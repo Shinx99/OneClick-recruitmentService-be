@@ -1,0 +1,213 @@
+# ============================================
+# SERVER CONFIGURATION
+# ============================================
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  compression:
+    enabled: ${SERVER_COMPRESSION_ENABLED:true}
+    mime-types: text/html,text/xml,text/plain,text/css,application/javascript,application/json
+  tomcat:
+    max-threads: ${SERVER_TOMCAT_MAX_THREADS:200}
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# ============================================
+# SPRING CONFIGURATION
+# ============================================
+spring:
+  application:
+    name: ${APP_NAME:cvService-be}
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  config:
+    fail-fast: ${SPRING_CONFIG_FAIL_FAST:false}
+
+  # ============================================
+  # DATASOURCE (PostgreSQL)
+  # ============================================
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: ${SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE:10}
+      minimum-idle: ${SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE:5}
+      connection-timeout: ${SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT:20000}
+      idle-timeout: ${SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT:300000}
+      max-lifetime: ${SPRING_DATASOURCE_HIKARI_MAX_LIFETIME:1800000}
+      leak-detection-threshold: ${SPRING_DATASOURCE_HIKARI_LEAK_DETECTION_THRESHOLD:60000}
+
+  # ============================================
+  # JPA & HIBERNATE
+  # ============================================
+  jpa:
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+    defer-datasource-initialization: false
+    properties:
+      hibernate:
+        format_sql: ${SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL:false}
+        jdbc:
+          batch_size: ${SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_BATCH_SIZE:20}
+        order_inserts: ${SPRING_JPA_PROPERTIES_HIBERNATE_ORDER_INSERTS:true}
+        order_updates: ${SPRING_JPA_PROPERTIES_HIBERNATE_ORDER_UPDATES:true}
+
+  # ============================================
+  # FLYWAY MIGRATION (Added spring. prefix)
+  # ============================================
+  flyway:
+    enabled: ${SPRING_FLYWAY_ENABLED:true}
+    baseline-on-migrate: ${SPRING_FLYWAY_BASELINE_ON_MIGRATE:false}
+    validate-on-migrate: ${SPRING_FLYWAY_VALIDATE_ON_MIGRATE:true}
+    locations: ${SPRING_FLYWAY_LOCATIONS:classpath:db/migration}
+    clean-disabled: ${SPRING_FLYWAY_CLEAN_DISABLED:true}
+
+  # ============================================
+  # REDIS (Added Redis config)
+  # ============================================
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      timeout: ${SPRING_DATA_REDIS_TIMEOUT:2s}
+      lettuce:
+        pool:
+          max-active: ${SPRING_DATA_REDIS_LETTUCE_POOL_MAX_ACTIVE:8}
+          max-idle: ${SPRING_DATA_REDIS_LETTUCE_POOL_MAX_IDLE:8}
+          min-idle: ${SPRING_DATA_REDIS_LETTUCE_POOL_MIN_IDLE:0}
+
+  # ============================================
+  # CACHE (Changed from NONE to redis)
+  # ============================================
+  cache:
+    type: ${SPRING_CACHE_TYPE:redis}
+    redis:
+      time-to-live: ${SPRING_CACHE_REDIS_TIME_TO_LIVE:3600000}  # 1 hour
+
+  # ============================================
+  # FILE UPLOAD
+  # ============================================
+  servlet:
+    multipart:
+      max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
+      max-request-size: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE:50MB}
+
+  # ============================================
+  # DEVTOOLS (Hot Reload)
+  # ============================================
+  devtools:
+    restart:
+      enabled: ${SPRING_DEVTOOLS_RESTART_ENABLED:true}
+      additional-paths: ${SPRING_DEVTOOLS_RESTART_ADDITIONAL_PATHS:src/main}
+      poll-interval: ${SPRING_DEVTOOLS_RESTART_POLL_INTERVAL:1s}
+      quiet-period: ${SPRING_DEVTOOLS_RESTART_QUIET_PERIOD:400ms}
+    livereload:
+      enabled: ${SPRING_DEVTOOLS_LIVERELOAD_ENABLED:true}
+      port: ${SPRING_DEVTOOLS_LIVERELOAD_PORT:35730}
+
+# ============================================
+# ACTUATOR (Corrected metrics path)
+# ============================================
+management:
+  endpoints:
+    enabled-by-default: ${MANAGEMENT_ENDPOINTS_ENABLED_BY_DEFAULT:true}
+    web:
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:health,info,metrics,prometheus}
+      base-path: ${MANAGEMENT_ENDPOINTS_WEB_BASE_PATH:/actuator}
+
+  endpoint:
+    health:
+      show-details: ${MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:always}
+      group:
+        readiness:
+          include: ${MANAGEMENT_ENDPOINT_HEALTH_GROUP_READINESS_INCLUDE:db,redis}
+        liveness:
+          include: ${MANAGEMENT_ENDPOINT_HEALTH_GROUP_LIVENESS_INCLUDE:ping}
+
+  metrics:
+    export:
+      simple:
+        enabled: ${MANAGEMENT_METRICS_EXPORT_SIMPLE_ENABLED:true}
+    tags:
+      application: ${spring.application.name}
+
+# ============================================
+# LOGGING
+# ============================================
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    org.springframework.web: ${LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB:INFO}
+    org.springframework.security: ${LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY:DEBUG}
+    org.springframework.mail: DEBUG
+    org.hibernate.SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:INFO}
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+    com.oneClick: ${LOGGING_LEVEL_COM_CVSERVICE:DEBUG}
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: ${LOGGING_FILE_NAME:logs/cvservice.log}
+    max-size: ${LOGGING_FILE_MAX_SIZE:10MB}
+    max-history: ${LOGGING_FILE_MAX_HISTORY:30}
+# ============================================
+# CUSTOM APP PROPERTIES
+# ============================================
+app:
+  name: ${APP_NAME:OneClick}
+  version: ${APP_VERSION:@project.version@}
+  environment: ${APP_ENVIRONMENT:development}
+
+  frontend:
+    url: ${APP_FRONTEND_URL:http://localhost:3000}
+
+  logo:
+    url: ${APP_LOGO_URL:https://yourapp.com/logo.png}
+
+  support:
+    email: ${APP_SUPPORT_EMAIL:support@oneclick.com}
+
+  security:
+    email: ${APP_SECURITY_EMAIL:security@oneclick.com}
+
+  features:
+    cache-enabled: ${APP_FEATURES_CACHE_ENABLED:true}
+    metrics-enabled: ${APP_FEATURES_METRICS_ENABLED:true}
+
+  cookie:
+    secure: ${APP_COOKIE_SECURE:false}
+
+# ============================================
+# SPRINGDOC / SWAGGER
+# ============================================
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_API_DOCS_ENABLED:true}
+    path: /api-docs
+  swagger-ui:
+    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:true}
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+# ============================================
+# CORS CONFIGURATION
+# ============================================
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  allowed-headers: "*"
+  allow-credentials: true
+  max-age: 3600

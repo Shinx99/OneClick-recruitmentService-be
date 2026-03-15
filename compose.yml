@@ -64,6 +64,8 @@ services:
       - maven-cache:/root/.m2/repository  # Match Dockerfile cache id
       - notarget:/app/target
     environment:
+      - JAVA_OPTS=-Xms256m -Xmx1024m -Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true
+
       # Spring profiles
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev}
 
@@ -90,6 +92,22 @@ services:
       # Logging
       - LOGGING_LEVEL_ROOT=${LOGGING_LEVEL_ROOT:-INFO}
       - LOGGING_LEVEL_COM_SOCIAL=${LOGGING_LEVEL_COM_SOCIAL:-DEBUG}
+
+      # JWT Configuration - ADD THIS
+      - JWT_SECRET=${JWT_SECRET}
+
+      # Email Configuration
+      - MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+
+      # CORS Configuration - ADD THIS
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+      - CORS_ALLOWED_METHODS=GET,POST,PUT,DELETE,PATCH,OPTIONS
+      - CORS_ALLOWED_HEADERS=*
+      - CORS_ALLOW_CREDENTIALS=true
+      - CORS_MAX_AGE=3600
 
 
 

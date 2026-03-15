@@ -1,13 +1,13 @@
-package com.oneClick.cvService_be;
+package com.onceClick.recruitmentService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CvServiceBeApplication {
+public class RecruitmentServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CvServiceBeApplication.class, args);
+		SpringApplication.run(RecruitmentServiceApplication.class, args);
 	}
 
 }

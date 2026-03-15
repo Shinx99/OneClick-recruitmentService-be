@@ -27,6 +27,43 @@ spring:
     fail-fast: ${SPRING_CONFIG_FAIL_FAST:false}
 
   # ============================================
+  # EMAIL CONFIGURATION
+  # ============================================
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    from: ${MAIL_FROM:${MAIL_USERNAME}}
+    default-encoding: UTF-8
+    test-connection: false
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+            auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+        debug: false
+
+  # ============================================
+  # THYMELEAF CONFIGURATION
+  # ============================================
+  thymeleaf:
+    enabled: true
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+    check-template: true
+    check-template-location: true
+
+  # ============================================
   # DATASOURCE (PostgreSQL)
   # ============================================
   datasource:
@@ -185,6 +222,16 @@ app:
     secure: ${APP_COOKIE_SECURE:false}
 
 # ============================================
+# JWT CONFIGURATION
+# ============================================
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:900000}
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000}
+  issuer: ${JWT_ISSUER:recruitmentService-be}
+
+
+# ============================================
 # SPRINGDOC / SWAGGER
 # ============================================
 springdoc:
@@ -201,7 +248,7 @@ springdoc:
 # CORS CONFIGURATION
 # ============================================
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:8080}
   allowed-methods:
     - GET
     - POST

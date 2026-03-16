@@ -109,6 +109,12 @@ services:
       - CORS_ALLOW_CREDENTIALS=true
       - CORS_MAX_AGE=3600
 
+      # Eureka
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_CLOUD_COMPATIBILITY_VERIFIER_ENABLED=false
+      # App name cho Eureka
+      - SPRING_APPLICATION_NAME=recruitmentService-be
+
 
 
     depends_on:
@@ -134,4 +140,5 @@ volumes:
 # ============================================
 networks:
   app-network:
-    driver: bridge
+    name: oneclick-network
+    external: true

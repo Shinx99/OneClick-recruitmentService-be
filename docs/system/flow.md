@@ -76,3 +76,18 @@ Client ──POST /api/recruitment/profile───> RecruitmentService
                   ▼
 6. Controller: Response data
 ```
+
+## 🔐 5 Solutions JWT Microservices (Từ simple → enterprise)
+Solution	Coupling	Complexity	Scale	Enterprise Usage
+```bash
+1. Shared JWT Secret (Current ✅)	Low	Low	Good	Netflix, Grab
+2. JWT with Public Key	Low	Medium	Excellent	Google, AWS
+3. Opaque Token + Introspection	Medium	Medium	Good	Okta, Auth0
+4. gRPC + Mutual TLS	High	High	Excellent	Uber, Google
+5. API Gateway + Centralized Auth	Low	High	Excellent	AWS API GW, Kong
+```
+
+```bash
+HS256: 1 secret chia đều → Dễ leak
+RS256: 1 private (auth) + N public (services) → An toàn
+```

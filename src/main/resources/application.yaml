@@ -248,7 +248,7 @@ springdoc:
 # CORS CONFIGURATION
 # ============================================
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:8080}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:8080,http://localhost:8081}
   allowed-methods:
     - GET
     - POST
@@ -258,3 +258,19 @@ cors:
   allowed-headers: "*"
   allow-credentials: true
   max-age: 3600
+
+# ===== EUREKA CLIENT =====
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+    enabled: true  # Register với Eureka
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
+    metadata-map:
+      startup: ${random.int}

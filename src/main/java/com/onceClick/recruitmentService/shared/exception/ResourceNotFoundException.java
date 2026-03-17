@@ -3,7 +3,7 @@ package com.onceClick.recruitmentService.shared.exception;
 import org.springframework.http.HttpStatus;
 
 /**
- * Exception thrown when a requested resource is not found
+ * Exception thrown when oauth2ResourceServer.md requested resource is not found
  */
 public class ResourceNotFoundException extends BusinessException {
 

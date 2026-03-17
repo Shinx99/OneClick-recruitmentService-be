@@ -155,7 +155,7 @@ public class PasswordUtil {
     }
 
     /**
-     * Generate a random strong password
+     * Generate oauth2ResourceServer.md random strong password
      */
     public static String generateRandomPassword(int length) {
         if (length < MIN_PASSWORD_LENGTH) {

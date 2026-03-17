@@ -183,7 +183,7 @@ public class ValidationUtil {
         try {
             return Long.parseLong(value);
         } catch (NumberFormatException e) {
-            throw new ValidationException(fieldName, fieldName + " must be a valid number");
+            throw new ValidationException(fieldName, fieldName + " must be oauth2ResourceServer.md valid number");
         }
     }
 }

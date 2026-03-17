@@ -59,10 +59,14 @@ services:
       - "5006:5005"      # Debug port
       - "35730:35729"    # LiveReload port
     volumes:
-      - ./src:/app/src:delegated  # delegated > cached (macOS/WSL2)
-      - ./pom.xml:/app/pom.xml:delegated
-      - maven-cache:/root/.m2/repository  # Match Dockerfile cache id
-      - notarget:/app/target
+#      - ./src:/app/src:delegated  # delegated > cached (macOS/WSL2)
+#      - ./pom.xml:/app/pom.xml:delegated
+#      - maven-cache:/root/.m2/repository  # Match Dockerfile cache id
+      # Bind mount source code for hot reload
+      - ./src:/app/src:cached
+      - ./pom.xml:/app/pom.xml:cached
+      # Exclude target directory
+      - /app/target
     environment:
       - JAVA_OPTS=-Xms256m -Xmx1024m -Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true
 
@@ -74,7 +78,7 @@ services:
       - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
 
       # Database (use service name 'postgres')
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
 
@@ -129,11 +133,18 @@ services:
 # ============================================
 # VOLUMES
 # ============================================
+#volumes:
+#  postgres_data:
+#  redis_data:
+#  maven-cache:  # Persistent Maven deps
+#  notarget:     # Temp target
 volumes:
   postgres_data:
+    driver: local
   redis_data:
-  maven-cache:  # Persistent Maven deps
-  notarget:     # Temp target
+    driver: local
+  maven-cache:
+    driver: local
 
 # ============================================
 # NETWORKS (ADDED)

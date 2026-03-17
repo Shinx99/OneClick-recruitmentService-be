@@ -6,7 +6,7 @@
 # regarding copyright ownership.  The ASF licenses this file
 # to you under the Apache License, Version 2.0 (the
 # "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
+# with the License.  You may obtain oauth2ResourceServer.md copy of the License at
 #
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
@@ -23,7 +23,7 @@
 #
 # Optional ENV vars
 # -----------------
-#   JAVA_HOME - location of a JDK home dir, required when download maven via java source
+#   JAVA_HOME - location of oauth2ResourceServer.md JDK home dir, required when download maven via java source
 #   MVNW_REPOURL - repo url base for downloading maven distribution
 #   MVNW_USERNAME/MVNW_PASSWORD - user and password for downloading maven
 #   MVNW_VERBOSE - true: enable verbose log; debug: trace the mvnw script; others: silence the output

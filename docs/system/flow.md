@@ -18,7 +18,7 @@
    
 5. SPRING FILTER CHAIN
    JwtAuthenticationFilter → 
-     a. Extract Bearer token
+     oauth2ResourceServer.md. Extract Bearer token
      b. jwtDecoder.verify(signature với JWT_SECRET từ env)
      c. Decode claims: {accountId:123, roles:["HR"], exp:..., iat:...}
      d. Check exp/not expired
@@ -34,7 +34,7 @@
    
 9. HANDLER EXECUTE BUSINESS LOGIC
    CreateJobHandler.execute(accountId, request)
-   a. Validate @Valid CreateJobRequest
+   oauth2ResourceServer.md. Validate @Valid CreateJobRequest
    b. Check companyId=req.companyId belongs to accountId=123 (ownership)
    c. Job job = new Job(req.title, req.companyId, status=DRAFT)
    d. jobRepository.save(job)

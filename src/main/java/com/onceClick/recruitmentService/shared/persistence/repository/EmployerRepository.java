@@ -8,6 +8,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface EmployerRepository extends JpaRepository<Employer, UUID> {
-    List<Employer> findByCompanyId(UUID companyId);
-    Optional<Employer> findByCccd(String cccd);
+
 }

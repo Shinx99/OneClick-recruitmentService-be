@@ -58,10 +58,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Bean
-//    public JwtDecoder jwtDecoder() {
-//        return NimbusJwtDecoder.withJwkSetUri("http://authservice:8081/oauth2/jwks").build();
-//    }
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {

@@ -1,41 +1,45 @@
 package com.onceClick.recruitmentService.shared.persistence.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(name = "skills")
+@Table(name = "candidate_statistic_daily")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Skills {
+public class CandidateStatisticDaily {
     
     @Id
     @GeneratedValue
-    @Column(name = "skills_id")
-    private UUID skillsId;
+    @Column(name = "id")
+    private UUID id;
     
-    @Column(name = "skills_name", unique = true, nullable = false, length = 255)
-    @NotBlank
-    private String skillsName;
+    @Column(name = "candidate_id", nullable = false)
+    private UUID candidateId;
+    
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
+    
+    @Column(name = "profile_view_count", nullable = false)
+    private Integer profileViewCount = 0;
+    
+    @Column(name = "apply_count", nullable = false)
+    private Integer applyCount = 0;
 
-/*    @CreationTimestamp
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
-    private Instant updatedAt;*/
 
 }

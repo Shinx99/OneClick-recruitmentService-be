@@ -280,3 +280,13 @@ eureka:
     lease-expiration-duration-in-seconds: 10
     metadata-map:
       startup: ${random.int}
+
+# ============================================
+# INTERNAL API CONFIGURATION
+# ============================================
+internal:
+  api:
+    key: ${INTERNAL_SECRET_KEY}
+  services:
+    auth-url: ${AUTH_SERVICE_URL:http://authService-be:8080}
+

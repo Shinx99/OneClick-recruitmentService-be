@@ -43,6 +43,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/recruitment/jobs").permitAll()
                         .requestMatchers("/api/recruitment/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Internal path
+                        .requestMatchers("/api/internal/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
 

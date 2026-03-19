@@ -120,12 +120,17 @@ services:
       - SPRING_APPLICATION_NAME=recruitmentService-be
 
 
+      # Internal Secret Key
+      - INTERNAL_SECRET_KEY=${INTERNAL_SECRET_KEY}
+      # Internal URL to AuthService-be
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL:-authService-be:8080}
+
 
     depends_on:
       postgres:
-        condition: service_started
+        condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - app-network

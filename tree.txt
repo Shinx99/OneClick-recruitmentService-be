@@ -1,0 +1,114 @@
+OneClick-recruitmentService-be
+├── Dockerfile
+├── README.md
+├── compose.yml
+├── create-folderStructure.sh
+├── create-migration.sh
+├── docs
+│   ├── flyway
+│   │   └── migration.md
+│   ├── github
+│   │   └── gitflow.md
+│   └── system
+│       ├── flow.md
+│       ├── folderStructure.md
+│       └── oauth2ResourceServer.md
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── onceClick
+│   │   │           └── recruitmentService
+│   │   │               ├── RecruitmentServiceApplication.java
+│   │   │               ├── features
+│   │   │               │   ├── RecruitmentController.java
+│   │   │               │   ├── candidate
+│   │   │               │   │   ├── dto
+│   │   │               │   │   └── event
+│   │   │               │   ├── company
+│   │   │               │   │   ├── dto
+│   │   │               │   │   └── event
+│   │   │               │   ├── employer
+│   │   │               │   │   ├── dto
+│   │   │               │   │   └── validator
+│   │   │               │   ├── experience
+│   │   │               │   ├── job
+│   │   │               │   │   ├── dto
+│   │   │               │   │   └── specification
+│   │   │               │   ├── report
+│   │   │               │   ├── resume
+│   │   │               │   │   ├── dto
+│   │   │               │   │   └── service
+│   │   │               │   ├── skills
+│   │   │               │   └── statistic
+│   │   │               │       ├── candidate
+│   │   │               │       │   └── dto
+│   │   │               │       ├── job
+│   │   │               │       │   └── dto
+│   │   │               │       └── resume
+│   │   │               │           └── dto
+│   │   │               ├── infrastructure
+│   │   │               │   ├── client
+│   │   │               │   │   ├── auth
+│   │   │               │   │   │   └── dto
+│   │   │               │   │   └── notification
+│   │   │               │   │       └── dto
+│   │   │               │   ├── messaging
+│   │   │               │   │   ├── consumer
+│   │   │               │   │   └── producer
+│   │   │               │   └── security
+│   │   │               └── shared
+│   │   │                   ├── config
+│   │   │                   │   ├── CorsConfig.java
+│   │   │                   │   ├── OpenApiConfig.java
+│   │   │                   │   ├── RedisConfig.java
+│   │   │                   │   └── SecurityConfig.java
+│   │   │                   ├── constant
+│   │   │                   ├── dto
+│   │   │                   │   ├── ApiResponse.java
+│   │   │                   │   ├── ErrorResponse.java
+│   │   │                   │   └── PageResponse.java
+│   │   │                   ├── exception
+│   │   │                   │   ├── BusinessException.java
+│   │   │                   │   ├── ForbiddenException.java
+│   │   │                   │   ├── GlobalExceptionHandler.java
+│   │   │                   │   ├── ResourceNotFoundException.java
+│   │   │                   │   ├── UnauthorizedException.java
+│   │   │                   │   └── ValidationException.java
+│   │   │                   ├── notification
+│   │   │                   │   ├── EmailConfig.java
+│   │   │                   │   ├── EmailService.java
+│   │   │                   │   ├── EmailServiceImpl.java
+│   │   │                   │   ├── EmailTemplateService.java
+│   │   │                   │   └── EmailTemplateServiceImpl.java
+│   │   │                   ├── persistence
+│   │   │                   │   ├── entity
+│   │   │                   │   └── repository
+│   │   │                   └── util
+│   │   │                       ├── DateTimeUtil.java
+│   │   │                       ├── PasswordUtil.java
+│   │   │                       ├── TokenHashUtil.java
+│   │   │                       └── ValidationUtil.java
+│   │   └── resources
+│   │       ├── application.yaml
+│   │       ├── db
+│   │       │   └── migration
+│   │       │       └── V20260314_130827__recruitment_service__first_version.sql
+│   │       └── static
+│   └── test
+│       └── java
+│           └── com
+│               ├── onceClick
+│               │   └── recruitmentService
+│               │       ├── features
+│               │       │   ├── employer
+│               │       │   ├── job
+│               │       │   └── statistic
+│               │       └── shared
+│               └── oneClick
+│                   └── recruitmentService
+│                       └── CvServiceBeApplicationTests.java
+└── tree.txt

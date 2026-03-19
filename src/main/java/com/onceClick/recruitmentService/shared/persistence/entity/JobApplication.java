@@ -1,7 +1,6 @@
 package com.onceClick.recruitmentService.shared.persistence.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,32 +9,32 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "skills")
+@Table(name = "job_application")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Skills {
-    
-    @Id
-    @GeneratedValue
-    @Column(name = "skills_id")
-    private UUID skillsId;
-    
-    @Column(name = "skills_name", unique = true, nullable = false, length = 255)
-    @NotBlank
-    private String skillsName;
+public class JobApplication {
 
-/*    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
-    private Instant createdAt;
+    @EmbeddedId
+    private JobApplicationId id;  // ← Dùng class ID mới
+
+    @Column(name = "resume_id")
+    private UUID resumeId;
+
+    @Column(name = "status", length = 50)
+    private String status = "pending";
+
+    @Column(name = "applied_at", updatable = false)
+    private Instant appliedAt = Instant.now();
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
-    private Instant updatedAt;*/
+    private Instant updatedAt;
 
+    @Column(name = "note", columnDefinition = "TEXT")
+    private String note;
 }

@@ -1,21 +1,25 @@
-package com.onceClick.recruitmentService.features.candidate.dto;
+package com.onceClick.recruitmentService.features.candidate.dto.request;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public class CandidateDto {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class CandidateRequestDto {
 
     private UUID candidateId;
 
     private String about;
+
+    private String email;
+
+    private String phone;
 
     private String surname;
 
@@ -35,20 +39,12 @@ public class CandidateDto {
 
     private String referenceLink;
 
-    private Instant consentDataAt;
-
     private String consentVersion;
 
     private String cccd;
 
-    private Instant cccdVerifiedAt;
-
     private String verificationLevel;
 
     private String status;
-
-    private Instant createdAt;
-
-    private Instant updatedAt;
 
 }

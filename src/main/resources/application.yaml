@@ -265,7 +265,10 @@ cors:
   allow-credentials: true
   max-age: 3600
 
+
+# ============================================
 # ===== EUREKA CLIENT =====
+# ============================================
 eureka:
   client:
     service-url:
@@ -287,6 +290,6 @@ eureka:
 internal:
   api:
     key: ${INTERNAL_SECRET_KEY}
-  services:
-    auth-url: ${AUTH_SERVICE_URL:http://authService-be:8080}
+  auth-service:
+    url: ${AUTH_SERVICE_URL:http://authService-be-app:8080}
 

@@ -1,0 +1,125 @@
+package com.onceClick.recruitmentService.features.employer.handler;
+
+import com.onceClick.recruitmentService.features.employer.dto.request.EmployerRequestDto;
+import com.onceClick.recruitmentService.features.employer.dto.response.EmployerResponseDto;
+import com.onceClick.recruitmentService.infrastructure.feign.AuthAccountDto;
+import com.onceClick.recruitmentService.infrastructure.feign.SyncDataFromAccountHandler;
+import com.onceClick.recruitmentService.shared.dto.ApiResponse;
+import com.onceClick.recruitmentService.shared.persistence.entity.Employer;
+import com.onceClick.recruitmentService.shared.persistence.repository.EmployerRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.SecondaryRow;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class EmployerProfileHandler {
+
+    private final EmployerRepository employerRepository;
+    private final SyncDataFromAccountHandler syncDataFromAccountHandler;
+
+    @Transactional
+    public ApiResponse<EmployerResponseDto> updateEmployerProfile(EmployerRequestDto requestDto){
+
+        UUID employerId = requestDto.getEmployerId();
+
+        // 1. Check exist employer
+        Employer employer = employerRepository.findById(employerId).orElse(null);
+
+        // 2. If it doesn't exist, sync from auth service
+        if(employer == null){
+
+            // Not exist, need to sync data from auth service
+            log.info("Employer {} not found, syncing from Auth Service", employerId);
+            AuthAccountDto authAccount = syncDataFromAccountHandler.syncAccountData(employerId);
+
+            employer = Employer.builder()
+                    .employerId(employerId)
+                    .email(authAccount.getEmail())
+                    .phone(authAccount.getPhone())
+                    .consentVersion("1.0")
+                    .status("active")
+                    .createdAt(Instant.now())
+                    .isNew(true)
+                    .build();
+        }
+
+        // 3. Update field from request
+        updateNullableFields(employer, requestDto);
+
+        // 4. Save into table Employer of Recruitment DB
+        employerRepository.save(employer);
+        log.info("Updated employer profile: {}", employerId);
+
+        // 5. return ApiResponse
+        return ApiResponse.<EmployerResponseDto>builder()
+                .success(true)
+                .message("Employer profile updated successfully")
+                .data(new EmployerResponseDto(employerId, "Employer profile updated successfully!"))
+                .build();
+    }
+
+    private void updateNullableFields(Employer employer, EmployerRequestDto request){
+
+        // Update every single fields if request does not null
+
+        // 1. company
+        if(request.getCompany() != null) employer.setCompany(request.getCompany());
+
+        // 2. name
+        if(request.getName() != null) employer.setName(request.getName());
+
+        // 3. surname
+        if(request.getSurname() != null) employer.setSurname(request.getSurname());
+
+        // 4. about
+        if(request.getAbout() != null) employer.setSurname(request.getSurname());
+
+        // 5. birthday
+        if(request.getBirthday() != null) employer.setBirthday(request.getBirthday());
+
+        // 6. province
+        if(request.getBirthday() != null) employer.setBirthday(request.getBirthday());
+
+        // 7. commune
+        if(request.getCommune() != null) employer.setCommune(request.getCommune());
+
+        // 8. gender
+        if(request.getGender() != null) employer.setGender(request.getGender());
+
+        // 9. industry
+        if(request.getIndustry() != null) employer.setIndustry(request.getIndustry());
+
+        // 10. avatar url
+        if(request.getAvatarUrl() != null) employer.setAvatarUrl(request.getAvatarUrl());
+
+        // 11. background url
+        if(request.getBackgroundUrl() != null) employer.setBackgroundUrl(request.getBackgroundUrl());
+
+        // 12. reference link
+        if (request.getReferenceLink() != null) employer.setReferenceLink(request.getReferenceLink());
+
+        // 13. level
+        if(request.getLevel() != null) employer.setLevel(request.getLevel());
+
+        // 14. experience year
+        if(request.getExperienceYear() != null) employer.setExperienceYear(request.getExperienceYear());
+
+        // 15. cccd
+        if(request.getCccd() != null) employer.setCccd(request.getCccd());
+
+        // 16. verification level
+        if(request.getVerificationLevel() != null) employer.setVerificationLevel(request.getVerificationLevel());
+
+        // 17. total job posted
+        if(request.getTotalJobPosted() != null) employer.setTotalJobPosted(request.getTotalJobPosted());
+    }
+
+
+}

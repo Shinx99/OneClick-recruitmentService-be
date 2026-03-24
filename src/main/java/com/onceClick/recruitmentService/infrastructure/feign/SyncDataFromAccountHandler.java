@@ -30,8 +30,6 @@ public class SyncDataFromAccountHandler {
 //        }
 //        return account;
 
-        // Load from authServiceClient first
-        log.info("Syncing account {} from Auth Service", accountId);
 
         try{
 
@@ -39,6 +37,7 @@ public class SyncDataFromAccountHandler {
             return account;
 
         } catch (Exception e) {
+            log.error("Feign call to Auth Service failed! accountId={}, error={}", accountId, e.getMessage(), e);
             throw new ResourceNotFoundException("Account is not sync from Auth Service yet!");
         }
     }

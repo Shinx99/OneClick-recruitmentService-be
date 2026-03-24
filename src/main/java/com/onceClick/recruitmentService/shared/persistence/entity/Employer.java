@@ -1,12 +1,10 @@
 package com.onceClick.recruitmentService.shared.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
@@ -21,11 +19,35 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employer {
+public class Employer implements Persistable<UUID> {
 
     @Id
     @Column(name = "employer_id", nullable = false)
     private UUID employerId;  // UUID từ Auth Service, không auto-generate
+
+    //-----------------------------------------------------------------------------
+    // For persist issue when syncing data
+    @Transient
+    @Getter(AccessLevel.NONE)
+    private boolean isNew;
+
+    @Override
+    public UUID getId(){
+        return employerId;
+    }
+
+    @Override
+    public boolean isNew(){
+        return isNew;
+    }
+
+    @PostPersist
+    @PostLoad
+    void markNotNew(){
+        this.isNew = false;
+    }
+
+    //-----------------------------------------------------------------------------
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
@@ -33,6 +55,12 @@ public class Employer {
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
+
+    @Column(name = "email", nullable = false, unique = true, length = 255)
+    private String email;
+
+    @Column(name = "phone")
+    private String phone;
 
     @Column(name = "surname", nullable = false, length = 50)
     private String surname;
@@ -80,7 +108,7 @@ public class Employer {
     private Instant verifiedAt;
 
     @Column(name = "verification_level", length = 50)
-    private String verificationLevel = "lv3";
+    private String verificationLevel;
 
     @Column(name = "total_job_posted")
     private Integer totalJobPosted = 0;

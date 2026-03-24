@@ -41,7 +41,9 @@ public class SecurityConfig {
                         ).permitAll()
 
                         .requestMatchers("/api/recruitment/jobs").permitAll()
-                        .requestMatchers("/api/recruitment/**").authenticated()
+                        .requestMatchers("/api/recruitment/candidate/**").authenticated()
+                        .requestMatchers("/api/recruitment/employer/**").authenticated()
+                        .requestMatchers("/api/recruitment/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         // Internal path

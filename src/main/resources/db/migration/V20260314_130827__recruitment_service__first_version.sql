@@ -12,7 +12,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- 1. COMPANY
 -- =========================================================
 CREATE TABLE company (
-    company_id UUID PRIMARY KEY, --UUID from auth service
+    company_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_name TEXT UNIQUE NOT NULL,
     tax_code VARCHAR(20) UNIQUE NOT NULL,
     business_license_url TEXT,
@@ -41,6 +41,8 @@ CREATE TABLE company (
 -- =========================================================
 CREATE TABLE candidate (
     candidate_id UUID PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(32),
     about TEXT,
     surname VARCHAR(50) NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -108,6 +110,8 @@ CREATE INDEX idx_candidate_certificate_candidate_id ON candidate_certificate(can
 CREATE TABLE employer (
     employer_id UUID PRIMARY KEY,  --UUID FROM AUTH SERVICE
     company_id UUID NOT NULL REFERENCES company(company_id),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(32),
     name VARCHAR(100) NOT NULL,
     surname VARCHAR(50) NOT NULL,
     about TEXT,

@@ -46,6 +46,28 @@ services:
     networks:
       - app-network
 
+  # MinIO = S3
+  minio:
+    image: minio/minio:latest
+    container_name: recruitment-minio
+    ports:
+      - "9000:9000"    # S3 API
+      - "9001:9001"    # Web console
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - app-network
+
   # ============================================
   # SPRING BOOT APPLICATION
   # ============================================
@@ -98,7 +120,7 @@ services:
       - LOGGING_LEVEL_COM_SOCIAL=${LOGGING_LEVEL_COM_SOCIAL:-DEBUG}
 
       # JWT Configuration - ADD THIS
-      - JWT_SECRET=${JWT_SECRET}
+      #- JWT_SECRET=${JWT_SECRET}
 
       # Email Configuration
       - MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
@@ -125,11 +147,22 @@ services:
       # Internal URL to AuthService-be
       - AUTH_SERVICE_URL=${AUTH_SERVICE_URL:-http://authService-be-app:8080}
 
+      # DeepSeek API Configuration
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+
+      # MinIo Configuration
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - AWS_S3_ENDPOINT=http://minio:9000
+      - AWS_REGION=us-east-1
+
 
     depends_on:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      minio:
         condition: service_healthy
     restart: unless-stopped
     networks:
@@ -144,6 +177,7 @@ services:
 #  maven-cache:  # Persistent Maven deps
 #  notarget:     # Temp target
 volumes:
+  minio_data:
   postgres_data:
     driver: local
   redis_data:
@@ -158,3 +192,4 @@ networks:
   app-network:
     name: oneclick-network
     external: true
+

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Công ty được xác thực - OneClick</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f4f7fa;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f7fa;">
+    <!-- Header -->
+    <tr>
+        <td style="padding: 40px 20px; text-align: center; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);">
+            <img th:src="${logoUrl}" alt="OneClick Recruitment" style="height: 50px; max-width: 150px;">
+            <h1 style="color: white; margin: 20px 0 10px; font-size: 28px; font-weight: 600;">Xin Chúc mừng!</h1>
+        </td>
+    </tr>
+    <!-- Content -->
+    <tr>
+        <td style="padding: 40px 40px; background: white; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #1a202c; margin-bottom: 20px;">Công ty <strong th:text="${companyName}"></strong> đã được xác thực</h2>
+            <p>Xin chào <strong th:text="${employerName}"></strong>,</p>
+            <p>Công ty của bạn đã được đội ngũ OneClick kiểm duyệt thành công!</p>
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 30px 0;">
+                <tr>
+                    <td style="text-align: center;">
+                        <a th:href="${dashboardUrl}" style="background: linear-gradient(135deg, #3182ce, #2b6cb0); color: white; padding: 16px 32px; text-decoration: none; font-weight: 600; border-radius: 8px; display: inline-block; font-size: 16px; box-shadow: 0 4px 12px rgba(49,130,206,0.3);">
+                            BẮT ĐẦU TUYỂN DỤNG
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            <div style="background: #f7fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #48bb78;">
+                <p><strong>✅ Bạn có thể:</strong></p>
+                <ul style="margin: 10px 0; padding-left: 20px; color: #4a5568;">
+                    <li>Đăng tin tuyển dụng không giới hạn</li>
+                    <li>Quản lý hồ sơ ứng viên</li>
+                    <li>Xem thống kê chi tiết</li>
+                </ul>
+            </div>
+        </td>
+    </tr>
+    <!-- Support + Footer same as employer-verification -->
+    <!-- Copy từ employer-verification.html từ phần Support + Footer -->
+</table>
+</body>
+</html>

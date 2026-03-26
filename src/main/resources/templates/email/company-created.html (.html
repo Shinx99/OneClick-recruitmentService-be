@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Công ty tạo thành công - OneClick</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f4f7fa;">
+<!-- Header: green gradient -->
+<tr>
+    <td style="padding: 40px 20px; text-align: center; background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);">
+        <img th:src="${logoUrl}" alt="OneClick">
+        <h1 style="color: white;">🏢 Hồ sơ công ty</h1>
+    </td>
+</tr>
+<!-- Content -->
+<tr>
+    <td style="padding: 40px 40px; background: white; max-width: 600px; margin: 0 auto;">
+        <h2>Hồ sơ <strong th:text="${companyName}"></strong> đã tạo thành công</h2>
+        <p>Xin chào <strong th:text="${employerName}"></strong>,</p>
+        <p>Hồ sơ công ty đã được lưu. <a th:href="${dashboardUrl}">Hoàn thiện thông tin</a> và bắt đầu tuyển dụng!</p>
+        <div style="background: #ebf8ff; padding: 20px; border-radius: 8px; border-left: 4px solid #4299e1;">
+            <p><strong>📋 Checklist tiếp theo:</strong></p>
+            <ul style="color: #4a5568;">
+                <li>Upload logo công ty</li>
+                <li>Thêm thông tin liên hệ</li>
+                <li>Đăng tin tuyển dụng đầu tiên</li>
+            </ul>
+        </div>
+    </td>
+</tr>
+<!-- Support + Footer same -->
+</body>
+</html>

@@ -10,6 +10,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 
 
 /*
@@ -34,85 +36,83 @@ public class EmailServiceImpl implements EmailService {
     @Value("${app.name:OneClick}")
     private String appName;
 
+    // ========== EMPLOYER ==========
     @Override
-    public void sendVerificationEmail(String toEmail, String username, String verificationToken, int expiryHours) {
-
-        String verifyUrl = frontendUrl + "/verify-email?token=" + verificationToken;
-        String supportUrl = frontendUrl + "/support";
-
-        String htmlContent = emailTemplateService.buildVerificationEmail(username, verifyUrl, expiryHours, supportUrl);
-
-        sendHtmlEmail(toEmail, "Verify your email address", htmlContent);
-        log.info("[EMAIL] Verification email sent to: {}", toEmail);
+    public void sendEmployerVerificationEmail(String toEmail, String employerName, String verificationUrl, int expiryHours) {
+        Map<String, Object> vars = Map.of(
+                "employerName", employerName,
+                "verificationUrl", verificationUrl,
+                "expiryHours", expiryHours
+        );
+        String html = emailTemplateService.buildEmployerVerification(vars);
+        sendHtmlEmail(toEmail, "✅ Xác thực tài khoản Nhà tuyển dụng", html);
+        log.info("[EMPLOYER] Verification email sent to: {}", toEmail);
     }
 
     @Override
-    public void sendPasswordResetEmail(String toEmail, String username, String resetToken, int expiryMinutes) {
-
-        String resetUrl = frontendUrl + "/reset-password?token=" + resetToken;
-        String supportUrl = frontendUrl + "/support";
-
-        String htmlContent = emailTemplateService.buildPasswordResetEmail(
-                username, resetUrl, expiryMinutes, supportUrl
+    public void sendCompanyVerifiedEmail(String toEmail, String employerName, String companyName) {
+        Map<String, Object> vars = Map.of(
+                "employerName", employerName,
+                "companyName", companyName,
+                "dashboardUrl", frontendUrl + "/employer/dashboard"
         );
+        String html = emailTemplateService.buildCompanyVerified(vars);
+        sendHtmlEmail(toEmail, "🎉 Công ty của bạn đã được xác thực!", html);
+        log.info("[COMPANY] Verified email sent to: {}", toEmail);
+    }
 
-        sendHtmlEmail(toEmail, "Reset your password", htmlContent);
-        log.info("[EMAIL] Password reset email sent to: {}", toEmail);
+    // ========== COMPANY ==========
+    @Override
+    public void sendCompanyCreatedEmail(String toEmail, String employerName, String companyName, String dashboardUrl) {
+        Map<String, Object> vars = Map.of(
+                "employerName", employerName,
+                "companyName", companyName,
+                "dashboardUrl", dashboardUrl
+        );
+        String html = emailTemplateService.buildCompanyCreated(vars);
+        sendHtmlEmail(toEmail, "🏢 Hồ sơ công ty đã được tạo thành công", html);
+    }
+
+    // ========== CANDIDATE ==========
+    @Override
+    public void sendCandidateWelcomeEmail(String toEmail, String candidateName, String dashboardUrl) {
+        Map<String, Object> vars = Map.of(
+                "candidateName", candidateName,
+                "dashboardUrl", dashboardUrl
+        );
+        String html = emailTemplateService.buildCandidateWelcome(vars);
+        sendHtmlEmail(toEmail, "👋 Chào mừng đến với OneClick Recruitment!", html);
+    }
+
+    // ========== JOB ==========
+    @Override
+    public void sendJobPublishedEmail(String toEmail, String employerName, String jobTitle, String jobUrl) {
+        Map<String, Object> vars = Map.of(
+                "employerName", employerName,
+                "jobTitle", jobTitle,
+                "jobUrl", jobUrl
+        );
+        String html = emailTemplateService.buildJobPublished(vars);
+        sendHtmlEmail(toEmail, "🚀 Việc làm của bạn đã được đăng!", html);
+    }
+
+    // ========== RESUME ==========
+    @Override
+    public void sendResumeUploadConfirm(String toEmail, String candidateName, String resumeUrl) {
+        Map<String, Object> vars = Map.of(
+                "candidateName", candidateName,
+                "resumeUrl", resumeUrl,
+                "dashboardUrl", frontendUrl + "/candidate/resumes"
+        );
+        String html = emailTemplateService.buildResumeConfirm(vars);
+        sendHtmlEmail(toEmail, "📄 CV của bạn đã được upload thành công", html);
     }
 
     @Override
-    public void sendOtpEmail(String toEmail, String username, String otpCode, int expiryMinutes) {
-
-        String supportUrl = frontendUrl + "/support";
-
-        String htmlContent = emailTemplateService.buildOtpEmail(
-                username, otpCode, expiryMinutes, supportUrl
-        );
-
-        sendHtmlEmail(toEmail, "Your OTP code", htmlContent);
-        log.info("[EMAIL] OTP email sent to: {} (OTP: {}", toEmail, otpCode);
-
-    }
-
-    @Override
-    public void sendPasswordChangedConfirmation(String toEmail, String username) {
-
-        String securityUrl = frontendUrl + "/security";
-
-        String htmlContent = emailTemplateService.buildPasswordChangedEmail(
-                username, "Unknown", securityUrl
-        );
-        sendHtmlEmail(toEmail, "Your password has been changed", htmlContent);
-        log.info("[EMAIL] Password changed confirmation sent to: {}", toEmail);
-
-    }
-
-    @Override
-    public void sendWelcomeEmail(String toEmail, String username) {
-
-        String dashboardUrl = frontendUrl + "/dashboard";
-        String docsUrl = frontendUrl + "/docs";
-
-        String htmlContent = emailTemplateService.buildWelcomeEmail(
-                username, dashboardUrl, docsUrl
-        );
-
-        sendHtmlEmail(toEmail, "Welcome to " + appName + "!", htmlContent);
-        log.info("[EMAIL] Welcome email sent to: {}", toEmail);
-    }
-
-    @Override
-    public void sendSuspiciousLoginAlert(String toEmail, String username, String ipAddress, String location) {
-
-        String changePasswordUrl = frontendUrl + "/change-password";
-
-        String htmlContent = emailTemplateService.buildSuspiciousLoginEmail(
-                username, ipAddress, location, changePasswordUrl
-        );
-
-        sendHtmlEmail(toEmail, "⚠️ Unusual login detected", htmlContent);
-        log.warn("[SECURITY_ALERT] Suspicious login alert sent to: {}", toEmail);
-
+    public void sendSupportEmail(String toEmail, String subject, String message) {
+        Map<String, Object> vars = Map.of("message", message);
+        String html = emailTemplateService.buildEmployerVerification(vars); // fallback
+        sendHtmlEmail(toEmail, subject, html);
     }
 
     // ============ Private Helper Method ============

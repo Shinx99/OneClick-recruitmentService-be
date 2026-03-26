@@ -1,11 +1,9 @@
 package com.onceClick.recruitmentService.shared.persistence.entity;
 
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -13,12 +11,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
 @Table(name = "resume")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Resume {
@@ -63,4 +63,13 @@ public class Resume {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant updatedAt;
+
+    @Type(JsonType.class)  // Hibernate 6+
+    @Column(name = "parsed_data", columnDefinition = "JSONB")
+    private Map<String, Object> parsedData;  // Hoặc JsonNode, ObjectNode
+
+    public static ResumeBuilder builder() {
+        return new ResumeBuilder();
+    }
+
 }

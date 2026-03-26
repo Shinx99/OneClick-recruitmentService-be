@@ -18,7 +18,7 @@ server:
 # ============================================
 spring:
   application:
-    name: ${APP_NAME:cvService-be}
+    name: ${APP_NAME:recruitmentService-be}
 
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
@@ -31,6 +31,24 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: http://authService-be-app:8080/oauth2/jwks
+
+  cloud:
+    aws:
+      s3:
+        bucket: recruitment-files
+
+  aws:
+    access-key-id: minioadmin
+    secret-access-key: minioadmin
+    s3:
+      #endpoint: http://localhost:9000
+      endpoint: http://minio:9000  # Container name (KHÔNG localhost)
+      path-style-access: true      # MinIO cần!
+      region: us-east-1
+
+  file:
+    extractor: s3FileProcessorService  # Primary bean name
+
 
   # ============================================
   # EMAIL CONFIGURATION
@@ -105,6 +123,7 @@ spring:
   # FLYWAY MIGRATION (Added spring. prefix)
   # ============================================
   flyway:
+    mixed: true
     enabled: ${SPRING_FLYWAY_ENABLED:true}
     baseline-on-migrate: ${SPRING_FLYWAY_BASELINE_ON_MIGRATE:false}
     validate-on-migrate: ${SPRING_FLYWAY_VALIDATE_ON_MIGRATE:true}
@@ -124,6 +143,8 @@ spring:
           max-active: ${SPRING_DATA_REDIS_LETTUCE_POOL_MAX_ACTIVE:8}
           max-idle: ${SPRING_DATA_REDIS_LETTUCE_POOL_MAX_IDLE:8}
           min-idle: ${SPRING_DATA_REDIS_LETTUCE_POOL_MIN_IDLE:0}
+      repositories:
+        enabled: false  # Disable auto Redis repo scan
 
   # ============================================
   # CACHE (Changed from NONE to redis)
@@ -227,6 +248,12 @@ app:
   cookie:
     secure: ${APP_COOKIE_SECURE:false}
 
+  file:
+    process:
+      supported-types: [ pdf, docx, txt, doc ]
+      max-size-mb: 10
+      ocr-enabled: false
+
 # ============================================
 # JWT CONFIGURATION
 # ============================================
@@ -249,6 +276,8 @@ springdoc:
     path: /swagger-ui.html
     operations-sorter: method
     tags-sorter: alpha
+  paths-to-match: /api/**
+  default-consumes-media-type: multipart/form-data
 
 # ============================================
 # CORS CONFIGURATION
@@ -292,4 +321,16 @@ internal:
     key: ${INTERNAL_SECRET_KEY}
   auth-service:
     url: ${AUTH_SERVICE_URL:http://authService-be-app:8080}
+
+# ============================================
+# DEEPSEEK API CONFIGURATION
+# ============================================
+deepseek:
+  api:
+    key: ${DEEPSEEK_API_KEY:sk-22436d003ab341e48019b1d26c70cb6b}     # ← ENV override # ← https://platform.deepseek.com/api_keys
+    endpoint: /v1/chat/completions
+    url: https://api.deepseek.com # ← Change → OpenAI/Ollama
+    model: deepseek-chat          # ← Switch model
+    max-tokens: 2000
+    temperature: 0.1
 

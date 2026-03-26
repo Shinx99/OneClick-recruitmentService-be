@@ -49,6 +49,9 @@ public class SecurityConfig {
                         // Internal path
                         .requestMatchers("/api/internal/**").permitAll()
 
+                        // Profile APIs
+                        .requestMatchers("/api/profile/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
 
@@ -69,7 +72,7 @@ public class SecurityConfig {
 
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
-        converter.setPrincipalClaimName("accountId");
+        converter.setPrincipalClaimName("sub");
         return converter;
     }
 }

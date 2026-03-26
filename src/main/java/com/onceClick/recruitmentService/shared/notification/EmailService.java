@@ -1,27 +1,20 @@
 package com.onceClick.recruitmentService.shared.notification;
 
-/*
-* Email service interface (internal infrastructure)
-* just use at infrastructure layer
-* */
-
 public interface EmailService {
+    // Employer/Company
+    void sendEmployerVerificationEmail(String toEmail, String employerName, String verificationUrl, int expiryHours);
+    void sendCompanyVerifiedEmail(String toEmail, String employerName, String companyName);
+    void sendCompanyCreatedEmail(String toEmail, String employerName, String companyName, String dashboardUrl);
 
-    void sendVerificationEmail(String toEmail, String username,
-                               String verificationToken, int expiryHours);
+    // Candidate
+    void sendCandidateWelcomeEmail(String toEmail, String candidateName, String dashboardUrl);
 
-    void sendPasswordResetEmail(String toEmail, String username,
-                                String resetToken, int expiryMinutes);
+    // Job
+    void sendJobPublishedEmail(String toEmail, String employerName, String jobTitle, String jobUrl);
 
-    void sendOtpEmail(String toEmail, String username,
-                      String otpCode, int expiryMinutes);
+    // Resume
+    void sendResumeUploadConfirm(String toEmail, String candidateName, String resumeUrl);
 
-    void sendPasswordChangedConfirmation(String toEmail, String username);
-
-    void sendWelcomeEmail(String toEmail, String username);
-
-    void sendSuspiciousLoginAlert(String toEmail, String username,
-                                  String ipAddress, String location);
-
-
+    // Common
+    void sendSupportEmail(String toEmail, String subject, String message);
 }

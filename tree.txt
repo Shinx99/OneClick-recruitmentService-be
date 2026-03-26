@@ -5,11 +5,17 @@ OneClick-recruitmentService-be
 ├── create-folderStructure.sh
 ├── create-migration.sh
 ├── docs
+│   ├── activity-diagram
+│   │   └── ScanCV.md
 │   ├── flyway
 │   │   └── migration.md
 │   ├── github
 │   │   └── gitflow.md
+│   ├── images
+│   │   ├── ScanCV-Diagram-2026-03-23T07-31-09.png
+│   │   └── ScanCv-at-JobDetail-Diagram-2026-03-23T09-47-15.png
 │   └── system
+│       ├── flow-s3-match-AI.md
 │       ├── flow.md
 │       ├── folderStructure.md
 │       └── oauth2ResourceServer.md
@@ -25,9 +31,17 @@ OneClick-recruitmentService-be
 │   │   │               ├── RecruitmentServiceApplication.java
 │   │   │               ├── features
 │   │   │               │   ├── RecruitmentController.java
+│   │   │               │   ├── ai_matching
+│   │   │               │   │   └── dto
 │   │   │               │   ├── candidate
 │   │   │               │   │   ├── dto
-│   │   │               │   │   └── event
+│   │   │               │   │   │   └── CandidateDto.java
+│   │   │               │   │   ├── entity
+│   │   │               │   │   ├── event
+│   │   │               │   │   └── handler
+│   │   │               │   │       └── CandidateProfileHandler.java
+│   │   │               │   ├── chatbot
+│   │   │               │   │   └── dto
 │   │   │               │   ├── company
 │   │   │               │   │   ├── dto
 │   │   │               │   │   └── event
@@ -42,6 +56,11 @@ OneClick-recruitmentService-be
 │   │   │               │   ├── resume
 │   │   │               │   │   ├── dto
 │   │   │               │   │   └── service
+│   │   │               │   ├── scanCv
+│   │   │               │   │   ├── ScanCv.java
+│   │   │               │   │   └── dto
+│   │   │               │   │       ├── ParsedData.java
+│   │   │               │   │       └── ParsedResumeResponse.java
 │   │   │               │   ├── skills
 │   │   │               │   └── statistic
 │   │   │               │       ├── candidate
@@ -51,11 +70,25 @@ OneClick-recruitmentService-be
 │   │   │               │       └── resume
 │   │   │               │           └── dto
 │   │   │               ├── infrastructure
-│   │   │               │   ├── client
-│   │   │               │   │   ├── auth
-│   │   │               │   │   │   └── dto
-│   │   │               │   │   └── notification
-│   │   │               │   │       └── dto
+│   │   │               │   ├── ai
+│   │   │               │   │   ├── AiConfig.java
+│   │   │               │   │   ├── AiPrompts.java
+│   │   │               │   │   └── AiService.java
+│   │   │               │   ├── config
+│   │   │               │   │   ├── AwsConfig.java
+│   │   │               │   │   └── RestTemplateConfig.java
+│   │   │               │   ├── feign
+│   │   │               │   │   ├── AuthAccountDto.java
+│   │   │               │   │   ├── AuthServiceClient.java
+│   │   │               │   │   ├── FeignClientConfig.java
+│   │   │               │   │   ├── InternalApiKeyInterceptor.java
+│   │   │               │   │   ├── SyncDataFromAccountController.java
+│   │   │               │   │   └── SyncDataFromAccountHandler.java
+│   │   │               │   ├── file
+│   │   │               │   │   ├── ByteArrayMultipartFile.java
+│   │   │               │   │   ├── FileProcessingConfig.java
+│   │   │               │   │   ├── FileProcessorService.java
+│   │   │               │   │   └── S3FileProcessorService.java
 │   │   │               │   ├── messaging
 │   │   │               │   │   ├── consumer
 │   │   │               │   │   └── producer
@@ -86,7 +119,39 @@ OneClick-recruitmentService-be
 │   │   │                   │   └── EmailTemplateServiceImpl.java
 │   │   │                   ├── persistence
 │   │   │                   │   ├── entity
+│   │   │                   │   │   ├── BaseEntity.java
+│   │   │                   │   │   ├── Candidate.java
+│   │   │                   │   │   ├── CandidateCertificate.java
+│   │   │                   │   │   ├── CandidateEducation.java
+│   │   │                   │   │   ├── CandidateStatisticDaily.java
+│   │   │                   │   │   ├── Company.java
+│   │   │                   │   │   ├── Employer.java
+│   │   │                   │   │   ├── EmployerStatisticDaily.java
+│   │   │                   │   │   ├── Experience.java
+│   │   │                   │   │   ├── Job.java
+│   │   │                   │   │   ├── JobApplication.java
+│   │   │                   │   │   ├── JobApplicationId.java
+│   │   │                   │   │   ├── JobEmployer.java
+│   │   │                   │   │   ├── JobEmployerId.java
+│   │   │                   │   │   ├── JobStatisticDaily.java
+│   │   │                   │   │   ├── Report.java
+│   │   │                   │   │   ├── Resume.java
+│   │   │                   │   │   ├── ResumeStatisticDaily.java
+│   │   │                   │   │   └── Skills.java
 │   │   │                   │   └── repository
+│   │   │                   │       ├── CandidateCertificateRepository.java
+│   │   │                   │       ├── CandidateEducationRepository.java
+│   │   │                   │       ├── CandidateRepository.java
+│   │   │                   │       ├── CandidateStatisticDailyRepository.java
+│   │   │                   │       ├── CompanyRepository.java
+│   │   │                   │       ├── EmployerRepository.java
+│   │   │                   │       ├── ExperienceRepository.java
+│   │   │                   │       ├── JobApplicationRepository.java
+│   │   │                   │       ├── JobEmployerRepository.java
+│   │   │                   │       ├── JobRepository.java
+│   │   │                   │       ├── ReportRepository.java
+│   │   │                   │       ├── ResumeRepository.java
+│   │   │                   │       └── SkillsRepository.java
 │   │   │                   └── util
 │   │   │                       ├── DateTimeUtil.java
 │   │   │                       ├── PasswordUtil.java
@@ -96,8 +161,17 @@ OneClick-recruitmentService-be
 │   │       ├── application.yaml
 │   │       ├── db
 │   │       │   └── migration
-│   │       │       └── V20260314_130827__recruitment_service__first_version.sql
-│   │       └── static
+│   │       │       ├── V20260314_130827__recruitment_service__first_version.sql
+│   │       │       └── V20260321_165253__scanCv__add_columns.sql
+│   │       ├── static
+│   │       └── templates
+│   │           └── email
+│   │               ├── candidate-welcome.html
+│   │               ├── company-created.html (.html
+│   │               ├── company-verified.html
+│   │               ├── employer-verification.html
+│   │               ├── job-published.html
+│   │               └── resume-confirm.html
 │   └── test
 │       └── java
 │           └── com

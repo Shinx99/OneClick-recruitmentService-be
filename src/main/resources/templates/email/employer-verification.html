@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác thực Nhà tuyển dụng - OneClick</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f4f7fa;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f7fa;">
+    <!-- Header -->
+    <tr>
+        <td style="padding: 40px 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <img th:src="${logoUrl}" alt="OneClick Recruitment" style="height: 50px; max-width: 150px;">
+            <h1 style="color: white; margin: 20px 0 10px; font-size: 28px; font-weight: 600;">Chào mừng Nhà tuyển dụng</h1>
+        </td>
+    </tr>
+    <!-- Content -->
+    <tr>
+        <td style="padding: 40px 40px; background: white; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #1a202c; margin-bottom: 20px;">Xác thực tài khoản để bắt đầu tuyển dụng</h2>
+            <p>Xin chào <strong th:text="${employerName}"></strong>,</p>
+            <p>Tài khoản nhà tuyển dụng của bạn đã được tạo thành công. Để đăng tin tuyển dụng, vui lòng xác thực bằng cách upload giấy phép kinh doanh:</p>
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 30px 0;">
+                <tr>
+                    <td style="text-align: center;">
+                        <a th:href="${verificationUrl}" style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 16px 32px; text-decoration: none; font-weight: 600; border-radius: 8px; display: inline-block; font-size: 16px; box-shadow: 0 4px 12px rgba(40,167,69,0.3);">
+                            XÁC THỰC TÀI KHOẢN
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            <p style="color: #718096; font-size: 14px;"><strong>Lưu ý:</strong> Link có hiệu lực trong <span th:text="${expiryHours}"></span> giờ.</p>
+        </td>
+    </tr>
+    <!-- Support -->
+    <tr>
+        <td style="padding: 0 40px 40px; background: white; max-width: 600px; margin: 0 auto;">
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+            <p style="color: #4a5568; margin: 0 0 20px;">Cần hỗ trợ? Liên hệ:</p>
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                    <td style="padding-right: 20px;">
+                        <strong>Email:</strong> <a th:href="@{mailto:${supportEmail}}" th:text="${supportEmail}" style="color: #3182ce;"></a>
+                    </td>
+                    <td>
+                        <strong>Hotline:</strong> <span th:text="${companyPhone}"></span>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <!-- Footer -->
+    <tr>
+        <td style="padding: 40px 20px; background: #2d3748; color: #a0aec0; text-align: center; font-size: 14px;">
+            <p>OneClick Recruitment - Nền tảng tuyển dụng thông minh</p>
+            <p>
+                <a th:href="${privacyUrl}" style="color: #a0aec0;">Chính sách bảo mật</a> |
+                <a th:href="${termsUrl}" style="color: #a0aec0;">Điều khoản dịch vụ</a> |
+                <a th:href="${helpUrl}" style="color: #a0aec0;">Trợ giúp</a>
+            </p>
+            <p th:text="'© ' + ${currentYear} + ' ' + ${appName}">© 2026 OneClick Recruitment</p>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

@@ -26,6 +26,14 @@ spring:
   config:
     fail-fast: ${SPRING_CONFIG_FAIL_FAST:false}
 
+  webflux:
+    static-path-pattern: /static/**
+  mvc:
+    static-path-pattern: /static/**
+  resources:
+    static-locations: classpath:/static/
+    add-mappings: false
+
   security:
     oauth2:
       resourceserver:

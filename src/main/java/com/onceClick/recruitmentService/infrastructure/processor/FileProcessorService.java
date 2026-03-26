@@ -1,10 +1,9 @@
-package com.onceClick.recruitmentService.infrastructure.file;
+package com.onceClick.recruitmentService.infrastructure.processor;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public interface FileTextExtractor {
+public interface FileProcessorService {
     String extractText(MultipartFile file) throws Exception;
-    String extractTextFromS3(String s3Url) throws Exception;  // S3 specific
     boolean isSupportedFile(String fileName);
     String getFileType(String fileName);
 }

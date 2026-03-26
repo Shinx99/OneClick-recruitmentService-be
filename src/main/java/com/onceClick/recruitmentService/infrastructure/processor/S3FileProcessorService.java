@@ -1,4 +1,5 @@
-package com.onceClick.recruitmentService.infrastructure.file;
+/*
+package com.onceClick.recruitmentService.infrastructure.processor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,20 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import jakarta.servlet.http.HttpServletResponse;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -31,7 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3FileProcessorService implements FileTextExtractor{
     private final S3Client s3Client;
-    private final FileProcessorService fileProcessor;
+    private final FileProcessorServiceImpl fileProcessor;
 
     @Value("${aws.s3.bucket:recruitment-files}")
     private String bucketName;
@@ -100,8 +92,7 @@ public class S3FileProcessorService implements FileTextExtractor{
         return "s3://" + bucket + "/" + key;
     }
 
-    // S3FileProcessorService.java – thêm method
-    public ResponseEntity<Resource> downloadCv(UUID accountId, String filename) {
+    public InputStream downloadCvStream(UUID accountId, String filename) {
         String key = "candidates/" + accountId + "/cv/" + filename;
 
         GetObjectRequest req = GetObjectRequest.builder()
@@ -109,14 +100,23 @@ public class S3FileProcessorService implements FileTextExtractor{
                 .key(key)
                 .build();
 
-        ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(req);
+        try {
+            return s3Client.getObject(req);
+        } catch (NoSuchKeyException e) {
+            log.warn("CV not found: {}", key);
+            throw new RuntimeException("File not found: " + filename, e);
+        }
+    }
 
-        Resource resource = new InputStreamResource(s3Object);
+    public List<S3Object> listCvObjects(UUID accountId) {
+        String prefix = "candidates/" + accountId + "/cv/";
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
+        ListObjectsV2Request req = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .prefix(prefix)
+                .build();
+
+        return s3Client.listObjectsV2(req).contents();
     }
 
     private String getBucketName() {
@@ -133,4 +133,4 @@ public class S3FileProcessorService implements FileTextExtractor{
     public String getFileType(String fileName) {
         return fileProcessor.getFileType(fileName);
     }
-}
+}*/

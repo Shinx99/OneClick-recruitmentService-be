@@ -4,10 +4,32 @@
 
 -- Add your SQL statements below:
 
-INSERT INTO candidate (candidate_id, about, surname, name, birthday, province, commune, gender, avatar_url, background_url, reference_link, consent_data_at, consent_version, cccd, cccd_verified_at, verification_level, status, created_at, updated_at) VALUES
+INSERT INTO candidate (
+  candidate_id,
+  email,
+  about,
+  surname,
+  name,
+  birthday,
+  province,
+  commune,
+  gender,
+  avatar_url,
+  background_url,
+  reference_link,
+  consent_data_at,
+  consent_version,
+  cccd,
+  cccd_verified_at,
+  verification_level,
+  status,
+  created_at,
+  updated_at
+) VALUES
 
   -- candidate0@example.com
-  ('94928b3f-2fa4-de90-b69d-1ae7373b5b92'::uuid,
+  ('949270cd-1fa2-4ad1-9a15-a7d5c10aa755'::uuid,
+   'candidate0@example.com',
    'Full-stack developer 5+ years experience. React, Node.js, PostgreSQL expert.',
    'Nguyen', 'Van Hung', '1995-08-15'::date,
    'Ho Chi Minh', 'Phuong 1, Quan 1', true,
@@ -19,7 +41,8 @@ INSERT INTO candidate (candidate_id, about, surname, name, birthday, province, c
    now() - INTERVAL '25 days', now()),
 
   -- candidate1@example.com
-  ('0606706f-2595-47a4-b903-4167be9f830f'::uuid,
+  ('306f0290-32e4-432f-a76c-8da640ae83d0'::uuid,
+   'candidate1@example.com',
    'Senior Frontend Engineer - UI/UX specialist. React, Vue.js, Figma.',
    'Tran', 'Thi Lan', '1993-03-22'::date,
    'Ho Chi Minh', 'Phuong 5, Quan 3', false,
@@ -31,7 +54,8 @@ INSERT INTO candidate (candidate_id, about, surname, name, birthday, province, c
    now() - INTERVAL '20 days', now()),
 
   -- candidate2@example.com
-  ('9606706f-2595-47a4-b903-4167be9f830f'::uuid,  -- Fix: 9606... theo screenshot
+  ('6d66756e-9257-47a8-903f-4175b8e9530f'::uuid,
+   'candidate2@example.com',
    'Junior Backend Developer - Java Spring Boot, Microservices.',
    'Le', 'Minh Tuan', '2000-11-10'::date,
    'Ha Noi', 'Phuong 10, Ba Dinh', true,
@@ -43,7 +67,8 @@ INSERT INTO candidate (candidate_id, about, surname, name, birthday, province, c
    now() - INTERVAL '15 days', now()),
 
   -- candidate3@example.com
-  ('5b73c5ed-f19f-8840-9848-7f3c5b73c5ed'::uuid,
+  ('d5601db5-cf93-4d5b-ba85-0696ea08fba8'::uuid,
+   'candidate3@example.com',
    'Data Analyst - Python, SQL, Tableau, Power BI.',
    'Pham', 'Thi Mai', '1997-07-05'::date,
    'Da Nang', 'Hai Chau 1', false,
@@ -51,7 +76,7 @@ INSERT INTO candidate (candidate_id, about, surname, name, birthday, province, c
    'https://example.com/bg/data-analyst.jpg',
    NULL,
    now() - INTERVAL '30 days', 'v1.0', '778899001122',
-   NULL, 'lv1', 'inactive',  -- Test inactive status
+   NULL, 'lv1', 'inactive',
    now() - INTERVAL '30 days', now() - INTERVAL '1 week')
 
 ON CONFLICT (candidate_id) DO UPDATE SET

@@ -30,7 +30,10 @@ public class Resume {
     
     @Column(name = "candidate_id", nullable = false)
     private UUID candidateId;
-    
+
+    @Column(name = "is_default")
+    private Boolean isDefault = false;
+
     @Column(name = "career_goal", columnDefinition = "TEXT")
     private String careerGoal;
     

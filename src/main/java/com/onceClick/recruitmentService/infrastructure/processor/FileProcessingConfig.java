@@ -1,4 +1,4 @@
-package com.onceClick.recruitmentService.infrastructure.file;
+package com.onceClick.recruitmentService.infrastructure.processor;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

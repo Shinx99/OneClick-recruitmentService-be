@@ -87,7 +87,7 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-        <!-- ✅ CRITICAL RS256 -->
+        <!-- CRITICAL RS256 -->
         <!-- OAuth2 Resource Server (JWT validation) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

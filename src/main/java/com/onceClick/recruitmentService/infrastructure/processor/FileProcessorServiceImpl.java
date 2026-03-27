@@ -1,4 +1,4 @@
-package com.onceClick.recruitmentService.infrastructure.file;
+package com.onceClick.recruitmentService.infrastructure.processor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -12,7 +12,7 @@ import java.io.InputStream;
 
 @Slf4j
 @Service
-public class FileProcessorService implements FileTextExtractor{
+public class FileProcessorServiceImpl implements FileProcessorService {
 
     public String extractText(MultipartFile file) throws Exception {
         String fileName = file.getOriginalFilename();
@@ -58,10 +58,16 @@ public class FileProcessorService implements FileTextExtractor{
             String text = stripper.getText(document);
             log.info("PDF text extracted: {} characters", text.length());
 
-            if (text.length() == 0) {
+            /*if (text.length() == 0) {
                 log.warn("No text extracted from PDF!");
                 log.warn("This might be a scanned PDF (image-based)");
                 return "PDF appears to be scanned or image-based. No text could be extracted.";
+            }*/
+
+            if (text.trim().length() < 100) {  // Threshold
+                log.error("🚨 IMAGE SCAN PDF! File: {} | Size: {}B",
+                        file.getOriginalFilename(), file.getSize());
+                return "[IMAGE_SCAN_CV] No selectable text found. This is likely a scanned/image PDF requiring OCR.";
             }
 
             // Log first 200 characters for debugging
@@ -105,11 +111,6 @@ public class FileProcessorService implements FileTextExtractor{
                 "Uploaded file name: " + file.getOriginalFilename();
     }
 
-    @Override
-    public String extractTextFromS3(String s3Url) throws Exception {
-        throw new UnsupportedOperationException(
-                "FileProcessorService không hỗ trợ S3 URL. Dùng S3FileProcessorService");
-    }
 
     @Override
     public String getFileType(String fileName) {

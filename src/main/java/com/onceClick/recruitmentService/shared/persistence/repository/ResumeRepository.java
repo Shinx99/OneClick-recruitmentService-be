@@ -6,21 +6,18 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface ResumeRepository extends JpaRepository<Resume, UUID> {
     List<Resume> findByCandidateId(UUID candidateId);
-    Optional<Resume> findByCandidateIdAndStatus(UUID candidateId, String status);
+    List<Resume> findByCandidateIdAndStatus(UUID candidateId, String status);
 
     // 1. Disallow all current default resumes for a candidate
     @Modifying
-    @Query("""
-        UPDATE Resume r
-        SET isDefault = false
-        WHERE r.candidateId = :candidateId AND r.isDefault = true
-        """)
+    @Query("UPDATE Resume r SET isDefault = false WHERE r.candidateId = :candidateId AND r.isDefault = true")
     void setCandidateResumesNotDefault(UUID candidateId);
 
     // 2. Optional: find current default resume
@@ -43,4 +40,52 @@ public interface ResumeRepository extends JpaRepository<Resume, UUID> {
 
     // Default CV cho Recruiter
     Optional<Resume> findFirstByCandidateIdAndIsDefaultTrueOrderByCreatedAtDesc(@Param("candidateId") UUID candidateId);
+
+    @Query("""
+    SELECT r FROM Resume r
+    WHERE r.status = 'deleted'
+      AND r.deletedAt < :cutoffInstant""")
+    List<Resume> findDeletedResumesOlderThan(@Param("cutoffInstant") Instant cutoffInstant);
+
+    @Query("SELECT r.resumeId FROM Resume r " +
+            "WHERE r.candidateId = :candidateId " +
+            "  AND r.resumeUploadUrl LIKE CONCAT('%/', :filename)")
+    Optional<UUID> findIdByCandidateIdAndFilename(
+            @Param("candidateId") UUID candidateId,
+            @Param("filename") String filename
+    );
+
+    // Trong ResumeRepository.java
+    @Modifying
+    @Query("""
+    UPDATE Resume r 
+    SET isDefault = false 
+    WHERE r.candidateId = :candidateId 
+      AND r.isDefault = true 
+      AND r.resumeId != :currentResumeId
+""")
+    void setCandidateResumesNotDefaultExcept(
+            @Param("candidateId") UUID candidateId,
+            @Param("currentResumeId") UUID currentResumeId
+    );
+
+    @Modifying
+    @Query("""
+    UPDATE Resume r 
+    SET r.isDefault = CASE 
+        WHEN r.resumeId = :newResumeId THEN true 
+        ELSE CASE WHEN r.isDefault THEN false ELSE r.isDefault END 
+    END
+    WHERE r.candidateId = :candidateId
+""")
+    int setNewDefaultAtomic(@Param("candidateId") UUID candidateId, @Param("newResumeId") UUID newResumeId);
+
+    @Query("""
+    SELECT r FROM Resume r 
+    WHERE r.candidateId = :candidateId 
+      AND r.status = 'active'
+    ORDER BY r.isDefault DESC, r.createdAt DESC
+""")
+    List<Resume> findActiveCvList(@Param("candidateId") UUID candidateId);
+
 }

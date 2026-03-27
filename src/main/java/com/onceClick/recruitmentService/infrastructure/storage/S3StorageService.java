@@ -15,5 +15,6 @@ public interface S3StorageService {
     String getContentType(String filename);
     long getFileSize(UUID accountId, String filename);
     byte[] downloadCvBytes(UUID accountId, String filename);
+    void deleteObject(String objectKey);
 
 }

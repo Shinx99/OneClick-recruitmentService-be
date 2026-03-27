@@ -63,11 +63,14 @@ public class ScanCvHandler {
 
             ParsedData parsed = aiService.parseResponse(cleanJson, ParsedData.class);
 
+            Resume resume = createResume(candidateId, pdfUrl, parsed, false);
+            resume = resumeRepo.save(resume);
+
+            // 2. Reset all old TRUE
             resumeRepo.setCandidateResumesNotDefault(candidateId);
 
-            // FULL mapping theo Entity
-            Resume resume = createResume(candidateId, pdfUrl, parsed, true);
-            resumeRepo.save(resume);
+            // 3. Set new TRUE (constraint OK vì chỉ còn FALSE)
+            resumeRepo.setDefault(resume.getResumeId(), candidateId);
 
             //saveEducations(req.candidateId(), parsed.education());
 

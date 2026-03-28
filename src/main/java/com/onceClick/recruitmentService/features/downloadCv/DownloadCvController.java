@@ -57,8 +57,6 @@ public class DownloadCvController {
     }
 
     // Stream trực tiếp (large files)
-
-
     @GetMapping(value = "/cv/stream/{filename:.+}", produces = "application/pdf")
     public ResponseEntity<Resource> previewCvStream(@PathVariable String filename) {
         UUID accountId = currentUser.getCurrentAccountId();
@@ -80,6 +78,8 @@ public class DownloadCvController {
         UUID candidateId = currentUser.getCurrentAccountId();
         return downloadCvHandler.setDefault(candidateId, resumeId);
     }
+
+
 
 
 }

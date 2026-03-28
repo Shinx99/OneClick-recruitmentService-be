@@ -122,4 +122,23 @@ public class S3StorageServiceImpl implements S3StorageService {
         }
     }
 
+    @Override
+    public void deleteObject(String objectKey) {
+        String bucket = getBucketName();
+        log.info("Deleting S3 object: s3://{}/{}", bucket, objectKey);
+
+        try {
+            DeleteObjectRequest req = DeleteObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(objectKey)
+                    .build();
+            s3Client.deleteObject(req);
+        } catch (NoSuchKeyException e) {
+            log.warn("S3 object already missing: s3://{}/{}", bucket, objectKey);
+        } catch (S3Exception e) {
+            log.error("Failed to delete S3 object: s3://{}/{}", bucket, objectKey, e);
+            throw e;
+        }
+    }
+
 }

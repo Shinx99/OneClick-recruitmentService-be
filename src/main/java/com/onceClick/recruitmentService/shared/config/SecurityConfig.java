@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/recruitment/jobs").permitAll()
                         .requestMatchers("/api/recruitment/candidate/**").authenticated()
                         .requestMatchers("/api/recruitment/employer/**").authenticated()
+                        .requestMatchers("/api/recruitment/job/").authenticated()
                         .requestMatchers("/api/recruitment/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 

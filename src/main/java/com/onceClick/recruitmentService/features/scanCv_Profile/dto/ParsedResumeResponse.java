@@ -25,4 +25,15 @@ public class ParsedResumeResponse {
     public static ParsedResumeResponse error(String message) {
         return new ParsedResumeResponse(false, null, message);
     }
+
+    public static ParsedResumeResponse warning(String message) {
+        return new ParsedResumeResponse(false, null, "warning " + message);
+    }
+
+    // WARNING với s3Url (giữ link download)
+    public static ParsedResumeResponse warning(String message, String pdfUrl) {
+        return new ParsedResumeResponse(false,
+                Map.of("pdfUrl", pdfUrl),
+                "warning " + message);
+    }
 }

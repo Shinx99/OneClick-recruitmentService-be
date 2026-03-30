@@ -30,7 +30,10 @@ public class Resume {
     
     @Column(name = "candidate_id", nullable = false)
     private UUID candidateId;
-    
+
+    @Column(name = "is_default")
+    private Boolean isDefault = false;
+
     @Column(name = "career_goal", columnDefinition = "TEXT")
     private String careerGoal;
     
@@ -64,6 +67,9 @@ public class Resume {
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant updatedAt;
 
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
+
     @Type(JsonType.class)  // Hibernate 6+
     @Column(name = "parsed_data", columnDefinition = "JSONB")
     private Map<String, Object> parsedData;  // Hoặc JsonNode, ObjectNode
@@ -71,5 +77,8 @@ public class Resume {
     public static ResumeBuilder builder() {
         return new ResumeBuilder();
     }
-
+    public void softDelete() {
+        this.status = "deleted";
+        this.deletedAt = Instant.now();
+    }
 }

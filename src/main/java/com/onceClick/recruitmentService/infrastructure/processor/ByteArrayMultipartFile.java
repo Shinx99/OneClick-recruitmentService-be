@@ -1,4 +1,4 @@
-package com.onceClick.recruitmentService.infrastructure.file;
+package com.onceClick.recruitmentService.infrastructure.processor;
 
 import org.springframework.web.multipart.MultipartFile;
 import java.io.*;

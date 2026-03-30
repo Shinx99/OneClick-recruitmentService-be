@@ -30,6 +30,10 @@ public class Skills {
     @NotBlank
     private String skillsName;
 
+    public Skills(String skillsName) {
+        this.skillsName = skillsName;
+    }
+
 /*    @CreationTimestamp
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt;

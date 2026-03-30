@@ -3,6 +3,7 @@ package com.onceClick.recruitmentService.shared.persistence.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Table(name = "job")
 @Getter
 @Setter
+@Builder
 public class Job extends BaseEntity {
     
     @Id

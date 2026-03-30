@@ -5,13 +5,16 @@ import com.onceClick.recruitmentService.features.employer.dto.response.EmployerR
 import com.onceClick.recruitmentService.infrastructure.feign.AuthAccountDto;
 import com.onceClick.recruitmentService.infrastructure.feign.SyncDataFromAccountHandler;
 import com.onceClick.recruitmentService.shared.dto.ApiResponse;
+import com.onceClick.recruitmentService.shared.persistence.entity.Company;
 import com.onceClick.recruitmentService.shared.persistence.entity.Employer;
+import com.onceClick.recruitmentService.shared.persistence.repository.CompanyRepository;
 import com.onceClick.recruitmentService.shared.persistence.repository.EmployerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.SecondaryRow;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -22,32 +25,105 @@ import java.util.UUID;
 public class EmployerProfileHandler {
 
     private final EmployerRepository employerRepository;
+    private final CompanyRepository companyRepository;
     private final SyncDataFromAccountHandler syncDataFromAccountHandler;
 
+
+
+    // HR login the first time with the super recruiter rights and create company
     @Transactional
-    public ApiResponse<EmployerResponseDto> updateEmployerProfile(EmployerRequestDto requestDto){
+    public ApiResponse<Void> submitOnboarding(EmployerRequestDto requestDto, UUID employerId){
 
-        UUID employerId = requestDto.getEmployerId();
+        // 1. Check is this HR onboarded (stop calling APIS at many times)
+        if(employerRepository.existsById(employerId)) {
+            throw new IllegalStateException("Employer đã hoàn thành bước gửi thông tin Onboarding!");
+        }
 
-        // 1. Check exist employer
-        Employer employer = employerRepository.findById(employerId).orElse(null);
+        // 2. Sync Account data to Employer
+        AuthAccountDto authAccount = syncDataFromAccountHandler.syncAccountData(employerId);
 
-        // 2. If it doesn't exist, sync from auth service
-        if(employer == null){
+        Employer employer;
 
-            // Not exist, need to sync data from auth service
-            log.info("Employer {} not found, syncing from Auth Service", employerId);
-            AuthAccountDto authAccount = syncDataFromAccountHandler.syncAccountData(employerId);
+        // 3. Handle request to join existed company (Script 2)
+        if(requestDto.getCompany() != null){
+
+            Company existingCompany = companyRepository.findById(requestDto.getCompany().getCompanyId())
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy công ty trên hệ thống!"));
 
             employer = Employer.builder()
                     .employerId(employerId)
                     .email(authAccount.getEmail())
                     .phone(authAccount.getPhone())
+                    .company(existingCompany)
                     .consentVersion("1.0")
-                    .status("active")
+                    .status("pending")
+                    .verifiedAt(null)
                     .createdAt(Instant.now())
                     .isNew(true)
                     .build();
+        }
+
+        // 4. Super Recruiter create Company (Script 1)
+        else {
+            Company newCompany = Company.builder()
+                    .companyName(requestDto.getCompany().getCompanyName())
+                    .taxCode(requestDto.getCompany().getTaxCode())
+                    .businessLicenseUrl(requestDto.getCompany().getBusinessLicenseUrl())
+                    .businessRepName(requestDto.getCompany().getBusinessRepName())
+                    .financialProofUrl(requestDto.getCompany().getFinancialProofUrl())
+                    .logoUrl(requestDto.getCompany().getLogoUrl())
+                    .websiteUrl(requestDto.getCompany().getWebsiteUrl())
+                    .provinceCode(requestDto.getCompany().getProvinceCode())
+                    .industry(requestDto.getCompany().getIndustry())
+                    .sizeRange(requestDto.getCompany().getSizeRange())
+                    .overview(requestDto.getCompany().getOverview())
+                    .backgroundUrl(requestDto.getCompany().getBackgroundUrl())
+                    .address(requestDto.getCompany().getAddress())
+                    .createdBy(employerId)
+                    .updatedBy(null)
+                    .verifiedAt(null)
+                    .verificationLevel(null)
+                    .status("pending")
+                    .createdAt(Instant.now())
+                    .updatedAt(null)
+                    .build();
+            companyRepository.save(newCompany);
+
+            employer = Employer.builder()
+                    .employerId(employerId)
+                    .email(authAccount.getEmail())
+                    .phone(authAccount.getPhone())
+                    .company(newCompany)
+                    .consentVersion("1.0")
+                    .status("pending")
+                    .verifiedAt(null)
+                    .createdAt(Instant.now())
+                    .build();
+
+        }
+
+        employerRepository.save(employer);
+        return ApiResponse.<Void>builder().success(true).message("Onboarding submitted. pending approval").build();
+    }
+
+
+    // Cập nhật Profile khi và chỉ khi Admin đã duyệt (verifiedAt != null và status == "active")
+    @Transactional
+    public ApiResponse<EmployerResponseDto> updateEmployerProfile(EmployerRequestDto requestDto, UUID employerId){
+
+        // 1. Check exist employer (Must have)
+        Employer employer = employerRepository.findById(employerId).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy công ty trên hệ thống!"));
+
+
+        // 2. GUARD CLAUSE: Chặn hoàn toàn nếu chưa được Admin/HR Manager duyệt
+        if(employer.getVerifiedAt() == null || !"active".equalsIgnoreCase(employer.getStatus())) {
+            throw new IllegalStateException("Tài khoản đang chờ duyệt! Bạn chưa thể cập nhật Profile lúc này!");
+        }
+
+        // 3. Check if employer verified with company
+        Company company = employer.getCompany();
+        if(company == null || company.getVerifiedAt() == null || requestDto.getCompany() == null){
+            throw new IllegalStateException("Công ty của bạn chưa được hệ thống xác thực!");
         }
 
         // 3. Update field from request
@@ -65,6 +141,8 @@ public class EmployerProfileHandler {
                 .build();
     }
 
+
+    // Helper
     private void updateNullableFields(Employer employer, EmployerRequestDto request){
 
         // Update every single fields if request does not null
@@ -79,13 +157,13 @@ public class EmployerProfileHandler {
         if(request.getSurname() != null) employer.setSurname(request.getSurname());
 
         // 4. about
-        if(request.getAbout() != null) employer.setSurname(request.getSurname());
+        if(request.getAbout() != null) employer.setAbout(request.getAbout());
 
         // 5. birthday
         if(request.getBirthday() != null) employer.setBirthday(request.getBirthday());
 
         // 6. province
-        if(request.getBirthday() != null) employer.setBirthday(request.getBirthday());
+        if(request.getProvince() != null) employer.setProvince(request.getProvince());
 
         // 7. commune
         if(request.getCommune() != null) employer.setCommune(request.getCommune());
@@ -121,5 +199,13 @@ public class EmployerProfileHandler {
         if(request.getTotalJobPosted() != null) employer.setTotalJobPosted(request.getTotalJobPosted());
     }
 
+
+    // THÊM METHOD NÀY VÀO Handler của bạn
+    public String checkOnboardingStatus(UUID employerId) {
+        if (employerRepository.existsById(employerId)) {
+            return "COMPLETED";
+        }
+        return "REQUIRE_ONBOARDING";
+    }
 
 }

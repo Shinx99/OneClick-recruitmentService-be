@@ -3,22 +3,22 @@ package com.onceClick.recruitmentService.shared.persistence.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.UUID;
 
-@Builder
 @Embeddable
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class JobEmployerId implements Serializable {
+@EqualsAndHashCode
+public class JobSkillsId implements Serializable {
+
     @Column(name = "job_id", nullable = false)
     private UUID jobId;
 
-    @Column(name = "employer_id", nullable = false)
-    private UUID employerId;
+    @Column(name = "skills_id", nullable = false)
+    private UUID skillsId;
+
 }

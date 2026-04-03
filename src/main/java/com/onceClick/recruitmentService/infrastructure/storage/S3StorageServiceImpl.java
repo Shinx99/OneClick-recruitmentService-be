@@ -141,4 +141,28 @@ public class S3StorageServiceImpl implements S3StorageService {
         }
     }
 
+    // S3StorageServiceImpl.java
+    @Override
+    public String uploadTempFile(String key, MultipartFile file) throws IOException {
+        String bucket = getBucketName();
+        String tempKey = "temp/" + key;  // temp/match/uuid_CV.pdf
+
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(tempKey)
+                .contentType(file.getContentType())
+                .build();
+
+        try (InputStream is = file.getInputStream()) {
+            s3Client.putObject(request, RequestBody.fromInputStream(is, file.getSize()));
+        }
+
+        return "s3://" + bucket + "/" + tempKey;
+    }
+
+    @Override
+    public void deleteTempObject(String key) {
+        String tempKey = "temp/" + key;
+        deleteObject(tempKey);  // dùng method deleteObject có sẵn
+    }
 }

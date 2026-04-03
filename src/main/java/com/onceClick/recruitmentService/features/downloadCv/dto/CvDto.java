@@ -7,5 +7,6 @@ import java.util.UUID;
 public record CvDto(
         UUID resumeId,
         String filename,
-        boolean isDefault
+        boolean isDefault,
+        String status
 ) {}

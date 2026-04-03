@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 
 @Slf4j
 @Configuration
@@ -21,7 +23,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(withDefaults())
                 .authorizeHttpRequests(authz -> authz
 
                         // Actuator & Health
@@ -51,6 +55,30 @@ public class SecurityConfig {
 
                         // Profile APIs
                         .requestMatchers("/api/profile/**").permitAll()
+
+                        // Chatbot
+                        .requestMatchers(
+                                "/api/chatbot/ws/**",
+                                "/api/chatbot/webhook/**"
+                        ).permitAll()
+
+                        // User endpoints (cần authenticated)
+                        .requestMatchers(
+                                "/api/chatbot/me/**",
+                                "/api/chatbot/conversations/**"
+                        ).authenticated()
+
+                        // Admin endpoints (chỉ admin)
+                        //.requestMatchers("/api/chatbot/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/chatbot/admin/**").permitAll()
+
+                        //ws
+                        // WebSocket & SockJS - Tất cả đều permitAll (authentication qua interceptor)
+                        .requestMatchers("/ws/**").permitAll()
+                        /*.requestMatchers("/ws").permitAll()
+                        .requestMatchers("/ws/info").permitAll()*/
+                        //.requestMatchers("/ws/**").permitAll() // Auth qua WebSocket interceptor
+
 
                         .anyRequest().authenticated()
                 )

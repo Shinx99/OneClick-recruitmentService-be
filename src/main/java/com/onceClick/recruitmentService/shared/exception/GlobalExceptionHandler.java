@@ -27,6 +27,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
 
+
     /**
      * Handle BusinessException and its subclasses
      */
@@ -268,6 +269,25 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
+
+   /* @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "timestamp", Instant.now().toString(),
+                "message", ex.getMessage(),
+                "status", HttpStatus.BAD_REQUEST.value()
+        ));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "timestamp", Instant.now().toString(),
+                "message", "Internal server error",
+                "status", HttpStatus.INTERNAL_SERVER_ERROR.value()
+        ));
+    }*/
 
 
 

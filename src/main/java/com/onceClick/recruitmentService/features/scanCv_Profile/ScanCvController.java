@@ -18,7 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor
-public class ScanCvController {
+public class  ScanCvController {
 
     private final ScanCvHandler scanCvHandler;
     private final CurrentUser currentUser;
@@ -28,7 +28,7 @@ public class ScanCvController {
             @Valid @ModelAttribute ScanCvRequest request) {
 
         UUID accountId = currentUser.getCurrentAccountId();
-        log.info("🆔 Account ID: {}", accountId);
+        log.info("Account ID: {}", accountId);
 
         ParsedResumeResponse result = scanCvHandler.handle(accountId,request);
         return ApiResponse.success(result);

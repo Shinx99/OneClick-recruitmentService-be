@@ -21,49 +21,6 @@ public class S3FileExtractorServiceImpl implements S3FileExtractorService{
     private final S3StorageService storageService;
     private final FileProcessorService textExtractor;
 
-    /*@Override
-    public String extractTextFromS3(String s3Url) {
-        if (s3Url == null || s3Url.isEmpty()) {
-            throw new IllegalArgumentException("S3 URL cannot be null");
-        }
-
-        try {
-            //  Parse S3 URL: s3://bucket/candidates/{accountId}/cv/filename.pdf
-            String[] parts = s3Url.replace("s3://", "").split("/", 3);  // 3 parts!
-            String bucket = parts[0];           // bucket
-            String accountIdStr = parts[1];     // UUID
-            String filename = parts[2];         // filename.pdf
-
-            UUID accountId = UUID.fromString(accountIdStr);
-
-            log.info("Parsing s3Url: bucket={}, accountId={}, filename={}",
-                    bucket, accountId, filename);
-
-            // Download từ storageService
-            InputStream inputStream = storageService.downloadCvStream(accountId, filename);
-
-            // InputStream → bytes (50MB limit)
-            byte[] bytes = inputStreamToBytes(inputStream);
-            if (bytes.length > 50 * 1024 * 1024) {
-                throw new RuntimeException("File too large: " + bytes.length + " bytes");
-            }
-
-            // ByteArrayMultipartFile → textExtractor.extractText()
-            MultipartFile multipartFile = new ByteArrayMultipartFile(
-                    filename, filename, getContentType(filename), bytes);
-
-            log.info("S3 file processed: {} ({} bytes)", filename, bytes.length);
-            return textExtractor.extractText(multipartFile);
-
-        } catch (IOException e) {
-            log.error("S3 download failed for {}: {}", s3Url, e.getMessage());
-            throw new RuntimeException("File download failed from S3: " + s3Url, e);
-        } catch (Exception e) {
-            log.error("Extraction failed for {}: {}", s3Url, e.getMessage());
-            throw new RuntimeException("Text extraction failed: " + e.getMessage(), e);
-        }
-    }*/
-
     @Override
     public String extractTextFromS3(String s3Url) {
         if (s3Url == null || s3Url.isEmpty()) {

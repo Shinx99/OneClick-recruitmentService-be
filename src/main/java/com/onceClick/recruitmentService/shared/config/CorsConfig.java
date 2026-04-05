@@ -1,8 +1,8 @@
 package com.onceClick.recruitmentService.shared.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -10,7 +10,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
-@Configuration
+// XÓA HOẶC COMMENT DÒNG NÀY ĐỂ SPRING BOOT KHÔNG ĐỌC FILE NÀY NỮA
+// @Configuration
 public class CorsConfig {
 
     @Value("${cors.allowed-origins}")
@@ -28,7 +29,8 @@ public class CorsConfig {
     @Value("${cors.max-age:3600}")
     private long maxAge;
 
-    @Bean
+    // XÓA HOẶC COMMENT DÒNG BEAN NÀY LUÔN
+    // @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 

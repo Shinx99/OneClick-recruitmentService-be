@@ -3,6 +3,7 @@ package com.onceClick.recruitmentService.shared.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,10 +41,10 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
 
-                        .requestMatchers("/api/recruitment/jobs").permitAll()
+                        .requestMatchers("/api/recruitment/job/all").permitAll()
                         .requestMatchers("/api/recruitment/candidate/**").authenticated()
                         .requestMatchers("/api/recruitment/employer/**").authenticated()
-                        .requestMatchers("/api/recruitment/job/").authenticated()
+//                        .requestMatchers("/api/recruitment/job/**").authenticated()
                         .requestMatchers("/api/recruitment/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 

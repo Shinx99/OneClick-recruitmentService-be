@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -12,11 +13,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ResumeRepository extends JpaRepository<Resume, UUID> {
+
     List<Resume> findByCandidateId(UUID candidateId);
     List<Resume> findByCandidateIdAndStatus(UUID candidateId, String status);
 
     // 1. Disallow all current default resumes for a candidate
     @Modifying
+    @Transactional
     @Query("UPDATE Resume r SET isDefault = false WHERE r.candidateId = :candidateId AND r.isDefault = true")
     void setCandidateResumesNotDefault(UUID candidateId);
 
@@ -26,11 +29,13 @@ public interface ResumeRepository extends JpaRepository<Resume, UUID> {
 
     // Reset all default của candidate
     @Modifying
+    @Transactional
     @Query("UPDATE Resume r SET r.isDefault = false WHERE r.candidateId = :candidateId")
     void resetDefaultForCandidate(@Param("candidateId") UUID candidateId);
 
     // Set 1 CV làm default
     @Modifying
+    @Transactional
     @Query("UPDATE Resume r SET r.isDefault = true WHERE r.resumeId = :resumeId AND r.candidateId = :candidateId")
     int setDefault(@Param("resumeId") UUID resumeId, @Param("candidateId") UUID candidateId);
 
@@ -57,6 +62,7 @@ public interface ResumeRepository extends JpaRepository<Resume, UUID> {
 
     // Trong ResumeRepository.java
     @Modifying
+    @Transactional
     @Query("""
     UPDATE Resume r 
     SET isDefault = false 
@@ -70,6 +76,7 @@ public interface ResumeRepository extends JpaRepository<Resume, UUID> {
     );
 
     @Modifying
+    @Transactional
     @Query("""
     UPDATE Resume r 
     SET r.isDefault = CASE 
@@ -87,5 +94,4 @@ public interface ResumeRepository extends JpaRepository<Resume, UUID> {
     ORDER BY r.isDefault DESC, r.createdAt DESC
 """)
     List<Resume> findActiveCvList(@Param("candidateId") UUID candidateId);
-
 }

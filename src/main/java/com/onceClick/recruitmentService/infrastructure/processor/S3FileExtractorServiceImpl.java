@@ -1,12 +1,11 @@
 // infrastructure/processor/S3FileExtractorService.java
 package com.onceClick.recruitmentService.infrastructure.processor;
 
-import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService;
+import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService.S3StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

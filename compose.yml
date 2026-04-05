@@ -140,9 +140,9 @@ services:
       # Eureka
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_COMPATIBILITY_VERIFIER_ENABLED=false
+
       # App name cho Eureka
       - SPRING_APPLICATION_NAME=recruitmentService-be
-
 
       # Internal Secret Key
       - INTERNAL_SECRET_KEY=${INTERNAL_SECRET_KEY}
@@ -158,6 +158,10 @@ services:
       - AWS_S3_ENDPOINT=http://minio:9000
       - AWS_REGION=us-east-1
 
+      # Cloudinary
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
 
     depends_on:
       postgres:

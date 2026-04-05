@@ -229,6 +229,7 @@ logging:
     name: ${LOGGING_FILE_NAME:logs/cvservice.log}
     max-size: ${LOGGING_FILE_MAX_SIZE:10MB}
     max-history: ${LOGGING_FILE_MAX_HISTORY:30}
+
 # ============================================
 # CUSTOM APP PROPERTIES
 # ============================================
@@ -341,4 +342,14 @@ deepseek:
     model: deepseek-chat          # ← Switch model
     max-tokens: 2000
     temperature: 0.1
+
+
+
+# ============================================
+# CLOUDINARY CONFIGURATION
+# ============================================
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
 

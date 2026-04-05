@@ -1,7 +1,8 @@
 package com.onceClick.recruitmentService.infrastructure.config;
 
 import com.onceClick.recruitmentService.infrastructure.processor.*;
-import com.onceClick.recruitmentService.infrastructure.storage.*;
+import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService.S3StorageService;
+import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService.S3StorageServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

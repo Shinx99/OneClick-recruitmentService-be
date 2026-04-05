@@ -1,7 +1,7 @@
 package com.onceClick.recruitmentService.features.downloadCv;
 
 import com.onceClick.recruitmentService.features.downloadCv.dto.CvResponse;
-import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService;
+import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService.S3StorageService;
 import com.onceClick.recruitmentService.shared.dto.ApiResponse;
 import com.onceClick.recruitmentService.shared.security.CurrentUser;
 import lombok.RequiredArgsConstructor;

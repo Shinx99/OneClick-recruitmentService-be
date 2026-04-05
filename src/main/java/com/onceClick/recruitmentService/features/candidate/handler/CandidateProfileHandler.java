@@ -4,7 +4,9 @@ import com.onceClick.recruitmentService.features.candidate.dto.request.Candidate
 import com.onceClick.recruitmentService.features.candidate.dto.response.CandidateResponseDto;
 import com.onceClick.recruitmentService.infrastructure.feign.AuthAccountDto;
 import com.onceClick.recruitmentService.infrastructure.feign.SyncDataFromAccountHandler;
+import com.onceClick.recruitmentService.infrastructure.storage.CloudinaryStorageService.CloudinaryStorageService;
 import com.onceClick.recruitmentService.shared.dto.ApiResponse;
+import com.onceClick.recruitmentService.shared.dto.PageResponse;
 import com.onceClick.recruitmentService.shared.exception.ResourceNotFoundException;
 import com.onceClick.recruitmentService.shared.persistence.entity.Candidate;
 import com.onceClick.recruitmentService.shared.persistence.repository.CandidateRepository;
@@ -12,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -23,37 +27,23 @@ public class CandidateProfileHandler {
 
     private final CandidateRepository candidateRepository;
     private final SyncDataFromAccountHandler syncDataFromAccountHandler;
+    private final CloudinaryStorageService cloudinaryStorageService;
 
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    // UPDATE PROFILE
+    //-----------------------------------------------------------------------------------------------------------------------------------------
     @Transactional
-    public ApiResponse<CandidateResponseDto> updateCandidateProfile(CandidateRequestDto requestDto)
+    public ApiResponse<CandidateResponseDto> updateCandidateProfile(CandidateRequestDto requestDto, UUID candidateId)
     {
 
-        UUID candidateId = requestDto.getCandidateId();
-
         // 1. Check exist candidate
-        Candidate candidate = candidateRepository.findById(candidateId).orElse(null);
+        Candidate candidate = getOrSyncCandidate(candidateId);
 
-        // 2. If it doesn't exist, sync from auth service
-        if(candidate == null){
-            // Not exist, need to sync data from auth service
-            log.info("Candidate {} not found, syncing from Auth Service", candidateId);
-            AuthAccountDto authAccount = syncDataFromAccountHandler.syncAccountData(candidateId);
-
-            candidate = Candidate.builder()
-                    .candidateId(candidateId)
-                    .email(authAccount.getEmail())
-                    .phone(authAccount.getPhone())
-                    .consentVersion("1.0")
-                    .status("active")
-                    .createdAt(Instant.now())
-                    .isNew(true)
-                    .build();
-        }
-
-        // 3. Update field from request
+        // 2. Update field from request
         updateNullableFields(candidate, requestDto);
 
-        // 4. Save into table Candidate of Recruitment DB
+        // 3. Save into table Candidate of Recruitment DB
         candidateRepository.save(candidate);
         log.info("Updated candidate profile: {}", candidateId);
 
@@ -61,12 +51,132 @@ public class CandidateProfileHandler {
         return ApiResponse.<CandidateResponseDto>builder()
                 .success(true)
                 .message("Candidate profile updated successfully!")
-                .data(new CandidateResponseDto(candidateId, "Candidate profile updated successfully!"))
+                .data(mapToResponseDto(candidate))
                 .build();
 
     }
 
 
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    // GET PROFILE WITH CANDIDATE ID
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    @Transactional
+    public ApiResponse<CandidateResponseDto> findByCandidateId(UUID candidateId){
+
+        Candidate candidate = getOrSyncCandidate(candidateId);
+
+        return ApiResponse.<CandidateResponseDto>builder()
+                .success(true)
+                .message("Candidate profile was filled successfully!")
+                .data(mapToResponseDto(candidate))
+                .build();
+    }
+
+
+    // -------------------------------------------------------------------------
+    // UPDATE AVATAR
+    // -------------------------------------------------------------------------
+    @Transactional
+    public ApiResponse<CandidateResponseDto> updateAvatar (UUID candidateId, MultipartFile file) throws IOException {
+
+        Candidate candidate = getOrSyncCandidate(candidateId);
+
+        String oldAvatarUrl = candidate.getAvatarUrl();
+        if(oldAvatarUrl != null){
+            String oldPublicId = extractPublicId(oldAvatarUrl);
+            try{
+                cloudinaryStorageService.deleteImage(oldPublicId);
+            } catch (IOException e){
+                log.warn("Failed to delete old avatar {}: {}", oldPublicId, e.getMessage());
+            }
+        }
+
+        String url = cloudinaryStorageService.uploadImage(file, "profiles/avatars");
+        candidate.setAvatarUrl(url);
+        candidate.setUpdatedAt(Instant.now());
+        candidateRepository.save(candidate);
+
+        log.info("Updated avatar for candidate: {}", candidateId);
+
+        return ApiResponse.<CandidateResponseDto>builder()
+                .success(true)
+                .message("Avatar updated successfully!")
+                .data(mapToResponseDto(candidate))
+                .build();
+    }
+
+
+    // -------------------------------------------------------------------------
+    // UPDATE COVER
+    // -------------------------------------------------------------------------
+    @Transactional
+    public ApiResponse<CandidateResponseDto> updateBackground (UUID candidateId, MultipartFile file) throws IOException {
+
+        Candidate candidate = getOrSyncCandidate(candidateId);
+
+        String oldBackgroundUrl = candidate.getBackgroundUrl();
+        if(oldBackgroundUrl != null){
+            String oldPublicId = extractPublicId(oldBackgroundUrl);
+            try{
+                cloudinaryStorageService.deleteImage(oldPublicId);
+            } catch (IOException e){
+                log.warn("Failed to delete old background {}: {}", oldPublicId, e.getMessage());
+            }
+        }
+
+        String url = cloudinaryStorageService.uploadImage(file, "profiles/covers");
+        candidate.setBackgroundUrl(url);
+        candidate.setUpdatedAt(Instant.now());
+        candidateRepository.save(candidate);
+
+        log.info("Updated Background Image for candidate: {}", candidateId);
+
+        return ApiResponse.<CandidateResponseDto>builder()
+                .success(true)
+                .message("Background image updated successfully!")
+                .data(mapToResponseDto(candidate))
+                .build();
+    }
+
+
+    // -------------------------------------------------------------------------
+    // HELPER EXTRACT PUBLIC ID FROM CLOUDINARY URL
+    // -------------------------------------------------------------------------
+    private String extractPublicId(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) return null;
+        try {
+            // URL: https://res.cloudinary.com/{cloud}/image/upload/v1775379790/profiles/covers/abc.jpg
+            // Cắt lấy phần sau "/upload/"
+            String[] parts = imageUrl.split("/upload/");
+            if (parts.length < 2) {
+                log.warn("Unexpected Cloudinary URL format: {}", imageUrl);
+                return null;
+            }
+
+            String afterUpload = parts[1];
+            // afterUpload = "v1775379790/profiles/covers/abc.jpg"
+
+            // Bỏ version (v + số + /) nếu có ở đầu
+            String withoutVersion = afterUpload.replaceAll("^v\\d+/", "");
+            // withoutVersion = "profiles/covers/abc.jpg"
+
+            // Bỏ extension (.jpg, .png, .webp...)
+            String publicId = withoutVersion.replaceAll("\\.[a-zA-Z0-9]+$", "");
+            // publicId = "profiles/covers/abc"
+
+            log.debug("Extracted publicId: '{}' from URL: {}", publicId, imageUrl);
+            return publicId;
+
+        } catch (Exception e) {
+            log.warn("Cannot extract publicId from URL: {}", imageUrl);
+            return null;
+        }
+    }
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    // HELPER UPDATE NULLABLE FIELDS
+    //-----------------------------------------------------------------------------------------------------------------------------------------
     private void updateNullableFields(Candidate candidate, CandidateRequestDto request){
 
         //Update every single fields if request doesn't null
@@ -115,13 +225,57 @@ public class CandidateProfileHandler {
 
         // System fields
         candidate.setUpdatedAt(Instant.now());
-
     }
 
 
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    // HELPER GET OR SYNC CANDIDATE
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    private Candidate getOrSyncCandidate(UUID candidateId){
+        return candidateRepository.findById(candidateId)
+                .orElseGet(() -> {
+                    log.debug("Candidate {} not found, syncing from Auth Service", candidateId);
+                    AuthAccountDto authAccount = syncDataFromAccountHandler.syncAccountData(candidateId);
+
+                     Candidate candidate = Candidate.builder()
+                            .candidateId(candidateId)
+                            .email(authAccount.getEmail())
+                            .phone(authAccount.getPhone())
+                            .consentVersion("1.0")
+                            .status(authAccount.getStatus())
+                            .createdAt(Instant.now())
+                            .isNew(true)
+                            .build();
+
+                     return candidateRepository.save(candidate);
+                });
+    }
 
 
-
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    // HELPER MAP TO RESPONSE DTO
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    private CandidateResponseDto mapToResponseDto(Candidate candidate) {
+        return CandidateResponseDto.builder()
+                .candidateId(candidate.getCandidateId())
+                .about(candidate.getAbout())
+                .email(candidate.getEmail())
+                .phone(candidate.getPhone())
+                .surname(candidate.getSurname())
+                .name(candidate.getName())
+                .birthday(candidate.getBirthday())
+                .province(candidate.getProvince())
+                .commune(candidate.getCommune())
+                .gender(candidate.getGender())
+                .avatarUrl(candidate.getAvatarUrl())
+                .backgroundUrl(candidate.getBackgroundUrl())
+                .referenceLink(candidate.getReferenceLink())
+                .consentVersion(candidate.getConsentVersion())
+                .cccd(candidate.getCccd())
+                .verificationLevel(candidate.getVerificationLevel())
+                .status(candidate.getStatus())
+                .build();
+    }
 }
 
 

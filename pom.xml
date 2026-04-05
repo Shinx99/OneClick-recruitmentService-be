@@ -339,6 +339,15 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
+        <!-- ========================================
+            S3 - CLOUDINARY
+        ======================================== -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http45</artifactId>
+            <version>1.39.0</version>
+        </dependency>
+
 
         <!-- ========================================
              TESTING
@@ -431,4 +440,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

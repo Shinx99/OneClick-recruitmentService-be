@@ -56,7 +56,7 @@ public class EmployerProfileHandler {
                     .phone(authAccount.getPhone())
                     .company(existingCompany)
                     .consentVersion("1.0")
-                    .status("pending")
+                    .status(authAccount.getStatus())
                     .verifiedAt(null)
                     .createdAt(Instant.now())
                     .isNew(true)

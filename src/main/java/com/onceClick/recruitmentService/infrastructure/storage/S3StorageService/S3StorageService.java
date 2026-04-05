@@ -1,5 +1,5 @@
 // infrastructure/storage/FileStorageService.java
-package com.onceClick.recruitmentService.infrastructure.storage;
+package com.onceClick.recruitmentService.infrastructure.storage.S3StorageService;
 
 import java.io.IOException;
 import java.io.InputStream;

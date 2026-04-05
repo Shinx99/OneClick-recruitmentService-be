@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onceClick.recruitmentService.features.ai_cv_matcher.dto.CvMatchResult;
 import com.onceClick.recruitmentService.features.ai_cv_matcher.dto.ParsedCvDto;
 import com.onceClick.recruitmentService.infrastructure.processor.FileProcessorService;
-import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService;
+import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService.S3StorageService;
 import com.onceClick.recruitmentService.shared.persistence.entity.Job;
 import com.onceClick.recruitmentService.shared.persistence.entity.Resume;
 import com.onceClick.recruitmentService.shared.persistence.repository.ResumeRepository;

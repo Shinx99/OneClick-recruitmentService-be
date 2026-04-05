@@ -4,9 +4,3 @@ WebSocket /api/ws/chat → Rasa/Dialogflow → Guide user + Tư vấn → "Nói 
 
 
 
-features/chatbot/
-├── ChatbotController.java         # WebSocket endpoint
-├── ChatWebSocketHandler.java      # STOMP messages
-├── ChatService.java               # Call Rasa/Dialogflow + Notify admin
-├── ChatMessage.java               # Entity (userId, message, botResponse)
-└── AdminNotificationService.java  # Kafka/email admin

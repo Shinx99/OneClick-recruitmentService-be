@@ -30,14 +30,15 @@ public class DownloadCvHandler {
     private final S3StorageService storageService;  // Interface!
 
     public CvResponse listCvs(UUID accountId) {
-        // Lấy tất cả active resumes từ DB
-        List<Resume> activeResumes = resumeRepo.findByCandidateIdAndStatus(accountId, "active");
+        //  get all resumes from DB
+        List<Resume> activeResumes = resumeRepo.findByCandidateId(accountId);
 
         List<CvDto> cvDtos = activeResumes.stream()
                 .map(resume -> new CvDto(
                         resume.getResumeId(),
                         extractFilenameFromUrl(resume.getResumeUploadUrl()),
-                        resume.getIsDefault()
+                        resume.getIsDefault(),
+                        resume.getStatus()
                 ))
                 .toList();
 
@@ -45,28 +46,6 @@ public class DownloadCvHandler {
 
     }
 
-    /*List<S3Object> objects = storageService.listCvObjects(accountId);
-
-        // Record: new CvResponse(params...)
-        List<CvDto> cvDtos = objects.stream()
-                .map(this::toCvDto)  // Record constructor!
-                .toList();
-        return new CvResponse(cvDtos, cvDtos.size());  // No builder!*/
-
-
-    // DownloadCvHandler.toCvDto()
-    /*private CvDto toCvDto(S3Object obj) {
-        String filename = obj.key().substring(obj.key().lastIndexOf('/') + 1);
-        return new CvDto(
-                null,
-                filename,
-                obj.size(),
-                Instant.ofEpochMilli(obj.lastModified().toEpochMilli()),
-                obj.key(),
-                "/api/profile/cv/" + filename,
-                "/api/profile/cv/stream/" + filename
-        );
-    }*/
 
     public ApiResponse<String> setDefault(UUID candidateId, UUID resumeId) {
         log.info("Set default CV: resumeId={}, candidateId={}", resumeId, candidateId);
@@ -119,32 +98,3 @@ public class DownloadCvHandler {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*private CvDto toCvDto(S3Object obj) {
-        String filename = obj.key().substring(obj.key().lastIndexOf('/') + 1);
-        return new CvDto(
-                null,
-                filename,
-                obj.size(),
-                Instant.ofEpochMilli(obj.lastModified().toEpochMilli()),
-                obj.key()
-        );
-    }*/

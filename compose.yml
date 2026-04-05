@@ -46,7 +46,9 @@ services:
     networks:
       - app-network
 
+  # ============================================
   # MinIO = S3
+  # ============================================
   minio:
     image: minio/minio:latest
     container_name: recruitment-minio

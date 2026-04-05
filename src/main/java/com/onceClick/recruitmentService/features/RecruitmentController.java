@@ -1,3 +1,4 @@
+/*
 package com.onceClick.recruitmentService.features;
 
 import org.springframework.security.core.Authentication;
@@ -41,3 +42,4 @@ public class RecruitmentController {
         return Map.of("adminJobs", "Secret Jobs", "roles", auth.getAuthorities());
     }
 }
+*/

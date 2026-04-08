@@ -1,0 +1,53 @@
+package com.onceClick.recruitmentService.features.company.controller;
+
+import com.onceClick.recruitmentService.features.company.dto.response.*;
+import com.onceClick.recruitmentService.features.company.handler.*;
+import com.onceClick.recruitmentService.shared.dto.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/recruitment/company")
+public class CompanyController {
+
+    private final GetCompanyHandler getCompanyHandler;
+    private final GetCompaniesHandler getCompaniesHandler;
+    private final GetTopCompaniesHandler getTopCompaniesHandler;
+
+    @GetMapping("/{companyId}")
+    public ResponseEntity<ApiResponse<GetCompanyResponseDto>> getCompanyById(@PathVariable UUID companyId) {
+        return ResponseEntity.ok(getCompanyHandler.getCompanyById(companyId));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<PageResponse<GetCompaniesResponseDto>>> getAllCompanies(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String provinceCode,
+            @RequestParam(required = false) String industry,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Set<String> allowedFields = Set.of("createdAt", "companyName", "industry", "status");
+        if (!allowedFields.contains(sortBy)) sortBy = "createdAt";
+
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return ResponseEntity.ok(getCompaniesHandler.getAllCompanies(keyword, provinceCode, industry, status, pageable));
+    }
+
+    @GetMapping("/top-6")
+    public ResponseEntity<ApiResponse<List<TopCompanyResponseDto>>> getTop6Companies() {
+        return ResponseEntity.ok(getTopCompaniesHandler.getTop6Companies());
+    }
+}

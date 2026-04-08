@@ -1,0 +1,26 @@
+package com.onceClick.recruitmentService.features.company.dto.response;
+import java.time.Instant;
+import java.util.UUID;
+public record GetCompanyResponseDto(
+        UUID companyId,
+        String companyName,
+        String taxCode,
+        String businessLicenseUrl,
+        String businessRepName,
+        String financialProofUrl,
+        String logoUrl,
+        String websiteUrl,
+        String provinceCode,
+        String industry,
+        String sizeRange,
+        String overview,
+        String backgroundUrl,
+        String address,
+        UUID createdBy,
+        UUID updatedBy,
+        Instant verifiedAt,
+        String verificationLevel,
+        String status,
+        Instant createdAt,
+        Instant updatedAt
+) {}

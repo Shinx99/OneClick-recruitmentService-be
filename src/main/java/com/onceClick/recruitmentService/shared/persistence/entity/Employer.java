@@ -49,9 +49,15 @@ public class Employer implements Persistable<UUID> {
 
     //-----------------------------------------------------------------------------
 
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "company_id", nullable = false)
+//    private Company company;
+
+    // để sau này mới tạo company và gắn vào hoặc nullable = true
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false)
+    @JoinColumn(name = "company_id")
     private Company company;
+
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;

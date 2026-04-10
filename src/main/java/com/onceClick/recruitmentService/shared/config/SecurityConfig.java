@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/recruitment/employer/**").authenticated()
 //                        .requestMatchers("/api/recruitment/job/**").authenticated()
                         .requestMatchers("/api/recruitment/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_admin")
 
                         // Internal path
                         .requestMatchers("/api/internal/**").permitAll()

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
@@ -44,4 +46,25 @@ Page<Company> searchCompanies(
         ORDER BY c.verifiedAt DESC
     """)
     Page<Company> findTopVerifiedCompanies(Pageable pageable);
+
+    long count();
+
+    long countByStatus(String status);
+
+    long countByCreatedAtBefore(Instant date);
+
+    long countByVerifiedAtIsNotNull();
+
+    long countByStatusAndCreatedAtBetween(String status, Instant start, Instant end);
+
+    @Query("SELECT FUNCTION('TO_CHAR', c.createdAt, 'YYYY-MM') as month, COUNT(c) " +
+            "FROM Company c " +
+            "WHERE c.createdAt BETWEEN :startDate AND :endDate " +
+            "GROUP BY FUNCTION('TO_CHAR', c.createdAt, 'YYYY-MM') " +
+            "ORDER BY month")
+    List<Object[]> countCompaniesByMonth(@Param("startDate") Instant startDate,
+                                         @Param("endDate") Instant endDate);
+
+    @Query("SELECT c FROM Company c ORDER BY c.createdAt DESC")
+    List<Company> findRecentCompanies(Pageable pageable);
 }

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.onceClick.recruitmentService.shared.dto.PageResponse;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Slf4j
@@ -43,7 +44,11 @@ public class JobController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String province,
             @RequestParam(required = false) String level,
-            @RequestParam(defaultValue = "0") int page,     // Spring start count from 0
+            @RequestParam(required = false) String jobType,
+            @RequestParam(required = false) BigDecimal salaryMin,
+            @RequestParam(required = false) BigDecimal salaryMax,
+            @RequestParam(required = false) BigDecimal experienceMax,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir
@@ -55,7 +60,9 @@ public class JobController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         // Gọi Handler
-        ApiResponse<PageResponse<GetJobsResponseDto>> response = getJobsHandler.getAllJobs(keyword, province, level, pageable);
+        ApiResponse<PageResponse<GetJobsResponseDto>> response = getJobsHandler.getAllJobs(
+                keyword, province, level, jobType, salaryMin, salaryMax, experienceMax, pageable
+        );
 
         return ResponseEntity.ok(response);
     }

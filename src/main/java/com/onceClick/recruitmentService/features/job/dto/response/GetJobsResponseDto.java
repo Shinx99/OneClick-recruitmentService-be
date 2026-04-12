@@ -8,6 +8,8 @@ import java.util.UUID;
 public record GetJobsResponseDto(
         UUID jobId,
         UUID companyId,
+        String companyName,
+        String companyLogoUrl,
         String title,
         String description,
         String requirement,

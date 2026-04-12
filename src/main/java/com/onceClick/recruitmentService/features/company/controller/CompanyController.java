@@ -3,11 +3,16 @@ package com.onceClick.recruitmentService.features.company.controller;
 import com.onceClick.recruitmentService.features.company.dto.response.*;
 import com.onceClick.recruitmentService.features.company.handler.*;
 import com.onceClick.recruitmentService.shared.dto.*;
+import com.onceClick.recruitmentService.shared.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -20,6 +25,8 @@ public class CompanyController {
     private final GetCompanyHandler getCompanyHandler;
     private final GetCompaniesHandler getCompaniesHandler;
     private final GetTopCompaniesHandler getTopCompaniesHandler;
+    private final UploadCompanyImageHandler uploadCompanyImageHandler;
+    private final CurrentUser currentUser;
 
     @GetMapping("/{companyId}")
     public ResponseEntity<ApiResponse<GetCompanyResponseDto>> getCompanyById(@PathVariable UUID companyId) {
@@ -49,5 +56,21 @@ public class CompanyController {
     @GetMapping("/top-6")
     public ResponseEntity<ApiResponse<List<TopCompanyResponseDto>>> getTop6Companies() {
         return ResponseEntity.ok(getTopCompaniesHandler.getTop6Companies());
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @PutMapping(value = "/logo/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<GetCompanyResponseDto>> uploadLogo(
+            @RequestParam("logoImage") MultipartFile file) throws IOException {
+        UUID employerId = currentUser.getCurrentAccountId();
+        return ResponseEntity.ok(uploadCompanyImageHandler.uploadLogo(employerId, file));
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @PutMapping(value = "/background/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<GetCompanyResponseDto>> uploadBackground(
+            @RequestParam("backgroundImage") MultipartFile file) throws IOException {
+        UUID employerId = currentUser.getCurrentAccountId();
+        return ResponseEntity.ok(uploadCompanyImageHandler.uploadBackground(employerId, file));
     }
 }

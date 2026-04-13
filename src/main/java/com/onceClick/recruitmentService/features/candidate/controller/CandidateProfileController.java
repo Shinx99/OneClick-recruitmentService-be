@@ -80,7 +80,6 @@ public class CandidateProfileController {
 
         ApiResponse<CandidateResponseDto> response = candidateProfileHandler.updateBackground(candidateId, file);
         return ResponseEntity.ok(response);
-
     }
 
 

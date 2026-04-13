@@ -4,6 +4,7 @@ import com.onceClick.recruitmentService.features.company.dto.response.*;
 import com.onceClick.recruitmentService.features.company.handler.*;
 import com.onceClick.recruitmentService.shared.dto.*;
 import com.onceClick.recruitmentService.shared.security.CurrentUser;
+import com.onceClick.recruitmentService.shared.util.LocationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
@@ -25,19 +26,16 @@ public class CompanyController {
     private final GetCompanyHandler getCompanyHandler;
     private final GetCompaniesHandler getCompaniesHandler;
     private final GetTopCompaniesHandler getTopCompaniesHandler;
+    private final GetCompanyFiltersHandler getCompanyFiltersHandler;
     private final UploadCompanyImageHandler uploadCompanyImageHandler;
     private final CurrentUser currentUser;
-
-    @GetMapping("/{companyId}")
-    public ResponseEntity<ApiResponse<GetCompanyResponseDto>> getCompanyById(@PathVariable UUID companyId) {
-        return ResponseEntity.ok(getCompanyHandler.getCompanyById(companyId));
-    }
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<PageResponse<GetCompaniesResponseDto>>> getAllCompanies(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String provinceCode,
             @RequestParam(required = false) String industry,
+            @RequestParam(required = false) String sizeRange,
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -50,12 +48,26 @@ public class CompanyController {
         Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return ResponseEntity.ok(getCompaniesHandler.getAllCompanies(keyword, provinceCode, industry, status, pageable));
+        // "TP. Hồ Chí Minh" -> "700000"
+        String mappedProvinceCode = LocationUtil.getDbCodeFromName(provinceCode);
+
+
+        return ResponseEntity.ok(getCompaniesHandler.getAllCompanies(keyword, mappedProvinceCode, industry, sizeRange, status, pageable));
     }
 
     @GetMapping("/top-6")
     public ResponseEntity<ApiResponse<List<TopCompanyResponseDto>>> getTop6Companies() {
         return ResponseEntity.ok(getTopCompaniesHandler.getTop6Companies());
+    }
+
+    @GetMapping("/filters")
+    public ResponseEntity<ApiResponse<FilterOptionsResponseDto>> getFilters() {
+        return ResponseEntity.ok(getCompanyFiltersHandler.getFilters());
+    }
+
+    @GetMapping("/{companyId}")
+    public ResponseEntity<ApiResponse<GetCompanyResponseDto>> getCompanyById(@PathVariable UUID companyId) {
+        return ResponseEntity.ok(getCompanyHandler.getCompanyById(companyId));
     }
 
     @PreAuthorize("hasAuthority('ROLE_recruiter')")

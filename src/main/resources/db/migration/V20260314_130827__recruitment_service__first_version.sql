@@ -148,6 +148,7 @@ CREATE TABLE job (
     title TEXT,
     description TEXT,
     requirement TEXT,
+    img_url TEXT,
     major_preffered VARCHAR(255),
     level VARCHAR (100),
     job_type VARCHAR(100),

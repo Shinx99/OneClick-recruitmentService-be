@@ -47,7 +47,7 @@ public class UploadCompanyImageHandler {
         }
 
         // Upload new logo
-        String logoUrl = cloudinaryStorageService.uploadImage(file, "companies/logos");
+        String logoUrl = cloudinaryStorageService.uploadImage(file, "companies/avatars");
         company.setLogoUrl(logoUrl);
         company.setUpdatedBy(employerId);
         company.setUpdatedAt(Instant.now());
@@ -77,7 +77,7 @@ public class UploadCompanyImageHandler {
         }
 
         // Upload new background
-        String backgroundUrl = cloudinaryStorageService.uploadImage(file, "companies/backgrounds");
+        String backgroundUrl = cloudinaryStorageService.uploadImage(file, "companies/coverss");
         company.setBackgroundUrl(backgroundUrl);
         company.setUpdatedBy(employerId);
         company.setUpdatedAt(Instant.now());

@@ -19,6 +19,7 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
             WHERE (:keyword IS NULL OR :keyword = '' OR LOWER(c.companyName) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%')))
               AND (:provinceCode IS NULL OR :provinceCode = '' OR c.provinceCode = :provinceCode)
               AND (:industry IS NULL OR :industry = '' OR LOWER(c.industry) LIKE LOWER(CONCAT('%', CAST(:industry AS string), '%')))
+              AND (:sizeRange IS NULL OR :sizeRange = '' OR c.sizeRange = :sizeRange)
               AND (:status IS NULL OR :status = '' OR c.status = :status)
             """,
             countQuery = """
@@ -26,22 +27,39 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
             WHERE (:keyword IS NULL OR :keyword = '' OR LOWER(c.companyName) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%')))
               AND (:provinceCode IS NULL OR :provinceCode = '' OR c.provinceCode = :provinceCode)
               AND (:industry IS NULL OR :industry = '' OR LOWER(c.industry) LIKE LOWER(CONCAT('%', CAST(:industry AS string), '%')))
+              AND (:sizeRange IS NULL OR :sizeRange = '' OR c.sizeRange = :sizeRange)
               AND (:status IS NULL OR :status = '' OR c.status = :status)
             """)
     Page<Company> searchCompanies(
             @Param("keyword") String keyword,
             @Param("provinceCode") String provinceCode,
             @Param("industry") String industry,
+            @Param("sizeRange") String sizeRange,
             @Param("status") String status,
             Pageable pageable
     );
 
     @Query("""
         SELECT c FROM Company c
-        WHERE c.verifiedAt IS NOT NULL
-        ORDER BY c.verifiedAt DESC
+        WHERE c.provinceCode IS NOT NULL
+        ORDER BY c.provinceCode DESC
     """)
     Page<Company> findTopVerifiedCompanies(Pageable pageable);
+
+    // Filter
+    @Query("SELECT DISTINCT c.industry FROM Company c WHERE c.industry IS NOT NULL")
+    List<String> findDistinctIndustries();
+
+
+    @Query("SELECT DISTINCT c.sizeRange FROM Company c WHERE c.sizeRange IS NOT NULL")
+    List<String> findDistinctSizeRanges();
+
+    @Query("SELECT DISTINCT c.provinceCode FROM Company c WHERE c.provinceCode IS NOT NULL")
+    List<String> findDistinctProvinces();
+
+
+
+
 
     // Dashboard queries
     long count();

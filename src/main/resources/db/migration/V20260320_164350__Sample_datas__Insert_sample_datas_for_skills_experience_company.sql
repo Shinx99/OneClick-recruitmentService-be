@@ -7,16 +7,18 @@
 -- 1. COMPANY (10 records - Professional Vietnamese IT companies)
 -- ========================================================
 INSERT INTO company (company_id, company_name, tax_code, size_range, overview, industry, province_code, address, logo_url, website_url) VALUES
-(gen_random_uuid(), 'FPT Software', '0100109106', '30000+', 'Vietnam''s largest IT exporter, global digital transformation leader', 'IT Services', 'SGP', 'Phu My Hung, District 7, HCMC', 'fpt-logo.png', 'fpt-software.com'),
-(gen_random_uuid(), 'VNG Corporation', '0302266895', '8000+', 'Zalo messaging, gaming & cloud platform pioneer', 'Technology', 'SGP', '9 Dinh Tien Hoang, District 1, HCMC', 'vng-logo.png', 'vng.com.vn'),
-(gen_random_uuid(), 'Tiki Corporation', '0103692061', '3000+', 'Vietnam''s leading e-commerce & digital marketplace', 'E-commerce', 'SGP', 'Lach Tray, District 3, HCMC', 'tiki-logo.png', 'tiki.vn'),
-(gen_random_uuid(), 'VinAI Research', '0108441481', '200+', 'VinGroup AI research lab, computer vision leader', 'AI/ML', 'HN', 'Vincom Mega Mall Royal City, Hanoi', 'vinai-logo.png', 'vinai.io'),
-(gen_random_uuid(), 'CMC Global', '0101777852', '5000+', 'Digital transformation & software outsourcing', 'IT Services', 'HN', 'Duy Tan, Cau Giay, Hanoi', 'cmc-logo.png', 'cmcglobal.com.vn'),
-(gen_random_uuid(), 'Saigon Technology', '0311978999', '400+', 'Custom software for US/EU enterprises', 'Software Development', 'SGP', 'District 1, HCMC', 'saigon-tech-logo.png', 'saigontechnology.com'),
-(gen_random_uuid(), 'KMS Technology', '0304837555', '1500+', 'Google Cloud partner, QA & automation leader', 'IT Services', 'SGP', 'Tan Thuan Export Processing Zone, HCMC', 'kms-logo.png', 'kms-technology.com'),
-(gen_random_uuid(), 'TMA Solutions', '0302892381', '5000+', 'Largest software outsourcing company in VN', 'IT Outsourcing', 'SGP', 'Tan Thuan EPZ, District 7, HCMC', 'tma-logo.png', 'tmasolutions.com'),
-(gen_random_uuid(), 'Axon Active', '0313788899', '1000+', 'Offshore development for EU/Swiss markets', 'IT Services', 'DAN', 'Chai Tower, Hai Chau, Da Nang', 'axon-logo.png', 'axonactive.com'),
-(gen_random_uuid(), 'Rikkeisoft', '0106728999', '1500+', 'Japan-focused offshore software development', 'IT Services', 'HN', 'Ba Dinh District, Hanoi', 'rikkeisoft-logo.png', 'rikkeisoft.com');
+(gen_random_uuid(), 'FPT Software', '0100109106', '30000+', 'Vietnam''s largest IT exporter, global digital transformation leader', 'Công Nghệ Thông Tin', '700000', 'Phu My Hung, District 7, HCMC', 'fpt-logo.png', 'fpt-software.com'),
+(gen_random_uuid(), 'VNG Corporation', '0302266895', '8000+', 'Zalo messaging, gaming & cloud platform pioneer', 'Công Nghệ Thông Tin', '700000', '9 Dinh Tien Hoang, District 1, HCMC', 'vng-logo.png', 'vng.com.vn'),
+(gen_random_uuid(), 'Tiki Corporation', '0103692061', '3000+', 'Vietnam''s leading e-commerce & digital marketplace', 'Sale Bán Hàng', '700000', 'Lach Tray, District 3, HCMC', 'tiki-logo.png', 'tiki.vn'),
+(gen_random_uuid(), 'VinAI Research', '0108441481', '200+', 'VinGroup AI research lab, computer vision leader', 'Công Nghệ Thông Tin', '100000', 'Vincom Mega Mall Royal City, Hanoi', 'vinai-logo.png', 'vinai.io'),
+(gen_random_uuid(), 'CMC Global', '0101777852', '5000+', 'Digital transformation & software outsourcing', 'Công Nghệ Thông Tin', '100000', 'Duy Tan, Cau Giay, Hanoi', 'cmc-logo.png', 'cmcglobal.com.vn'),
+(gen_random_uuid(), 'Saigon Technology', '0311978999', '400+', 'Custom software for US/EU enterprises', 'Công Nghệ Thông Tin', '700000', 'District 1, HCMC', 'saigon-tech-logo.png', 'saigontechnology.com'),
+(gen_random_uuid(), 'KMS Technology', '0304837555', '1500+', 'Google Cloud partner, QA & automation leader', 'Công Nghệ Thông Tin', '700000', 'Tan Thuan Export Processing Zone, HCMC', 'kms-logo.png', 'kms-technology.com'),
+(gen_random_uuid(), 'TMA Solutions', '0302892381', '5000+', 'Largest software outsourcing company in VN', 'Công Nghệ Thông Tin', '700000', 'Tan Thuan EPZ, District 7, HCMC', 'tma-logo.png', 'tmasolutions.com'),
+(gen_random_uuid(), 'Axon Active', '0313788899', '1000+', 'Offshore development for EU/Swiss markets', 'Công Nghệ Thông Tin', '500000', 'Chai Tower, Hai Chau, Da Nang', 'axon-logo.png', 'axonactive.com'),
+(gen_random_uuid(), 'Giao Hang Tiet Kiem', '0106181234', '20000+', 'Top-tier logistics tech company in Vietnam', 'Logistics', '100000', 'Pham Hung, Nam Tu Liem, Hanoi', 'ghtk-logo.png', 'giaohangtietkiem.vn'),
+(gen_random_uuid(), 'ELSA Corp', '0314123987', '150+', 'AI-powered English pronunciation assistant', 'Giáo Dục', '700000', 'District 1, HCMC', 'elsa-logo.png', 'elsaspeak.com'),
+(gen_random_uuid(), 'Rikkeisoft', '0106728999', '1500+', 'Japan-focused offshore software development', 'Công Nghệ Thông Tin', '100000', 'Ba Dinh District, Hanoi', 'rikkeisoft-logo.png', 'rikkeisoft.com');
 
 -- ========================================================
 -- 2. SKILLS (10 records - Professional tech stack)

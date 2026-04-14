@@ -2,9 +2,13 @@ package com.onceClick.recruitmentService.features.job.controller;
 
 import com.onceClick.recruitmentService.features.job.dto.request.CreateJobRequestDto;
 import com.onceClick.recruitmentService.features.job.dto.response.CreateJobResponseDto;
+
+import com.onceClick.recruitmentService.features.job.dto.response.GetJobDetailResponseDto;
 import com.onceClick.recruitmentService.features.job.dto.response.GetJobsResponseDto;
 import com.onceClick.recruitmentService.features.job.handler.CreateJobHandler;
+import com.onceClick.recruitmentService.features.job.handler.GetJobDetailHandler;
 import com.onceClick.recruitmentService.features.job.handler.GetJobsHandler;
+import com.onceClick.recruitmentService.features.job.handler.GetRelatedJobsHandler;
 import com.onceClick.recruitmentService.shared.dto.ApiResponse;
 import com.onceClick.recruitmentService.shared.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.onceClick.recruitmentService.shared.dto.PageResponse;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -28,6 +33,8 @@ public class JobController {
 
     private final CreateJobHandler createJobHandler;
     private final GetJobsHandler getJobsHandler;
+    private final GetJobDetailHandler getJobDetailHandler;
+    private final GetRelatedJobsHandler getRelatedJobsHandler;
     private final CurrentUser currentUser;
 
     @PreAuthorize("hasAuthority('ROLE_recruiter')")
@@ -37,6 +44,18 @@ public class JobController {
 
         ApiResponse<CreateJobResponseDto> response = createJobHandler.createJobHandler(request, employerId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{jobId}")
+    public ResponseEntity<ApiResponse<GetJobDetailResponseDto>> getJobDetail(@PathVariable UUID jobId) {
+        return ResponseEntity.ok(getJobDetailHandler.getJobDetail(jobId));
+    }
+
+    @GetMapping("/{jobId}/related")
+    public ResponseEntity<ApiResponse<List<GetJobsResponseDto>>> getRelatedJobs(
+            @PathVariable UUID jobId
+    ) {
+        return ResponseEntity.ok(getRelatedJobsHandler.getRelatedJobs(jobId));
     }
 
     @GetMapping("/all")

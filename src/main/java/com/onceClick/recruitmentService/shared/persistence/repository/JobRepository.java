@@ -1,6 +1,7 @@
 package com.onceClick.recruitmentService.shared.persistence.repository;
 
 import com.onceClick.recruitmentService.shared.persistence.entity.Job;
+import com.onceClick.recruitmentService.shared.persistence.entity.JobSkills;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,4 +40,64 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
 
     @Query("SELECT j FROM Job j ORDER BY j.createdAt DESC")
     List<Job> findRecentJobs(Pageable pageable);
+
+    // Related Jobs: tìm các job có chung ít nhất 1 skill với job hiện tại
+    @Query("""
+        SELECT j FROM Job j
+        WHERE j.jobId IN (
+            SELECT js2.id.jobId FROM JobSkills js2
+            WHERE js2.id.skillsId IN (
+                SELECT js1.id.skillsId FROM JobSkills js1
+                WHERE js1.id.jobId = :jobId
+            )
+            AND js2.id.jobId <> :jobId
+        )
+        AND j.status = 'active'
+        """)
+    Page<Job> findRelatedJobsBySkills(@Param("jobId") UUID jobId, Pageable pageable);
+
+    // Related Jobs: tìm các job cùng ngành (majorPreferred) với job hiện tại
+    @Query("""
+        SELECT j FROM Job j
+        WHERE j.majorPreferred = :majorPreferred
+        AND j.jobId <> :jobId
+        AND j.status = 'active'
+        ORDER BY j.createdAt DESC
+        """)
+    Page<Job> findRelatedJobsByMajor(
+            @Param("majorPreferred") String majorPreferred,
+            @Param("jobId") UUID jobId,
+            Pageable pageable
+    );
+
+    // Fallback: lấy các job active mới nhất, loại trừ job hiện tại
+    @Query("""
+        SELECT j FROM Job j
+        WHERE j.jobId <> :jobId
+        AND j.status = 'active'
+        ORDER BY j.createdAt DESC
+        """)
+    Page<Job> findFallbackRelatedJobs(@Param("jobId") UUID jobId, Pageable pageable);
+
+    // Related Jobs (không phân trang): trả về TẤT CẢ jobs cùng ngành
+    @Query("""
+        SELECT j FROM Job j
+        WHERE j.majorPreferred = :majorPreferred
+        AND j.jobId <> :jobId
+        AND j.status = 'active'
+        ORDER BY j.createdAt DESC
+        """)
+    List<Job> findAllRelatedJobsByMajor(
+            @Param("majorPreferred") String majorPreferred,
+            @Param("jobId") UUID jobId
+    );
+
+    // Fallback (không phân trang): trả về TẤT CẢ jobs active mới nhất
+    @Query("""
+        SELECT j FROM Job j
+        WHERE j.jobId <> :jobId
+        AND j.status = 'active'
+        ORDER BY j.createdAt DESC
+        """)
+    List<Job> findAllFallbackRelatedJobs(@Param("jobId") UUID jobId);
 }

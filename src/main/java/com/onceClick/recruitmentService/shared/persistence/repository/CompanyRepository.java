@@ -39,12 +39,20 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
             Pageable pageable
     );
 
+
     @Query("""
         SELECT c FROM Company c
-        WHERE c.provinceCode IS NOT NULL
-        ORDER BY c.provinceCode DESC
+        WHERE c.sizeRange IS NOT NULL AND c.sizeRange != ''
+        ORDER BY CASE c.sizeRange
+            WHEN '1-50' THEN 1
+            WHEN '50-150' THEN 2
+            WHEN '150-500' THEN 3
+            WHEN '500-1000' THEN 4
+            WHEN '1000+' THEN 5
+            ELSE 0
+        END DESC, c.companyName ASC
     """)
-    Page<Company> findTopVerifiedCompanies(Pageable pageable);
+    Page<Company> findTopCompaniesBySize(Pageable pageable);
 
     // Filter
     @Query("SELECT DISTINCT c.industry FROM Company c WHERE c.industry IS NOT NULL")

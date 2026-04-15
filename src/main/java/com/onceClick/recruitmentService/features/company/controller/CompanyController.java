@@ -2,6 +2,8 @@ package com.onceClick.recruitmentService.features.company.controller;
 
 import com.onceClick.recruitmentService.features.company.dto.response.*;
 import com.onceClick.recruitmentService.features.company.handler.*;
+import com.onceClick.recruitmentService.features.job.dto.response.GetJobsResponseDto;
+import com.onceClick.recruitmentService.features.job.handler.GetJobsHandler;
 import com.onceClick.recruitmentService.shared.dto.*;
 import com.onceClick.recruitmentService.shared.security.CurrentUser;
 import com.onceClick.recruitmentService.shared.util.LocationUtil;
@@ -29,6 +31,7 @@ public class CompanyController {
     private final GetCompanyFiltersHandler getCompanyFiltersHandler;
     private final UploadCompanyImageHandler uploadCompanyImageHandler;
     private final CurrentUser currentUser;
+    private final GetJobsHandler  getJobsHandler;
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<PageResponse<GetCompaniesResponseDto>>> getAllCompanies(
@@ -68,6 +71,15 @@ public class CompanyController {
     @GetMapping("/{companyId}")
     public ResponseEntity<ApiResponse<GetCompanyResponseDto>> getCompanyById(@PathVariable UUID companyId) {
         return ResponseEntity.ok(getCompanyHandler.getCompanyById(companyId));
+    }
+
+    @GetMapping("/{companyId}/jobs")
+    public ResponseEntity<ApiResponse<PageResponse<GetJobsResponseDto>>> getJobsByCompany(
+            @PathVariable UUID companyId,
+            Pageable pageable) {
+
+        // Gọi Handler và trả về Response chuẩn
+        return ResponseEntity.ok(getJobsHandler.getJobsByCompanyId(companyId, pageable));
     }
 
     @PreAuthorize("hasAuthority('ROLE_recruiter')")

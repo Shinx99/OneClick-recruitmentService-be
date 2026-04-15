@@ -18,7 +18,7 @@ public class GetTopCompaniesHandler {
 
     @Transactional(readOnly = true)
     public ApiResponse<List<TopCompanyResponseDto>> getTop6Companies() {
-        List<Company> companies = companyRepository.findTopVerifiedCompanies(PageRequest.of(0, 6)).getContent();
+        List<Company> companies = companyRepository. findTopCompaniesBySize(PageRequest.of(0, 6)).getContent();
 
         List<TopCompanyResponseDto> response = companies.stream()
                 .map(c -> new TopCompanyResponseDto(

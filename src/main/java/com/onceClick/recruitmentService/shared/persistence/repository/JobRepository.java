@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificationExecutor<Job> {
-    List<Job> findByCompanyId(UUID companyId);
+    Page<Job> findByCompanyId(UUID companyId, Pageable pageable);
     List<Job> findByStatus(String status);
     List<Job> findByProvinceAndStatus(String province, String status);
     @Query("SELECT j FROM Job j WHERE j.salaryMin <= :maxSal AND j.salaryMax >= :minSal")

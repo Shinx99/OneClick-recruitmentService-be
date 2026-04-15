@@ -101,4 +101,40 @@ public class GetJobsHandler {
         );
     }
 
+    @Transactional(readOnly = true)
+    public ApiResponse<PageResponse<GetJobsResponseDto>> getJobsByCompanyId(UUID companyId, Pageable pageable) {
+        log.info("Fetching jobs for companyId: {}", companyId);
+
+        Page<Job> jobPage = jobRepository.findByCompanyId(companyId, pageable);
+
+        Company company = companyRepository.findById(companyId).orElse(null);
+
+        Page<GetJobsResponseDto> dtoPage = jobPage.map(job -> {
+            return new GetJobsResponseDto(
+                    job.getJobId(),
+                    job.getCompanyId(),
+                    company != null ? company.getCompanyName() : null,
+                    company != null ? company.getLogoUrl() : null,
+                    job.getTitle(),
+                    job.getDescription(),
+                    job.getRequirement(),
+                    job.getLevel(),
+                    job.getJobType(),
+                    job.getProvince(),
+                    job.getSalaryMin(),
+                    job.getSalaryMax(),
+                    job.getExperienceMinYear(),
+                    job.getApplicationDeadline(),
+                    job.getApplicationCount(),
+                    job.getViewCount(),
+                    job.getStatus(),
+                    job.getCreatedAt()
+            );
+        });
+
+        // 4. Bọc vào PageResponse và ApiResponse chuẩn của hệ thống
+        PageResponse<GetJobsResponseDto> pageResponse = PageResponse.from(dtoPage);
+        return ApiResponse.success("Fetched jobs by company successfully!", pageResponse);
+    }
+
 }

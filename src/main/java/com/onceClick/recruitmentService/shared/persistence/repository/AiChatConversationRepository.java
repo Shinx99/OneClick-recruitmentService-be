@@ -40,6 +40,15 @@ public interface AiChatConversationRepository extends JpaRepository<AiChatConver
             Pageable pageable
     );
 
+    List<AiChatConversation> findByAssignedAdminIdAndStatusIn(UUID adminId, List<String> statuses);
+
+    // Thêm method mới - lấy conversation của admin theo status
+    List<AiChatConversation> findByAssignedAdminIdAndStatusOrderByLastMessageAtDesc(UUID adminId, String status);
+
+    // Hoặc lấy nhiều status
+    List<AiChatConversation> findByAssignedAdminIdAndStatusInOrderByLastMessageAtDesc(UUID adminId, List<String> statuses);
+
+
     @Query("SELECT c FROM AiChatConversation c WHERE c.userId = :userId AND c.userType = :userType AND c.status = 'open' ORDER BY c.createdAt DESC")
     Optional<AiChatConversation> findFirstOpenByUserIdAndUserType(@Param("userId") UUID userId, @Param("userType") String userType);
 }

@@ -5,10 +5,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -251,6 +253,7 @@ public class GlobalExceptionHandler {
 
     /**
      * Handle all other exceptions (catch-all)
+     * Thêm produces = MediaType.APPLICATION_JSON_VALUE
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(
@@ -258,6 +261,13 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
 
         log.error("Unexpected error occurred", ex);
+
+        // Kiểm tra nếu request là WebSocket thì không trả về response
+        String path = request.getRequestURI();
+        if (path != null && path.contains("/ws")) {
+            log.debug("WebSocket error, skipping response: {}", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(Instant.now())
@@ -267,29 +277,9 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errorResponse);
     }
-
-
-   /* @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(Map.of(
-                "timestamp", Instant.now().toString(),
-                "message", ex.getMessage(),
-                "status", HttpStatus.BAD_REQUEST.value()
-        ));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                "timestamp", Instant.now().toString(),
-                "message", "Internal server error",
-                "status", HttpStatus.INTERNAL_SERVER_ERROR.value()
-        ));
-    }*/
-
-
-
 
 }

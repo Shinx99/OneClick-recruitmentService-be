@@ -14,4 +14,15 @@ public class AiChatHistoryDto {
     private List<AiChatMessageDto> messages;
     private String lastMessagePreview;
     private Instant lastMessageAt;
+
+    private long totalMessages;
+    private boolean hasMore;
+    private Integer currentPage;
+    private Integer totalPages;
+
+    private UUID userId;
+    private String userType;
+    private String userFullName;
+    private String userEmail;
+    private String userAvatar;
 }

@@ -1,6 +1,7 @@
 package com.onceClick.recruitmentService.shared.persistence.repository;
 
 import com.onceClick.recruitmentService.shared.persistence.entity.AiChatMessage;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,11 +18,6 @@ public interface AiChatMessageRepository extends JpaRepository<AiChatMessage, UU
 
     List<AiChatMessage> findByConversation_ConversationIdOrderByCreatedAtAsc(
             UUID conversationId
-    );
-
-    List<AiChatMessage> findByConversation_ConversationIdOrderByCreatedAtDesc(
-            UUID conversationId,
-            Pageable pageable
     );
 
     Optional<AiChatMessage> findFirstByConversation_ConversationIdOrderByCreatedAtDesc(
@@ -65,4 +61,24 @@ public interface AiChatMessageRepository extends JpaRepository<AiChatMessage, UU
             "AND m.read = false")
     int countUnreadByConversationAndUser(@Param("conversationId") UUID conversationId,
                                          @Param("userId") UUID userId);
+
+
+
+    // Phân trang messages (ascending - cũ nhất trước, cho infinite scroll)
+    Page<AiChatMessage> findByConversation_ConversationIdOrderByCreatedAtAsc(
+            UUID conversationId,
+            Pageable pageable
+    );
+
+    List<AiChatMessage> findByConversation_ConversationIdAndCreatedAtAfterOrderByCreatedAtAsc(
+            UUID conversationId,
+            Instant afterDate,
+            Pageable pageable
+    );
+
+    // Phân trang messages descending
+    Page<AiChatMessage> findByConversation_ConversationIdOrderByCreatedAtDesc(
+            UUID conversationId,
+            Pageable pageable
+    );
 }

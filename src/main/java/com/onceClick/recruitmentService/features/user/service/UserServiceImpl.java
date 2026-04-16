@@ -32,12 +32,12 @@ public class UserServiceImpl implements UserService {
         // 1. Check cache
         UserInfo cached = (UserInfo) redisTemplate.opsForValue().get(cacheKey);
         if (cached != null) {
-            log.debug("✅ Cache hit for userId: {}", userId);
+            log.debug("Cache hit for userId: {}", userId);
             return cached;
         }
         
         // 2. Load from DB
-        log.debug("❌ Cache miss for userId: {}, loading from DB", userId);
+        log.debug("Cache miss for userId: {}, loading from DB", userId);
         UserInfo userInfo = null;
         
         if ("candidate".equals(userType)) {

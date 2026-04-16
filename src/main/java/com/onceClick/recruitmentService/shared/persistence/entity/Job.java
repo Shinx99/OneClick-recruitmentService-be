@@ -91,4 +91,5 @@ public class Job extends BaseEntity {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant updatedAt;
+
 }

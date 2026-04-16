@@ -45,6 +45,19 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
 
+                        // ========== JOB APPLICATION APIs ==========
+                        // Cần authenticated cho tất cả API job application
+                        .requestMatchers(
+                                        "/api/jobs/apply",
+                                        "/api/jobs/*/check-applied",
+                                        "/api/applications/my-applications",
+                                        "/api/applications/*",
+                                        "/api/applications/*/*",
+                                        "/api/employer/jobs/*/applications",
+                                        "/api/employer/applications/*/*/status"
+                        ).authenticated()
+
+                                // ========== RECRUITMENT APIs ==========
                         .requestMatchers("/api/recruitment/job/all").permitAll()
                         .requestMatchers("/api/recruitment/candidate/**").authenticated()
                         .requestMatchers("/api/recruitment/employer/**").authenticated()

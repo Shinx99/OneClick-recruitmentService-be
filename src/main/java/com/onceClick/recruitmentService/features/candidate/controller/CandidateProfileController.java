@@ -70,6 +70,19 @@ public class CandidateProfileController {
 
 
     // -------------------------------------------------------------------------
+    // UPDATE AVATAR IMAGE CANDIDATE CONTROLLER
+    // -------------------------------------------------------------------------
+    @PreAuthorize("hasAuthority('ROLE_candidate')")
+    @DeleteMapping(value = "/avatar/delete")
+    public ResponseEntity<ApiResponse<Void>> deleteAvatar() throws IOException {
+
+        UUID candidateId = currentUser.getCurrentAccountId();
+        ApiResponse<Void> response = candidateProfileHandler.deleteAvatar(candidateId);
+        return ResponseEntity.ok(response);
+    }
+
+
+    // -------------------------------------------------------------------------
     // UPDATE BACKGROUND IMAGE CANDIDATE CONTROLLER
     // -------------------------------------------------------------------------
     @PreAuthorize("hasAuthority('ROLE_candidate')")
@@ -79,6 +92,19 @@ public class CandidateProfileController {
         UUID candidateId = currentUser.getCurrentAccountId();
 
         ApiResponse<CandidateResponseDto> response = candidateProfileHandler.updateBackground(candidateId, file);
+        return ResponseEntity.ok(response);
+    }
+
+
+    // -------------------------------------------------------------------------
+    // UPDATE BACKGROUND IMAGE CANDIDATE CONTROLLER
+    // -------------------------------------------------------------------------
+    @PreAuthorize("hasAuthority('ROLE_candidate')")
+    @DeleteMapping (value = "/background/delete")
+    public ResponseEntity<ApiResponse<Void>> deleteBackground() throws IOException {
+
+        UUID candidateId = currentUser.getCurrentAccountId();
+        ApiResponse<Void> response = candidateProfileHandler.deleteBackground(candidateId);
         return ResponseEntity.ok(response);
     }
 

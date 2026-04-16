@@ -97,6 +97,7 @@ public class GetJobsHandler {
                 job.getApplicationCount(),
                 job.getViewCount(),
                 job.getStatus(),
+                job.getImgUrl(),
                 job.getCreatedAt()
         );
     }
@@ -128,6 +129,7 @@ public class GetJobsHandler {
                     job.getApplicationCount(),
                     job.getViewCount(),
                     job.getStatus(),
+                    job.getImgUrl(),
                     job.getCreatedAt()
             );
         });

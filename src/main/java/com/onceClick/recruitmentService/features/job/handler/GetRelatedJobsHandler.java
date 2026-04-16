@@ -91,6 +91,7 @@ public class GetRelatedJobsHandler {
                 job.getApplicationCount(),
                 job.getViewCount(),
                 job.getStatus(),
+                job.getImgUrl(),
                 job.getCreatedAt()
         );
     }

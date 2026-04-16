@@ -57,6 +57,7 @@ public class CreateJobHandler {
                 .salaryMax(requestDto.salaryMax())
                 .experienceMinYear(requestDto.experienceMinYear())
                 .applicationDeadline(requestDto.applicationDeadline())
+                .imgUrl(requestDto.imgUrl())
                 .status("pending")
                 .applicationCount(0) //default
                 .viewCount(0)
@@ -110,6 +111,7 @@ public class CreateJobHandler {
                 savedJob.getJobId(),
                 savedJob.getTitle(),
                 savedJob.getStatus(),
+                savedJob.getImgUrl(),
                 company.getCompanyId(),
                 savedJob.getApplicationCount(),
                 savedJob.getViewCount()

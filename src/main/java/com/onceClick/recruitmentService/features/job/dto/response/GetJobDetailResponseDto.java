@@ -26,6 +26,7 @@ public record GetJobDetailResponseDto(
         Integer applicationCount,
         Integer viewCount,
         String status,
+        String imgUrl,
         List<SkillInfo> skills,
         UUID createdBy,
         UUID updatedBy,

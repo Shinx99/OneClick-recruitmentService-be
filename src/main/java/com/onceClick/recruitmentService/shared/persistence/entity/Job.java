@@ -74,6 +74,9 @@ public class Job extends BaseEntity {
     @Min(0)
     private Integer viewCount = 0;
     
+    @Column(name = "img_url", columnDefinition = "TEXT")
+    private String imgUrl;
+
     @Column(name = "status", length = 50, nullable = false)
     @NotNull
     private String status = "active";

@@ -23,5 +23,6 @@ public record GetJobsResponseDto(
         Integer applicationCount,
         Integer viewCount,
         String status,
+        String imgUrl,
         Instant createdAt
 ) {}

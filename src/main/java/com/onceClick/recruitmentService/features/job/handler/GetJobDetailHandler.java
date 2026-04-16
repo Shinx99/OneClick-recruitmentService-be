@@ -67,6 +67,7 @@ public class GetJobDetailHandler {
                 job.getApplicationCount(),
                 job.getViewCount(),
                 job.getStatus(),
+                job.getImgUrl(),
                 skillInfos,
                 job.getCreatedBy(),
                 job.getUpdatedBy(),

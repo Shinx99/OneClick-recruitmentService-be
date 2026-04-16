@@ -48,7 +48,7 @@ public class CreateJobHandler {
 
         // 4. Save job
         Job job = Job.builder()
-                .companyId(company.getCompanyId())
+                .companyId(company != null ? company.getCompanyId() : null)
                 .title(requestDto.title())
                 .description(requestDto.description())
                 .level(requestDto.level())
@@ -58,7 +58,7 @@ public class CreateJobHandler {
                 .experienceMinYear(requestDto.experienceMinYear())
                 .applicationDeadline(requestDto.applicationDeadline())
                 .imgUrl(requestDto.imgUrl())
-                .status("pending")
+                .status("active") // TODO: change back to "pending" when admin approval flow is implemented
                 .applicationCount(0) //default
                 .viewCount(0)
                 .createdBy(employerId)

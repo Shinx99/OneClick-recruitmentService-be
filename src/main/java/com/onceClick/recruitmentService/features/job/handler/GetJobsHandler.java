@@ -36,16 +36,17 @@ public class GetJobsHandler {
             String province,
             String level,
             String jobType,
+            String status,
             BigDecimal salaryMin,
             BigDecimal salaryMax,
             BigDecimal experienceMax,
             Pageable pageable) {
 
-        log.info("Fetching jobs with keyword: {}, province: {}, level: {}, jobType: {}, salaryMin: {}, salaryMax: {}, experienceMax: {}",
-                keyword, province, level, jobType, salaryMin, salaryMax, experienceMax);
+        log.info("Fetching jobs with keyword: {}, province: {}, level: {}, jobType: {}, status: {}, salaryMin: {}, salaryMax: {}, experienceMax: {}",
+                keyword, province, level, jobType, status, salaryMin, salaryMax, experienceMax);
 
         // 1. Build Specification from filters
-        Specification<Job> spec = Specification.where(JobSpecification.isActive())
+        Specification<Job> spec = Specification.where(JobSpecification.hasStatus(status))
                 .and(JobSpecification.hasKeyword(keyword))
                 .and(JobSpecification.hasProvince(province))
                 .and(JobSpecification.hasLevel(level))

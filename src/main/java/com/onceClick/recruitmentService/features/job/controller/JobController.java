@@ -74,6 +74,7 @@ public class JobController {
             @RequestParam(required = false) String province,
             @RequestParam(required = false) String level,
             @RequestParam(required = false) String jobType,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) BigDecimal salaryMin,
             @RequestParam(required = false) BigDecimal salaryMax,
             @RequestParam(required = false) BigDecimal experienceMax,
@@ -90,7 +91,7 @@ public class JobController {
 
         // Gọi Handler
         ApiResponse<PageResponse<GetJobsResponseDto>> response = getJobsHandler.getAllJobs(
-                keyword, province, level, jobType, salaryMin, salaryMax, experienceMax, pageable
+                keyword, province, level, jobType, status, salaryMin, salaryMax, experienceMax, pageable
         );
 
         return ResponseEntity.ok(response);

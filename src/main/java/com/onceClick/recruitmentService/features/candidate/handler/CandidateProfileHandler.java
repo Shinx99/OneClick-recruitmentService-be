@@ -116,6 +116,35 @@ public class CandidateProfileHandler {
 
 
     // -------------------------------------------------------------------------
+    // DELETE AVATAR
+    // -------------------------------------------------------------------------
+    @Transactional
+    public ApiResponse<Void> deleteAvatar(UUID candidateId) throws IOException{
+
+        Candidate candidate = getOrSyncCandidate(candidateId);
+
+        String oldAvatarUrl = candidate.getAvatarUrl();
+        if(oldAvatarUrl != null){
+            String oldPublicId = extractPublicId(oldAvatarUrl);
+            try{
+                cloudinaryStorageService.deleteImage(oldPublicId);
+                candidate.setAvatarUrl(null);
+                candidate.setUpdatedAt(Instant.now());
+            } catch (IOException e){
+                log.warn("Failed to delete old avatar {}: {}", oldPublicId, e.getMessage());
+            }
+        }
+
+        candidateRepository.save(candidate);
+
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .message("Candidate avatar deleted successfully!")
+                .build();
+    }
+
+
+    // -------------------------------------------------------------------------
     // UPDATE COVER
     // -------------------------------------------------------------------------
     @Transactional
@@ -147,6 +176,35 @@ public class CandidateProfileHandler {
                 .build();
     }
 
+
+
+    // -------------------------------------------------------------------------
+    // DELETE BACKGROUND
+    // -------------------------------------------------------------------------
+    @Transactional
+    public ApiResponse<Void> deleteBackground(UUID candidateId) throws IOException{
+
+        Candidate candidate = getOrSyncCandidate(candidateId);
+
+        String oldBackgroundUrl = candidate.getBackgroundUrl();
+        if(oldBackgroundUrl != null){
+            String oldPublicId = extractPublicId(oldBackgroundUrl);
+            try{
+                cloudinaryStorageService.deleteImage(oldPublicId);
+                candidate.setBackgroundUrl(null);
+                candidate.setUpdatedAt(Instant.now());
+            } catch (IOException e){
+                log.warn("Failed to delete old background {}: {}", oldPublicId, e.getMessage());
+            }
+        }
+
+        candidateRepository.save(candidate);
+
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .message("Candidate background deleted successfully!")
+                .build();
+    }
 
     // -------------------------------------------------------------------------
     // HELPER EXTRACT PUBLIC ID FROM CLOUDINARY URL

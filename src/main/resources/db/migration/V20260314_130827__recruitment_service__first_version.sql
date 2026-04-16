@@ -198,6 +198,7 @@ CREATE TABLE resume(
     img_url TEXT,
     view_count INTEGER DEFAULT 0,
     status VARCHAR(50) DEFAULT 'active',
+    find_job BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

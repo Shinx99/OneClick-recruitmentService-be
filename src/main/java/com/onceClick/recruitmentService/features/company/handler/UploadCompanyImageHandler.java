@@ -77,7 +77,7 @@ public class UploadCompanyImageHandler {
         }
 
         // Upload new background
-        String backgroundUrl = cloudinaryStorageService.uploadImage(file, "companies/coverss");
+        String backgroundUrl = cloudinaryStorageService.uploadImage(file, "companies/covers");
         company.setBackgroundUrl(backgroundUrl);
         company.setUpdatedBy(employerId);
         company.setUpdatedAt(Instant.now());

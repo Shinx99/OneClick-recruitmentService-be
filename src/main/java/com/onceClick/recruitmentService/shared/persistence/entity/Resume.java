@@ -59,6 +59,9 @@ public class Resume {
     @Column(name = "status", length = 50, nullable = false)
     private String status = "active";
 
+    @Column(name = "find_job", nullable = false)
+    private Boolean findJob = false;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt;

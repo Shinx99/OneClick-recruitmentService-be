@@ -1,5 +1,6 @@
 package com.onceClick.recruitmentService.features.scanCv_Profile;
 
+import com.cloudinary.Api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onceClick.recruitmentService.features.scanCv_Profile.dto.ParsedResumeResponse;
 import com.onceClick.recruitmentService.features.scanCv_Profile.dto.ScanCvRequest;
@@ -9,6 +10,7 @@ import com.onceClick.recruitmentService.features.scanCv_Profile.dto.parsedDataDt
 import com.onceClick.recruitmentService.infrastructure.ai.AiService;
 import com.onceClick.recruitmentService.infrastructure.processor.S3FileExtractorService;
 import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService.S3StorageService;
+import com.onceClick.recruitmentService.shared.dto.ApiResponse;
 import com.onceClick.recruitmentService.shared.persistence.entity.Resume;
 import com.onceClick.recruitmentService.shared.persistence.repository.CandidateEducationRepository;
 import com.onceClick.recruitmentService.shared.persistence.repository.ResumeRepository;
@@ -109,6 +111,5 @@ public class ScanCvHandler {
                 .status("active")
                 .build();
     }
-
 
 }

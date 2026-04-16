@@ -24,7 +24,7 @@ public interface ResumeRepository extends JpaRepository<Resume, UUID> {
     void setCandidateResumesNotDefault(UUID candidateId);
 
     // 2. Optional: find current default resume
-    @Query("SELECT r FROM Resume r WHERE r.candidateId = :candidateId AND r.isDefault = true")
+    @Query("SELECT r FROM Resume r WHERE r.candidateId = :candidateId AND r.isDefault = true and r.status = 'active'")
     Optional<Resume> findDefaultResumeByCandidateId(UUID candidateId);
 
     // Reset all default của candidate
@@ -94,4 +94,7 @@ public interface ResumeRepository extends JpaRepository<Resume, UUID> {
     ORDER BY r.isDefault DESC, r.createdAt DESC
 """)
     List<Resume> findActiveCvList(@Param("candidateId") UUID candidateId);
+
+
+
 }

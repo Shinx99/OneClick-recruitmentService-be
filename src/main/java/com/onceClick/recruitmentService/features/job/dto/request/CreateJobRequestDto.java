@@ -36,6 +36,8 @@ public record CreateJobRequestDto (
 
     String status,
 
+    String imgUrl,
+
     List<UUID> skillIds,
 
     List<String> skillNames

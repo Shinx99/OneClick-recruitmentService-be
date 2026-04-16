@@ -18,6 +18,17 @@ public class JobSpecification {
     }
 
     /**
+     * Filter: by status param, or exclude 'deleted' if no status specified
+     */
+    public static Specification<Job> hasStatus(String status) {
+        if (status != null && !status.isBlank()) {
+            return (root, query, cb) -> cb.equal(root.get("status"), status);
+        }
+        // If no status filter, show all except deleted
+        return (root, query, cb) -> cb.notEqual(root.get("status"), "deleted");
+    }
+
+    /**
      * Search: keyword in title OR description OR requirement (case-insensitive)
      */
     public static Specification<Job> hasKeyword(String keyword) {

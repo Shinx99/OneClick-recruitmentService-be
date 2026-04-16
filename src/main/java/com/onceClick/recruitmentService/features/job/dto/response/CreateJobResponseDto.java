@@ -8,6 +8,7 @@ public record CreateJobResponseDto(
         UUID jobId,
         String title,
         String status,
+        String imgUrl,
         UUID companyId,
         Integer applicationCount,
         Integer viewCount

@@ -2,6 +2,7 @@ package com.onceClick.recruitmentService.features.candidate.handler;
 
 import com.onceClick.recruitmentService.features.candidate.dto.request.CandidateRequestDto;
 import com.onceClick.recruitmentService.features.candidate.dto.response.CandidateResponseDto;
+import com.onceClick.recruitmentService.features.skill.handler.SkillHandler;
 import com.onceClick.recruitmentService.infrastructure.feign.AuthAccountDto;
 import com.onceClick.recruitmentService.infrastructure.feign.SyncDataFromAccountHandler;
 import com.onceClick.recruitmentService.infrastructure.storage.CloudinaryStorageService.CloudinaryStorageService;
@@ -10,6 +11,7 @@ import com.onceClick.recruitmentService.shared.dto.PageResponse;
 import com.onceClick.recruitmentService.shared.exception.ResourceNotFoundException;
 import com.onceClick.recruitmentService.shared.persistence.entity.Candidate;
 import com.onceClick.recruitmentService.shared.persistence.repository.CandidateRepository;
+import com.onceClick.recruitmentService.shared.persistence.repository.CandidateSkillRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,6 +31,8 @@ public class CandidateProfileHandler {
     private final CandidateRepository candidateRepository;
     private final SyncDataFromAccountHandler syncDataFromAccountHandler;
     private final CloudinaryStorageService cloudinaryStorageService;
+    private final SkillHandler skillHandler;
+    private final CandidateSkillRepository candidateSkillRepository;
 
 
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -46,6 +51,10 @@ public class CandidateProfileHandler {
         // 3. Save into table Candidate of Recruitment DB
         candidateRepository.save(candidate);
         log.info("Updated candidate profile: {}", candidateId);
+
+        if (requestDto.getSkills() != null) {
+            skillHandler.replaceSkillsForCandidate(candidateId, requestDto.getSkills());
+        }
 
         // 5. return ApiResponse
         return ApiResponse.<CandidateResponseDto>builder()
@@ -256,6 +265,7 @@ public class CandidateProfileHandler {
     // HELPER MAP TO RESPONSE DTO
     //-----------------------------------------------------------------------------------------------------------------------------------------
     private CandidateResponseDto mapToResponseDto(Candidate candidate) {
+        List<String> skills = candidateSkillRepository.findSkillNamesByCandidateId(candidate.getCandidateId());
         return CandidateResponseDto.builder()
                 .candidateId(candidate.getCandidateId())
                 .about(candidate.getAbout())
@@ -274,6 +284,7 @@ public class CandidateProfileHandler {
                 .cccd(candidate.getCccd())
                 .verificationLevel(candidate.getVerificationLevel())
                 .status(candidate.getStatus())
+                .skills(skills)
                 .build();
     }
 }

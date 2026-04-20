@@ -1,8 +1,9 @@
-package com.onceClick.recruitmentService.features.ai_cv_matcher;
+package com.onceClick.recruitmentService.features.ai_cv_matcher.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onceClick.recruitmentService.features.ai_cv_matcher.dto.CvMatchResult;
 import com.onceClick.recruitmentService.features.ai_cv_matcher.dto.ParsedCvDto;
+import com.onceClick.recruitmentService.features.ai_cv_matcher.service.AiCvMatchService;
 import com.onceClick.recruitmentService.infrastructure.processor.FileProcessorService;
 import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService.S3StorageService;
 import com.onceClick.recruitmentService.shared.persistence.entity.Job;
@@ -94,7 +95,6 @@ public class AiCvMatchHandler {
     /**
      *  Luồng 2: Handler cho luồng NEW CV (MultipartFile → temp S3 → process → delete)
      */
-    /*
     public CvMatchResult handleNewCv(MultipartFile cvFile, Job job) throws Exception {
         String tempS3Key = "temp/match/" + UUID.randomUUID() + "_" + cvFile.getOriginalFilename();
         String tempS3Url = s3StorageService.uploadTempFile(tempS3Key, cvFile);
@@ -121,6 +121,6 @@ public class AiCvMatchHandler {
     private boolean isSupportedCvFile(String filename) {
         if (filename == null) return false;
         String lower = filename.toLowerCase();
-        return lower.endsWith(".pdf")*//* || lower.endsWith(".docx")*//*;
-    }*/
+        return lower.endsWith(".pdf") || lower.endsWith(".docx");
+    }
 }

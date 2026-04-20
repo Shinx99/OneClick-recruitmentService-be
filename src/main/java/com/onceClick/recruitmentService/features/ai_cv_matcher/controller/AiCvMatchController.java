@@ -1,6 +1,7 @@
-package com.onceClick.recruitmentService.features.ai_cv_matcher;
+package com.onceClick.recruitmentService.features.ai_cv_matcher.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onceClick.recruitmentService.features.ai_cv_matcher.handler.AiCvMatchHandler;
 import com.onceClick.recruitmentService.features.ai_cv_matcher.dto.CvMatchResult;
 import com.onceClick.recruitmentService.features.ai_cv_matcher.dto.MatchCachedCvRequest;
 import com.onceClick.recruitmentService.features.ai_cv_matcher.dto.MatchS3CvRequest;
@@ -59,7 +60,7 @@ public class AiCvMatchController {
         return ResponseEntity.ok(result);
     }
 
-    /*@PostMapping("/cached/{jobId}")
+    @PostMapping("/cached/{jobId}")
     public ResponseEntity<CvMatchResult> matchCachedCv(
             @PathVariable UUID jobId,
             @RequestBody MatchCachedCvRequest request) throws Exception {
@@ -69,7 +70,7 @@ public class AiCvMatchController {
         val parsedCv = objectMapper.readValue(request.getParsedCvJson(), ParsedCvDto.class);
         val result = handler.handleCachedCv(parsedCv, job);
         return ResponseEntity.ok(result);
-    }*/
+    }
 
     /**
      * ENDPOINT 3: New file upload → Direct extract (3.3s)

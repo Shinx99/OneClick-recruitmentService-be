@@ -7,10 +7,10 @@ import com.onceClick.recruitmentService.shared.persistence.entity.Job;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;  // ĐÃ THÊM IMPORT
 
 @Component
 public class AiPromptsImpl implements AiPrompts {
-
 
     @Override
     public String getSystemPromptForScanCV(String task) {
@@ -30,7 +30,7 @@ public class AiPromptsImpl implements AiPrompts {
                         {
                           "company": "Công ty ABC",
                           "position": "Backend Developer",
-                          "startDate": "2023-05-01",  // YYYY-MM-DD format
+                          "startDate": "2023-05-01",
                           "endDate": "2024-12-31",
                           "description": "Mô tả ngắn"
                         }
@@ -63,11 +63,14 @@ public class AiPromptsImpl implements AiPrompts {
         };
     }
 
-    /**
-     * Tạo job description chi tiết cho AI match + góp ý
-     */
     @Override
     public String buildJobPrompt(Job job) {
+        // FIXED: Chỉ dùng getMajorPreferred()
+        String major = job.getMajorPreferred();
+        if (major == null || major.isEmpty()) {
+            major = "Không yêu cầu";
+        }
+
         return """
             Job Title: %s
             Company: %s
@@ -87,11 +90,11 @@ public class AiPromptsImpl implements AiPrompts {
             
             """.formatted(
                 job.getTitle(),
-                "Công ty ABC", // TODO: join với Company entity
+                "Công ty ABC",
                 job.getProvince() + (job.getCommune() != null ? ", " + job.getCommune() : ""),
                 job.getDescription() != null ? job.getDescription() : "",
                 job.getRequirement() != null ? job.getRequirement() : "",
-                job.getMajorPreferred() != null ? job.getMajorPreferred() : "Không yêu cầu",
+                major,
                 job.getLevel() != null ? job.getLevel() : "Junior",
                 job.getExperienceMinYear() != null ? job.getExperienceMinYear() : "0",
                 formatSalary(job.getSalaryMin()),
@@ -100,34 +103,60 @@ public class AiPromptsImpl implements AiPrompts {
         );
     }
 
+    /*@Override
+    public String buildCvJobMatchPrompt(String cvParsedJson, String jobPrompt) {
+        return "Phân tích CV vs Job Description. Trả JSON EXACT format:\n\n" +
+                "{\n" +
+                "  \"similarity\": 85.0,\n" +
+                "  \"matchedSkills\": [\"Java\", \"Spring Boot\"],\n" +
+                "  \"missingSkills\": [\"Docker\", \"Kubernetes\"],\n" +
+                "  \"matchReason\": \"Phù hợp 85%...\",\n" +
+                "  \"improvementTips\": [\n" +
+                "    \"Thêm kinh nghiệm Docker\",\n" +
+                "    \"Cập nhật salary expectation 20-30tr\",\n" +
+                "    \"Bổ sung projects GitHub\"\n" +
+                "  ]\n" +
+                "}\n\n" +
+                "CV JSON: " + (cvParsedJson != null ? cvParsedJson : "") + "\n\n" +
+                "JOB: " + (jobPrompt != null ? jobPrompt : "");
+    }*/
+
     @Override
     public String buildCvJobMatchPrompt(String cvParsedJson, String jobPrompt) {
-        return """
-            Phân tích CV vs Job Description. Trả JSON EXACT format:
-            
-            {
-              "similarity": 85.0,
-              "matchedSkills": ["Java", "Spring Boot"],
-              "missingSkills": ["Docker", "Kubernetes"],
-              "matchReason": "Phù hợp 85%...",
-              "improvementTips": [
-                "Thêm kinh nghiệm Docker",
-                "Cập nhật salary expectation 20-30tr",
-                "Bổ sung projects GitHub"
-              ]
-            }
-            
-            CV JSON: %s
-            
-            JOB: %s
-            """.formatted(cvParsedJson, jobPrompt);
+        // Sử dụng StringBuilder thay vì text block để tránh lỗi format
+        StringBuilder sb = new StringBuilder();
+        sb.append("Phân tích CV vs Job Description. Trả JSON EXACT format:\n\n");
+        sb.append("{\n");
+        sb.append("  \"similarity\": 85.0,\n");
+        sb.append("  \"matchedSkills\": [\"Java\", \"Spring Boot\"],\n");
+        sb.append("  \"missingSkills\": [\"Docker\", \"Kubernetes\"],\n");
+        sb.append("  \"matchReason\": \"Phù hợp 85%...\",\n");
+        sb.append("  \"improvementTips\": [\n");
+        sb.append("    \"Thêm kinh nghiệm Docker\",\n");
+        sb.append("    \"Cập nhật salary expectation 20-30tr\",\n");
+        sb.append("    \"Bổ sung projects GitHub\"\n");
+        sb.append("  ]\n");
+        sb.append("}\n\n");
+        sb.append("CV JSON: ").append(cvParsedJson).append("\n\n");
+        sb.append("JOB: ").append(jobPrompt);
+
+        return sb.toString();
     }
 
+    // FIXED: Đã thêm RoundingMode.HALF_UP
     private String formatSalary(BigDecimal salary) {
         if (salary == null) return "Thương lượng";
-        return salary.divide(BigDecimal.valueOf(1000000)).setScale(0) + "tr";
-    }
 
+        try {
+            // Chia cho 1.000.000 và làm tròn
+            BigDecimal salaryInMillions = salary.divide(BigDecimal.valueOf(1000000));
+            long millions = salaryInMillions.setScale(0, RoundingMode.HALF_UP).longValue();
+            return millions + "tr";
+        } catch (Exception e) {
+            // Fallback an toàn
+            return String.format("%.0ftr", salary.doubleValue() / 1_000_000);
+        }
+    }
 
     @Override
     public String getSystemPromptForChat() {
@@ -158,7 +187,6 @@ public class AiPromptsImpl implements AiPrompts {
             Các nội dung ngoài phạm vi này, em chưa thể tư vấn chuyên sâu.
             """;
     }
-
 
     @Override
     public String buildPromptForChat(

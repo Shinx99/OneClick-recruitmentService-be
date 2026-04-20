@@ -1,4 +1,4 @@
-package com.onceClick.recruitmentService.features.ai_cv_matcher;
+package com.onceClick.recruitmentService.features.ai_cv_matcher.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onceClick.recruitmentService.features.ai_cv_matcher.dto.CvMatchResult;
@@ -59,6 +59,11 @@ public class AiCvMatchService {
         String matchPrompt = aiPrompts.buildCvJobMatchPrompt(cvJson, jobPrompt);
 
         String matchJson = deepSeekService.chat("ai_matching", "", matchPrompt);
+
+        // Log response trước khi parse
+        log.info("Response from AI (first 500 chars): {}",
+                matchJson.length() > 500 ? matchJson.substring(0, 500) : matchJson);
+
         CvMatchScore score = objectMapper.readValue(matchJson, CvMatchScore.class);
 
         return CvMatchResult.builder()
@@ -79,7 +84,7 @@ public class AiCvMatchService {
         String jobPrompt = aiPrompts.buildJobPrompt(job);
         String matchPrompt = aiPrompts.buildCvJobMatchPrompt(cvJson, jobPrompt);
 
-        String matchJson = deepSeekService.chat("ai_matching", matchPrompt);
+        String matchJson = deepSeekService.chat("ai_matching", "", matchPrompt);
         CvMatchScore score = objectMapper.readValue(matchJson, CvMatchScore.class);
 
         return CvMatchResult.builder()
@@ -105,36 +110,4 @@ public class AiCvMatchService {
         return matchWithParsedCv(parsedCv, job);
     }
 
-    /*public CvMatchResult scanAndMatchCv(String cvS3Url, Job job) throws Exception {
-        String cvText = s3Extractor.extractTextFromS3(cvS3Url);
-        String jobPrompt = aiPromts.buildJobPrompt(job);
-
-        if (cvText.startsWith("[IMAGE_SCAN_CV]")) {
-            return CvMatchResult.builder()
-                    .cvText(cvText)
-                    .matchScore(0.0)
-                    .matchReason("CV là ảnh scan")
-                    .build();
-        }
-
-        // 1. AI Scan CV
-        String parsedJson = deepSeekService.parseCvText(cvText);
-        ParsedCvDto parsedCv = objectMapper.readValue(parsedJson, ParsedCvDto.class);
-
-        // 2. AI Match + Góp ý
-        String matchPrompt = aiPromts.buildCvJobMatchPrompt(parsedJson, jobPrompt);
-
-        String matchJson = deepSeekService.chat("ai_matching", matchPrompt);
-        CvMatchScore score = objectMapper.readValue(matchJson, CvMatchScore.class);
-
-        return CvMatchResult.builder()
-                .cvText(cvText)
-                .parsedCv(parsedCv)
-                .matchScore(score.getSimilarity())
-                .matchedSkills(score.getMatchedSkills())
-                .missingSkills(score.getMissingSkills())
-                .matchReason(score.getMatchReason())
-                .improvementTips(score.getImprovementTips())
-                .build();
-    }*/
 }

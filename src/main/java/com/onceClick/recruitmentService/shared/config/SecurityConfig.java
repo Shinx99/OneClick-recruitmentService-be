@@ -57,6 +57,13 @@ public class SecurityConfig {
                                         "/api/employer/applications/*/*/status"
                         ).authenticated()
 
+                                // AI CV Match endpoints - THÊM CÁC DÒNG NÀY
+                                .requestMatchers("/api/ai-cv-match/**").permitAll()
+                                .requestMatchers("/api/ai-cv-match/resume/**").permitAll()
+                                .requestMatchers("/api/ai-cv-match/new/**").permitAll()
+                                .requestMatchers("/api/ai-cv-match/s3/**").permitAll()
+                                .requestMatchers("/api/ai-cv-match/cache/**").permitAll()
+
                                 // ========== RECRUITMENT APIs ==========
                         .requestMatchers("/api/recruitment/job/all").permitAll()
                         .requestMatchers("/api/recruitment/candidate/**").authenticated()

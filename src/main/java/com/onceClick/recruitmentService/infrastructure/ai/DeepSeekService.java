@@ -71,7 +71,16 @@ public class DeepSeekService implements AiService {
             throw new RuntimeException("AI API error: " + resp.getStatusCode());
         }
 
-        return extractContent(resp.getBody());
+
+
+        String content = extractContent(resp.getBody());
+
+        // Nếu là task cần JSON (ai_matching hoặc scan_cv), clean response
+        if ("ai_matching".equals(task) || "scan_cv".equals(task)) {
+            content = extractAndCleanJson(content);
+        }
+
+        return content;
     }
 
 
@@ -107,6 +116,112 @@ public class DeepSeekService implements AiService {
         } catch (Exception e) {
             log.error("AI response parse failed: {}", response);
             throw new RuntimeException("Invalid AI response format", e);
+        }
+    }
+
+    // DeepSeekService.java - THÊM METHOD NÀY
+    private String extractAndCleanJson(String response) {
+        if (response == null || response.trim().isEmpty()) {
+            throw new RuntimeException("Empty response from AI");
+        }
+
+        String cleaned = response.trim();
+
+        // Log raw response để debug
+        log.info("Raw response before cleaning (first 500 chars): {}",
+                cleaned.length() > 500 ? cleaned.substring(0, 500) : cleaned);
+
+        // Loại bỏ markdown code blocks
+        if (cleaned.startsWith("```json")) {
+            cleaned = cleaned.substring(7);
+            log.info("Removed ```json prefix");
+        } else if (cleaned.startsWith("```")) {
+            cleaned = cleaned.substring(3);
+            log.info("Removed ``` prefix");
+        }
+
+        if (cleaned.endsWith("```")) {
+            cleaned = cleaned.substring(0, cleaned.length() - 3);
+            log.info("Removed ``` suffix");
+        }
+
+        cleaned = cleaned.trim();
+
+        // Tìm vị trí bắt đầu của JSON
+        int startBrace = cleaned.indexOf('{');
+        int startBracket = cleaned.indexOf('[');
+        int startIndex = -1;
+
+        if (startBrace >= 0 && startBracket >= 0) {
+            startIndex = Math.min(startBrace, startBracket);
+        } else if (startBrace >= 0) {
+            startIndex = startBrace;
+        } else if (startBracket >= 0) {
+            startIndex = startBracket;
+        }
+
+        if (startIndex == -1) {
+            log.error("No JSON found in AI response: {}", response);
+            throw new RuntimeException("No JSON found in AI response");
+        }
+
+        // Tìm vị trí kết thúc của JSON
+        int endIndex = cleaned.length() - 1;
+        int braceCount = 0;
+        int bracketCount = 0;
+        boolean inString = false;
+        boolean escaped = false;
+        char startChar = cleaned.charAt(startIndex);
+
+        for (int i = startIndex; i < cleaned.length(); i++) {
+            char c = cleaned.charAt(i);
+
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+
+            if (c == '\\') {
+                escaped = true;
+                continue;
+            }
+
+            if (c == '"' && !escaped) {
+                inString = !inString;
+                continue;
+            }
+
+            if (!inString) {
+                if (c == '{') braceCount++;
+                if (c == '}') {
+                    braceCount--;
+                    if (startChar == '{' && braceCount == 0) {
+                        endIndex = i;
+                        break;
+                    }
+                }
+                if (c == '[') bracketCount++;
+                if (c == ']') {
+                    bracketCount--;
+                    if (startChar == '[' && bracketCount == 0) {
+                        endIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        String jsonContent = cleaned.substring(startIndex, endIndex + 1);
+
+        log.info("Extracted JSON (first 500 chars): {}",
+                jsonContent.length() > 500 ? jsonContent.substring(0, 500) : jsonContent);
+        // Validate JSON
+        try {
+            objectMapper.readTree(jsonContent);
+            return jsonContent;
+        } catch (Exception e) {
+            log.error("Invalid JSON after cleaning: {}", jsonContent);
+            throw new RuntimeException("Invalid JSON response from AI: " + e.getMessage(), e);
         }
     }
 }

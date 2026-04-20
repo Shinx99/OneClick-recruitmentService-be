@@ -27,7 +27,7 @@ public class S3FileExtractorServiceImpl implements S3FileExtractorService{
         }
 
         try {
-            // ✅ FIX: Parse đúng cấu trúc s3://bucket/candidates/{UUID}/cv/filename
+            // Parse đúng cấu trúc s3://bucket/candidates/{UUID}/cv/filename
             String path = s3Url.replace("s3://", "");
             String[] parts = path.split("/", 4);  // Cần 4 parts!
 
@@ -39,7 +39,7 @@ public class S3FileExtractorServiceImpl implements S3FileExtractorService{
             String accountIdStr = parts[2];        // 949270cd-1fa2-4ad1-9a15-a7d5c10aa755
             String restPath = parts[3];            // cv/CV Fresher.pdf
 
-            // ✅ Validate UUID trước khi parse
+            // Validate UUID trước khi parse
             if (!isValidUUID(accountIdStr)) {
                 throw new IllegalArgumentException("Invalid accountId in S3 path: " + accountIdStr);
             }
@@ -47,7 +47,7 @@ public class S3FileExtractorServiceImpl implements S3FileExtractorService{
 
             String filename = restPath.substring(restPath.lastIndexOf('/') + 1); // CV Fresher.pdf
 
-            log.info("✅ Parsed s3Url: bucket={}, accountId={}, filename={}",
+            log.info("Parsed s3Url: bucket={}, accountId={}, filename={}",
                     bucket, accountId, filename);
 
             // Download từ storageService (sẽ dùng key="candidates/{accountId}/cv/{filename}")
@@ -61,16 +61,16 @@ public class S3FileExtractorServiceImpl implements S3FileExtractorService{
             MultipartFile multipartFile = new ByteArrayMultipartFile(
                     filename, filename, getContentType(filename), bytes);
 
-            log.info("✅ S3 file processed: {} ({} bytes)", filename, bytes.length);
+            log.info("S3 file processed: {} ({} bytes)", filename, bytes.length);
             return textExtractor.extractText(multipartFile);
 
         } catch (Exception e) {
-            log.error("❌ Extraction failed for {}: {}", s3Url, e.getMessage(), e);
+            log.error("Extraction failed for {}: {}", s3Url, e.getMessage(), e);
             throw new RuntimeException("Text extraction failed: " + e.getMessage(), e);
         }
     }
 
-    // ✅ Helper method validate UUID
+    // Helper method validate UUID
     private boolean isValidUUID(String str) {
         if (str == null || str.length() != 36) return false;
         try {

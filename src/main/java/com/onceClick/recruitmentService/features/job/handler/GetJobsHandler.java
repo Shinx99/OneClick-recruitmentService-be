@@ -53,7 +53,11 @@ public class GetJobsHandler {
                 .and(JobSpecification.hasJobType(jobType))
                 .and(JobSpecification.hasSalaryMin(salaryMin))
                 .and(JobSpecification.hasSalaryMax(salaryMax))
-                .and(JobSpecification.hasExperienceMax(experienceMax));
+                .and(JobSpecification.hasExperienceMax(experienceMax))
+                .and((root, query, cb) -> cb.or(
+                        cb.isNull(root.get("applicationDeadline")),
+                        cb.greaterThan(root.get("applicationDeadline"), cb.currentTimestamp())
+                ));
 
         // 2. Query with Specification + Pagination
         Page<Job> jobPage = jobRepository.findAll(spec, pageable);

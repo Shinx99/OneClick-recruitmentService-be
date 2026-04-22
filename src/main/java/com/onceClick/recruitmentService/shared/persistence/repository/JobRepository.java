@@ -70,11 +70,12 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
             Pageable pageable
     );
 
-    // Fallback: lấy các job active mới nhất, loại trừ job hiện tại
+    // Fallback: lấy các job active mới nhất
     @Query("""
         SELECT j FROM Job j
         WHERE j.jobId <> :jobId
-        AND j.status = 'active'
+        AND j.status = 'ACTIVE' 
+        AND j.applicationDeadline > CURRENT_TIMESTAMP
         ORDER BY j.createdAt DESC
         """)
     Page<Job> findFallbackRelatedJobs(@Param("jobId") UUID jobId, Pageable pageable);
@@ -84,7 +85,8 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
         SELECT j FROM Job j
         WHERE j.majorPreferred = :majorPreferred
         AND j.jobId <> :jobId
-        AND j.status = 'active'
+        AND j.status = 'ACTIVE' 
+        AND j.applicationDeadline > CURRENT_TIMESTAMP
         ORDER BY j.createdAt DESC
         """)
     List<Job> findAllRelatedJobsByMajor(
@@ -92,11 +94,12 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
             @Param("jobId") UUID jobId
     );
 
-    // Fallback (không phân trang): trả về TẤT CẢ jobs active mới nhất
+    // Fallback (không phân trang): trả về TẤT CẢ jobs active mới nhất (ĐÃ THÊM LỌC HẠN)
     @Query("""
         SELECT j FROM Job j
         WHERE j.jobId <> :jobId
-        AND j.status = 'active'
+        AND j.status = 'ACTIVE' 
+        AND j.applicationDeadline > CURRENT_TIMESTAMP
         ORDER BY j.createdAt DESC
         """)
     List<Job> findAllFallbackRelatedJobs(@Param("jobId") UUID jobId);

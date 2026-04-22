@@ -59,7 +59,7 @@ public class Employer implements Persistable<UUID> {
     private Company company;
 
 
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(name = "name", length = 100)
     private String name;
 
     @Column(name = "email", nullable = false, unique = true, length = 255)
@@ -68,7 +68,7 @@ public class Employer implements Persistable<UUID> {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "surname", nullable = false, length = 50)
+    @Column(name = "surname", length = 50)
     private String surname;
 
     @Column(name = "about", columnDefinition = "TEXT")

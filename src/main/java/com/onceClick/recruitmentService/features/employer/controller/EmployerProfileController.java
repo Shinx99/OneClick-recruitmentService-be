@@ -27,7 +27,7 @@ public class EmployerProfileController {
     // Method submitOnboarding() cho recruiter chua duoc onboard
     @PreAuthorize("hasAuthority('ROLE_recruiter')")
     @PostMapping("/onboarding")
-    public ResponseEntity<ApiResponse<Void>> submitOnboarding(@RequestBody EmployerRequestDto requestDto){
+    public ResponseEntity<ApiResponse<Void>> submitOnboarding(@RequestBody(required = false) EmployerRequestDto requestDto){
 
         UUID employerId = currentUser.getCurrentAccountId();
         ApiResponse<Void> response = employerProfileHandler.submitOnboarding(requestDto, employerId);
@@ -39,7 +39,7 @@ public class EmployerProfileController {
     // Method checkOnboardingStatus()
     @PreAuthorize("hasAuthority('ROLE_recruiter')")
     @GetMapping("/onboarding-status")
-    public ResponseEntity<ApiResponse<String>> checkOnboardingStatus(@RequestBody EmployerRequestDto requestDto){
+    public ResponseEntity<ApiResponse<String>> checkOnboardingStatus(){
         UUID employerId = currentUser.getCurrentAccountId();
         String status = employerProfileHandler.checkOnboardingStatus(employerId);
         return ResponseEntity.ok(ApiResponse.success(status));

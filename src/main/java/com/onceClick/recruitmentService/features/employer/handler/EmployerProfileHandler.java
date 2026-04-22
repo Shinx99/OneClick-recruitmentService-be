@@ -44,8 +44,15 @@ public class EmployerProfileHandler {
 
         Employer employer;
 
-        // 3. Handle request to join existed company (Script 2)
-        if(requestDto.getCompany() != null){
+        // 3. Decide flow based on company info in request
+        boolean hasCompanyPayload = requestDto != null && requestDto.getCompany() != null;
+        boolean joinExistingCompany = hasCompanyPayload && requestDto.getCompany().getCompanyId() != null;
+        boolean createNewCompany = hasCompanyPayload
+                && requestDto.getCompany().getCompanyId() == null
+                && requestDto.getCompany().getCompanyName() != null;
+
+        // 3.A. Join an existing company (Script 2)
+        if(joinExistingCompany){
 
             Company existingCompany = companyRepository.findById(requestDto.getCompany().getCompanyId())
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy công ty trên hệ thống!"));
@@ -63,9 +70,10 @@ public class EmployerProfileHandler {
                     .build();
         }
 
-        // 4. Super Recruiter create Company (Script 1)
-        else {
+        // 3.B. Super Recruiter create Company together with onboarding (Script 1)
+        else if(createNewCompany){
             Company newCompany = Company.builder()
+                    .companyId(UUID.randomUUID())
                     .companyName(requestDto.getCompany().getCompanyName())
                     .taxCode(requestDto.getCompany().getTaxCode())
                     .businessLicenseUrl(requestDto.getCompany().getBusinessLicenseUrl())
@@ -80,12 +88,10 @@ public class EmployerProfileHandler {
                     .backgroundUrl(requestDto.getCompany().getBackgroundUrl())
                     .address(requestDto.getCompany().getAddress())
                     .createdBy(employerId)
-                    .updatedBy(null)
+                    .updatedBy(employerId)
                     .verifiedAt(null)
                     .verificationLevel(null)
                     .status("pending")
-                    .createdAt(Instant.now())
-                    .updatedAt(null)
                     .build();
             companyRepository.save(newCompany);
 
@@ -98,12 +104,34 @@ public class EmployerProfileHandler {
                     .status("pending")
                     .verifiedAt(null)
                     .createdAt(Instant.now())
+                    .isNew(true)
                     .build();
+        }
 
+        // 3.C. Onboarding WITHOUT company (default flow):
+        //      employer record is created with company_id = NULL,
+        //      user will create company later via POST /api/recruitment/company
+        else {
+            employer = Employer.builder()
+                    .employerId(employerId)
+                    .email(authAccount.getEmail())
+                    .phone(authAccount.getPhone())
+                    .company(null)
+                    .consentVersion("1.0")
+                    .status("active")   // employer profile is OK; company verification handled later
+                    .verifiedAt(null)
+                    .createdAt(Instant.now())
+                    .isNew(true)
+                    .build();
         }
 
         employerRepository.save(employer);
-        return ApiResponse.<Void>builder().success(true).message("Onboarding submitted. pending approval").build();
+        log.info("Employer onboarded: employerId={}, hasCompany={}", employerId, employer.getCompany() != null);
+
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .message("Onboarding submitted. pending approval")
+                .build();
     }
 
 

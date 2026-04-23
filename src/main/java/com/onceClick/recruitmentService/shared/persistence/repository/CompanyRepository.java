@@ -95,4 +95,9 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
     List<Company> findByProvinceCode(String provinceCode);
 
     List<Company> findAllByCompanyIdIn(List<UUID> companyIds);
+
+    // Uniqueness checks for create flow
+    boolean existsByCompanyName(String companyName);
+
+    boolean existsByTaxCode(String taxCode);
 }

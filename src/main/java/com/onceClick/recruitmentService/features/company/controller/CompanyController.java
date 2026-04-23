@@ -1,7 +1,9 @@
 package com.onceClick.recruitmentService.features.company.controller;
 
+import com.onceClick.recruitmentService.features.company.dto.request.CreateCompanyRequestDto;
 import com.onceClick.recruitmentService.features.company.dto.response.*;
 import com.onceClick.recruitmentService.features.company.handler.*;
+import jakarta.validation.Valid;
 import com.onceClick.recruitmentService.features.job.dto.response.GetJobsResponseDto;
 import com.onceClick.recruitmentService.features.job.handler.GetJobsHandler;
 import com.onceClick.recruitmentService.shared.dto.*;
@@ -30,8 +32,17 @@ public class CompanyController {
     private final GetTopCompaniesHandler getTopCompaniesHandler;
     private final GetCompanyFiltersHandler getCompanyFiltersHandler;
     private final UploadCompanyImageHandler uploadCompanyImageHandler;
+    private final CreateCompanyHandler createCompanyHandler;
     private final CurrentUser currentUser;
     private final GetJobsHandler  getJobsHandler;
+
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @PostMapping
+    public ResponseEntity<ApiResponse<CreateCompanyResponseDto>> createCompany(
+            @Valid @RequestBody CreateCompanyRequestDto requestDto) {
+        UUID employerId = currentUser.getCurrentAccountId();
+        return ResponseEntity.ok(createCompanyHandler.createCompany(requestDto, employerId));
+    }
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<PageResponse<GetCompaniesResponseDto>>> getAllCompanies(

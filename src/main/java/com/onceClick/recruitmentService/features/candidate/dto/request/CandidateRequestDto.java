@@ -1,5 +1,6 @@
 package com.onceClick.recruitmentService.features.candidate.dto.request;
 
+import com.onceClick.recruitmentService.features.experience.DTO.ExperienceRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -49,5 +50,7 @@ public class CandidateRequestDto {
     private String status;
 
     private List<String> skills;
+
+    private List<ExperienceRequestDto> experiences;
 
 }

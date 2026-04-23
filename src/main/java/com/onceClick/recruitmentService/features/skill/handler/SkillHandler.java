@@ -66,4 +66,12 @@ public class SkillHandler {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    public List<String> getAllSkillNames() {
+        return skillsRepository.findAll()
+                .stream()
+                .map(Skills::getSkillsName)
+                .sorted()
+                .collect(Collectors.toList());
+    }
 }

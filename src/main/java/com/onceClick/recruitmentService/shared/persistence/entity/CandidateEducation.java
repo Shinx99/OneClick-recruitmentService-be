@@ -18,47 +18,48 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CandidateEducation {
-    
+
     @Id
-    @GeneratedValue
-    @Column(name = "education_id", columnDefinition = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "education_id", updatable = false, nullable = false)
     private UUID educationId;
-    
-    @Column(name = "candidate_id", nullable = false, columnDefinition = "UUID")
-    private UUID candidateId;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_id", nullable = false)
+    private Candidate candidate;
+
     @Column(name = "school_name", nullable = false, length = 255)
     private String schoolName;
-    
+
     @Column(name = "degree", length = 100)
     private String degree;
-    
+
     @Column(name = "field_of_study", length = 255)
     private String fieldOfStudy;
-    
+
     @Column(name = "start_date")
     private LocalDate startDate;
-    
+
     @Column(name = "end_date")
     private LocalDate endDate;
-    
+
     @Column(name = "is_current")
     private Boolean isCurrent = false;
-    
+
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-    
-    @Column(name = "image_url", columnDefinition = "TEXT")
+
+    @Column(name = "image_url")
     private String imageUrl;
-    
-    @Column(name = "reference_link", columnDefinition = "TEXT")
+
+    @Column(name = "reference_link")
     private String referenceLink;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
+    @Column(name = "updated_at")
     private Instant updatedAt;
 }

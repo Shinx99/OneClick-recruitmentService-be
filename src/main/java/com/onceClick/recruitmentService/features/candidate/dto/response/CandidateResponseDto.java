@@ -1,5 +1,7 @@
 package com.onceClick.recruitmentService.features.candidate.dto.response;
 
+import com.onceClick.recruitmentService.features.education.DTO.EducationResponseDto;
+import com.onceClick.recruitmentService.features.experience.DTO.ExperienceResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -50,4 +52,8 @@ public class CandidateResponseDto {
     private String status;
 
     private List<String> skills;
+
+    private List<EducationResponseDto> educations;
+
+    private List<ExperienceResponseDto> experiences;
 }

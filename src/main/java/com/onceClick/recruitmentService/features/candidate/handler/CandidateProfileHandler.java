@@ -2,6 +2,10 @@ package com.onceClick.recruitmentService.features.candidate.handler;
 
 import com.onceClick.recruitmentService.features.candidate.dto.request.CandidateRequestDto;
 import com.onceClick.recruitmentService.features.candidate.dto.response.CandidateResponseDto;
+import com.onceClick.recruitmentService.features.education.DTO.EducationResponseDto;
+import com.onceClick.recruitmentService.features.education.Handler.EducationHandler;
+import com.onceClick.recruitmentService.features.experience.DTO.ExperienceResponseDto;
+import com.onceClick.recruitmentService.features.experience.Handler.ExperienceHandler;
 import com.onceClick.recruitmentService.features.skill.handler.SkillHandler;
 import com.onceClick.recruitmentService.infrastructure.feign.AuthAccountDto;
 import com.onceClick.recruitmentService.infrastructure.feign.SyncDataFromAccountHandler;
@@ -33,7 +37,8 @@ public class CandidateProfileHandler {
     private final CloudinaryStorageService cloudinaryStorageService;
     private final SkillHandler skillHandler;
     private final CandidateSkillRepository candidateSkillRepository;
-
+    private final EducationHandler educationHandler;
+    private final ExperienceHandler experienceHandler;
 
     //-----------------------------------------------------------------------------------------------------------------------------------------
     // UPDATE PROFILE
@@ -54,6 +59,10 @@ public class CandidateProfileHandler {
 
         if (requestDto.getSkills() != null) {
             skillHandler.replaceSkillsForCandidate(candidateId, requestDto.getSkills());
+        }
+
+        if (requestDto.getExperiences() != null) {
+            experienceHandler.replaceAllExperiences(candidateId, requestDto.getExperiences());
         }
 
         // 5. return ApiResponse
@@ -324,6 +333,8 @@ public class CandidateProfileHandler {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     private CandidateResponseDto mapToResponseDto(Candidate candidate) {
         List<String> skills = candidateSkillRepository.findSkillNamesByCandidateId(candidate.getCandidateId());
+        List<EducationResponseDto> educations = educationHandler.getEducations(candidate.getCandidateId());
+        List<ExperienceResponseDto> experiences = experienceHandler.getExperiences(candidate.getCandidateId());
         return CandidateResponseDto.builder()
                 .candidateId(candidate.getCandidateId())
                 .about(candidate.getAbout())
@@ -343,6 +354,8 @@ public class CandidateProfileHandler {
                 .verificationLevel(candidate.getVerificationLevel())
                 .status(candidate.getStatus())
                 .skills(skills)
+                .educations(educations)
+                .experiences(experiences)
                 .build();
     }
 }

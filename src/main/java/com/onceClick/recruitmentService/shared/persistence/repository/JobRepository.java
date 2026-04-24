@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -103,4 +105,14 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
         ORDER BY j.createdAt DESC
         """)
     List<Job> findAllFallbackRelatedJobs(@Param("jobId") UUID jobId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Job j SET j.saveCount = COALESCE(j.saveCount, 0) + 1 WHERE j.jobId = :jobId")
+    int incrementSaveCount(@Param("jobId") UUID jobId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Job j SET j.saveCount = CASE WHEN COALESCE(j.saveCount, 0) > 0 THEN j.saveCount - 1 ELSE 0 END WHERE j.jobId = :jobId")
+    int decrementSaveCount(@Param("jobId") UUID jobId);
 }

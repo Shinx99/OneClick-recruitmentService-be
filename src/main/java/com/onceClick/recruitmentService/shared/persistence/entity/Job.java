@@ -87,6 +87,9 @@ public class Job extends BaseEntity {
     @Column(name = "updated_by")
     private UUID updatedBy;
 
+    @Column(name = "save_count")
+    private Integer saveCount = 0;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant createdAt;

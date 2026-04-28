@@ -103,6 +103,16 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
         """)
     List<Job> findAllFallbackRelatedJobs(@Param("jobId") UUID jobId);
 
+    @Transactional
+    @Modifying
+    @Query("UPDATE Job j SET j.saveCount = COALESCE(j.saveCount, 0) + 1 WHERE j.jobId = :jobId")
+    int incrementSaveCount(@Param("jobId") UUID jobId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Job j SET j.saveCount = CASE WHEN COALESCE(j.saveCount, 0) > 0 THEN j.saveCount - 1 ELSE 0 END WHERE j.jobId = :jobId")
+    int decrementSaveCount(@Param("jobId") UUID jobId);
+
     List<Job> findByCreatedBy(UUID employerId);
 
     // Xử lý cho lượt ứng tuyển và lượt view

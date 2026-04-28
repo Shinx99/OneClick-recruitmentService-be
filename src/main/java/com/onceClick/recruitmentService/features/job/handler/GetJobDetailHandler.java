@@ -12,6 +12,8 @@ import com.onceClick.recruitmentService.shared.persistence.repository.CompanyRep
 import com.onceClick.recruitmentService.shared.persistence.repository.JobRepository;
 import com.onceClick.recruitmentService.shared.persistence.repository.JobSkillRepository;
 import com.onceClick.recruitmentService.shared.persistence.repository.SkillsRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,10 +33,13 @@ public class GetJobDetailHandler {
     private final JobSkillRepository jobSkillRepository;
     private final SkillsRepository skillsRepository;
 
-    @Transactional(readOnly = true)
-    public ApiResponse<GetJobDetailResponseDto> getJobDetail(UUID jobId) {
+    @Transactional  //(readOnly = true)
+    public ApiResponse<GetJobDetailResponseDto> getJobDetail(UUID jobId, HttpServletRequest request) {
 
         log.info("Fetching job detail for jobId: {}", jobId);
+
+        // TĂNG VIEW COUNT (chống spam)
+        incrementViewCount(jobId, request);
 
         // 1. Tìm Job theo jobId — ném ResourceNotFoundException nếu không tồn tại
         Job job = jobRepository.findById(jobId)
@@ -98,5 +103,21 @@ public class GetJobDetailHandler {
         return skills.stream()
                 .map(skill -> new SkillInfo(skill.getSkillsId(), skill.getSkillsName()))
                 .toList();
+    }
+
+    /**
+     * Tăng view count an toàn (mỗi session chỉ tăng 1 lần cho mỗi job)
+     */
+    private void incrementViewCount(UUID jobId, HttpServletRequest request) {
+        HttpSession session = request.getSession(true);
+        String viewKey = "viewed_job_" + jobId;
+
+        if (session.getAttribute(viewKey) == null) {
+            jobRepository.incrementViewCount(jobId);
+            session.setAttribute(viewKey, true);
+            log.debug("Increased view count for job: {}", jobId);
+        } else {
+            log.debug("View count already increased for job: {} in this session", jobId);
+        }
     }
 }

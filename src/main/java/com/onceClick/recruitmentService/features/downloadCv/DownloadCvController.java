@@ -6,11 +6,13 @@ import com.onceClick.recruitmentService.shared.dto.ApiResponse;
 import com.onceClick.recruitmentService.shared.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,6 +84,40 @@ public class DownloadCvController {
     }
 
 
+    /**
+     * Recruiter xem CV của candidate (có kiểm tra quyền)
+     */
+    @GetMapping("/cv/stream/{candidateId}/{filename:.+}")
+    public ResponseEntity<Resource> previewCandidateCvStream(
+            @PathVariable UUID candidateId,
+            @PathVariable String filename) {  // Bỏ @AuthenticationPrincipal
+
+        // Lấy employerId từ CurrentUser
+        UUID employerId = currentUser.getCurrentAccountId();
+
+        log.info("Recruiter {} viewing CV of candidate {}, filename: {}", employerId, candidateId, filename);
+
+        // Kiểm tra quyền
+        boolean hasAccess = downloadCvHandler.checkRecruiterAccessToCandidate(candidateId, employerId);
+
+        if (!hasAccess) {
+            log.warn("Recruiter {} has no access to candidate {} CV", employerId, candidateId);
+            return ResponseEntity.status(403).build();
+        }
+
+        // Lấy CV từ S3
+        InputStream inputStream = storageService.downloadCvStream(candidateId, filename);
+        InputStreamResource resource = new InputStreamResource(inputStream);
+
+        String contentType = storageService.getContentType(filename);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType(contentType))
+                .contentLength(storageService.getFileSize(candidateId, filename))
+                .body(resource);
+    }
+
 
 
 }
@@ -90,28 +126,4 @@ public class DownloadCvController {
 
 
 
-
-
-
-
-
-
-
-
-
-    /*@GetMapping("/cv/stream/{filename:.+}")
-    public void downloadCvStream(@PathVariable String filename,
-                                 HttpServletResponse response) throws IOException {
-        UUID accountId = currentUser.getCurrentAccountId();
-
-        String contentType = storageService.getContentType(filename);
-
-        try (InputStream inputStream = storageService.downloadCvStream(accountId, filename)) {
-            response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" +
-                    URLEncoder.encode(filename, StandardCharsets.UTF_8));
-            response.setContentType(contentType);
-            response.setHeader("Content-Length", String.valueOf(storageService.getFileSize(accountId, filename)));
-            inputStream.transferTo(response.getOutputStream());
-        }
-    }*/
 

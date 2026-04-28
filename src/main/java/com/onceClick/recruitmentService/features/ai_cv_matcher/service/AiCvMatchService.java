@@ -110,4 +110,46 @@ public class AiCvMatchService {
         return matchWithParsedCv(parsedCv, job);
     }
 
+    /**
+     * CHỈ TÍNH ĐIỂM MATCH
+     * Dùng cho việc lưu match_score khi ứng tuyển
+     * @return Điểm match (0-100) hoặc null nếu lỗi
+     */
+    public Double calculateMatchScoreOnly(ParsedCvDto parsedCv, Job job) throws Exception {
+        if (parsedCv == null || job == null) {
+            return null;
+        }
+
+        log.info("Calculating match score only (fast mode)");
+
+        String cvJson = objectMapper.writeValueAsString(parsedCv);
+        String jobPrompt = aiPrompts.buildJobPrompt(job);
+
+        String matchPrompt = buildSimpleMatchPrompt(cvJson, jobPrompt);
+        String matchJson = deepSeekService.chat("ai_matching", "", matchPrompt);
+
+        CvMatchScore score = objectMapper.readValue(matchJson, CvMatchScore.class);
+
+        // similarity đã là Double từ AI (ví dụ: 85.5)
+        return score != null ? score.getSimilarity() : null;
+    }
+
+    /**
+     * Build prompt đơn giản - chỉ yêu cầu trả về similarity
+     */
+    private String buildSimpleMatchPrompt(String cvJson, String jobPrompt) {
+        return """
+            Phân tích nhanh CV vs Job Description. Chỉ trả về JSON với trường similarity:
+            
+            {
+              "similarity": 85.0
+            }
+            
+            CV JSON: %s
+            
+            JOB: %s
+            """.formatted(cvJson, jobPrompt);
+    }
+
+
 }

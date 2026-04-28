@@ -6,6 +6,7 @@ import com.onceClick.recruitmentService.features.downloadCv.dto.CvResponse;
 import com.onceClick.recruitmentService.infrastructure.storage.S3StorageService.S3StorageService;
 import com.onceClick.recruitmentService.shared.dto.ApiResponse;
 import com.onceClick.recruitmentService.shared.persistence.entity.Resume;
+import com.onceClick.recruitmentService.shared.persistence.repository.JobApplicationRepository;
 import com.onceClick.recruitmentService.shared.persistence.repository.ResumeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class DownloadCvHandler {
 
     private final ResumeRepository resumeRepo;
+    private final JobApplicationRepository jobApplicationRepository;
 
 
     @Qualifier("s3StorageService")
@@ -93,6 +95,11 @@ public class DownloadCvHandler {
         }
 
         return filename;
+    }
+
+    public boolean checkRecruiterAccessToCandidate(UUID candidateId, UUID employerId) {
+        // Kiểm tra candidate này có apply vào job nào của employer không
+        return jobApplicationRepository.existsByCandidateIdAndEmployerId(candidateId, employerId);
     }
 
 

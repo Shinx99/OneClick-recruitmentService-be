@@ -72,12 +72,11 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
             Pageable pageable
     );
 
-    // Fallback: lấy các job active mới nhất
+    // Fallback: lấy các job active mới nhất, loại trừ job hiện tại
     @Query("""
         SELECT j FROM Job j
         WHERE j.jobId <> :jobId
-        AND j.status = 'ACTIVE' 
-        AND j.applicationDeadline > CURRENT_TIMESTAMP
+        AND j.status = 'active'
         ORDER BY j.createdAt DESC
         """)
     Page<Job> findFallbackRelatedJobs(@Param("jobId") UUID jobId, Pageable pageable);
@@ -87,8 +86,7 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
         SELECT j FROM Job j
         WHERE j.majorPreferred = :majorPreferred
         AND j.jobId <> :jobId
-        AND j.status = 'ACTIVE' 
-        AND j.applicationDeadline > CURRENT_TIMESTAMP
+        AND j.status = 'active'
         ORDER BY j.createdAt DESC
         """)
     List<Job> findAllRelatedJobsByMajor(
@@ -96,23 +94,30 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
             @Param("jobId") UUID jobId
     );
 
-    // Fallback (không phân trang): trả về TẤT CẢ jobs active mới nhất (ĐÃ THÊM LỌC HẠN)
+    // Fallback (không phân trang): trả về TẤT CẢ jobs active mới nhất
     @Query("""
         SELECT j FROM Job j
         WHERE j.jobId <> :jobId
-        AND j.status = 'ACTIVE' 
-        AND j.applicationDeadline > CURRENT_TIMESTAMP
+        AND j.status = 'active'
         ORDER BY j.createdAt DESC
         """)
     List<Job> findAllFallbackRelatedJobs(@Param("jobId") UUID jobId);
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE Job j SET j.saveCount = COALESCE(j.saveCount, 0) + 1 WHERE j.jobId = :jobId")
-    int incrementSaveCount(@Param("jobId") UUID jobId);
+    List<Job> findByCreatedBy(UUID employerId);
 
-    @Transactional
+    // Xử lý cho lượt ứng tuyển và lượt view
     @Modifying
-    @Query("UPDATE Job j SET j.saveCount = CASE WHEN COALESCE(j.saveCount, 0) > 0 THEN j.saveCount - 1 ELSE 0 END WHERE j.jobId = :jobId")
-    int decrementSaveCount(@Param("jobId") UUID jobId);
+    @Transactional
+    @Query("UPDATE Job j SET j.applicationCount = j.applicationCount + 1 WHERE j.jobId = :jobId")
+    void incrementApplicationCount(@Param("jobId") UUID jobId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Job j SET j.applicationCount = j.applicationCount - 1 WHERE j.jobId = :jobId AND j.applicationCount > 0")
+    void decrementApplicationCount(@Param("jobId") UUID jobId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Job j SET j.viewCount = j.viewCount + 1 WHERE j.jobId = :jobId")
+    void incrementViewCount(@Param("jobId") UUID jobId);
 }

@@ -57,7 +57,40 @@ public class SecurityConfig {
                                         "/api/employer/applications/*/*/status"
                         ).authenticated()
 
-                                // AI CV Match endpoints - THÊM CÁC DÒNG NÀY
+                                // ========== RECRUITER APPLICATION APIs (MỚI) ==========
+                        .requestMatchers(
+                                        // Candidate APIs
+                                        "/api/jobs/apply",
+                                        "/api/jobs/*/check-applied",
+                                        "/api/applications/my-applications",
+                                        "/api/applications/*",
+                                        "/api/applications/*/*",
+
+                                        // Recruiter APIs
+                                        "/api/employer/jobs/*/applications",
+                                        "/api/employer/applications/*/*/status",
+
+                                        // ========== RECRUITER APIs (MỚI - THÊM CÁC DÒNG NÀY) ==========
+                                        "/api/employer/jobs/*/applications/stats",           // Thống kê
+                                        "/api/employer/applications/*",                      // Chi tiết đơn
+                                        "/api/employer/applications/*/history",              // Lịch sử
+                                        "/api/employer/applications/*/status",               // Cập nhật status (API mới)
+                                        "/api/employer/applications/*/schedule-interview",   // Lên lịch PV
+                                        "/api/employer/schedule-interview/*",                // Hủy lịch PV
+                                        "/api/employer/jobs",                                // Danh sách job của employer
+
+                                        // Notification APIs
+                                        "/api/notifications/my",
+                                        "/api/notifications/unread-count",
+                                        "/api/notifications/*/read",
+                                        "/api/employer/notifications",
+                                        "/api/employer/notifications/unread-count",
+
+                                // ========== THÊM API XEM CV ==========
+                                "/api/profile/cv/stream/*/*"  // Cho phép recruiter xem CV của candidate
+                        ).authenticated()
+
+                                // ========== AI CV MATCH APIs ==========
                                 .requestMatchers("/api/ai-cv-match/**").permitAll()
                                 .requestMatchers("/api/ai-cv-match/resume/**").permitAll()
                                 .requestMatchers("/api/ai-cv-match/new/**").permitAll()

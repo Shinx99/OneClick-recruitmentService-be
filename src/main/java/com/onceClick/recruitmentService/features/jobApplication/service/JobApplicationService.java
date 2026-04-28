@@ -1,4 +1,4 @@
-package com.onceClick.recruitmentService.features.jobApplication;
+package com.onceClick.recruitmentService.features.jobApplication.service;
 
 import com.onceClick.recruitmentService.features.jobApplication.dto.request.ApplyJobRequest;
 import com.onceClick.recruitmentService.features.jobApplication.dto.response.ApplyJobResponse;
@@ -13,10 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.onceClick.recruitmentService.shared.constant.ApplicationConstants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,11 @@ public class JobApplicationService {
 
     private final JobApplicationRepository jobApplicationRepository;
     private final JobRepository jobRepository;
+
+    private final ResumeRepository resumeRepository;
+    private final NotificationService notificationService;
+    private final EmployerRepository employerRepository;
+    private final MatchScoreCalculator matchScoreCalculator;
 
     /**
      * 1. Ứng tuyển công việc
@@ -44,18 +52,37 @@ public class JobApplicationService {
         Job job = jobRepository.findById(request.getJobId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy công việc"));
 
+        // Kiểm tra resume có tồn tại không
+        Resume resume = resumeRepository.findById(request.getResumeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy CV"));
+
+
+        // ========== TÍNH MATCH SCORE ==========
+        BigDecimal matchScore = matchScoreCalculator.calculate(resume, job);
+
         // Tạo application
-        JobApplication application = new JobApplication();
-        JobApplicationId id = new JobApplicationId();
-        id.setJobId(request.getJobId());
-        id.setCandidateId(candidateId);
-        application.setId(id);
-        application.setResumeId(request.getResumeId());
-        application.setStatus("pending");
-        application.setAppliedAt(Instant.now());
-        application.setNote(request.getNote());
+        JobApplication application = JobApplication.builder()
+                .jobId(request.getJobId())
+                .candidateId(candidateId)
+                .resumeId(request.getResumeId())
+                .status("pending")
+                .appliedAt(Instant.now())
+                .note(request.getNote())
+                .matchScore(matchScore)
+                .build();
 
         JobApplication saved = jobApplicationRepository.save(application);
+
+        // Tăng số ứng viên
+        jobRepository.incrementApplicationCount(request.getJobId());
+
+        // Gửi thông báo cho recruiter
+        UUID employerId = job.getCreatedBy();
+        if (employerId != null) {
+            notificationService.notifyNewApplication(saved, job.getTitle(), employerId);
+        }
+
+        log.info("Candidate {} applied for job {}", candidateId, request.getJobId());
 
         return ApplyJobResponse.builder()
                 .jobId(saved.getJobId())
@@ -86,6 +113,7 @@ public class JobApplicationService {
                             .jobTitle(job != null ? job.getTitle() : "Unknown")
                             .companyName(job != null ? job.getTitle() : "Unknown")
                             .status(app.getStatus())
+                            .statusDisplay(getStatusDisplay(app.getStatus()))
                             .appliedAt(app.getAppliedAt())
                             .build();
                 })
@@ -139,6 +167,22 @@ public class JobApplicationService {
         }
 
         jobApplicationRepository.delete(application);
+        jobRepository.decrementApplicationCount(jobId);
+
         log.info("Cancelled application for job {} by candidate {}", jobId, candidateId);
+    }
+
+
+
+
+    private String getStatusDisplay(String status) {
+        return switch (status) {
+            case STATUS_PENDING -> "Đang xử lý";
+            case STATUS_REVIEWED -> "Đã xem";
+            case STATUS_INTERVIEW -> "Phỏng vấn";
+            case STATUS_ACCEPTED -> "Được nhận";
+            case STATUS_REJECTED -> "Từ chối";
+            default -> status;
+        };
     }
 }

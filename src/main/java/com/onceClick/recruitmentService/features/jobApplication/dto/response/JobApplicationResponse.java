@@ -14,5 +14,6 @@ public class JobApplicationResponse {
     private String jobTitle;
     private String companyName;
     private String status;
+    private String statusDisplay;
     private Instant appliedAt;
 }

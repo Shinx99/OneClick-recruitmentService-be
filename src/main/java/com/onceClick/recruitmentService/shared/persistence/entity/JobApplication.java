@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -17,8 +18,16 @@ import java.util.UUID;
 @Builder
 public class JobApplication {
 
-    @EmbeddedId
-    private JobApplicationId id;  // ← Dùng class ID mới
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "application_id")
+    private UUID applicationId;
+
+    @Column(name = "job_id", nullable = false)
+    private UUID jobId;
+
+    @Column(name = "candidate_id", nullable = false)
+    private UUID candidateId;
 
     @Column(name = "resume_id")
     private UUID resumeId;
@@ -30,32 +39,12 @@ public class JobApplication {
     private Instant appliedAt = Instant.now();
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;
 
-    // Helper methods để dễ truy cập composite key
-    public UUID getJobId() {
-        return id != null ? id.getJobId() : null;
-    }
-
-    public UUID getCandidateId() {
-        return id != null ? id.getCandidateId() : null;
-    }
-
-    public void setJobId(UUID jobId) {
-        if (id == null) {
-            id = new JobApplicationId();
-        }
-        id.setJobId(jobId);
-    }
-
-    public void setCandidateId(UUID candidateId) {
-        if (id == null) {
-            id = new JobApplicationId();
-        }
-        id.setCandidateId(candidateId);
-    }
+    @Column(name = "match_score", precision = 5, scale = 2)
+    private BigDecimal matchScore;
 }

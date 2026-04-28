@@ -15,6 +15,7 @@ import com.onceClick.recruitmentService.features.job.handler.UpdateJobHandler;
 import com.onceClick.recruitmentService.features.job.handler.UploadJobImageHandler;
 import com.onceClick.recruitmentService.shared.dto.ApiResponse;
 import com.onceClick.recruitmentService.shared.security.CurrentUser;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -57,8 +58,9 @@ public class JobController {
     }
 
     @GetMapping("/{jobId}")
-    public ResponseEntity<ApiResponse<GetJobDetailResponseDto>> getJobDetail(@PathVariable UUID jobId) {
-        return ResponseEntity.ok(getJobDetailHandler.getJobDetail(jobId));
+    public ResponseEntity<ApiResponse<GetJobDetailResponseDto>> getJobDetail(@PathVariable UUID jobId,
+                                                                             HttpServletRequest request) {
+        return ResponseEntity.ok(getJobDetailHandler.getJobDetail(jobId, request));
     }
 
     @GetMapping("/{jobId}/related")

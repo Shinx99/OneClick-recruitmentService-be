@@ -70,6 +70,18 @@ public class JobController {
         return ResponseEntity.ok(getRelatedJobsHandler.getRelatedJobs(jobId));
     }
 
+    // Why: employer-specific endpoint — JWT provides employerId, query through job_employer table
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @GetMapping("/my-jobs")
+    public ResponseEntity<ApiResponse<PageResponse<GetJobsResponseDto>>> getMyJobs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        UUID employerId = currentUser.getCurrentAccountId();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(getJobsHandler.getJobsByEmployer(employerId, pageable));
+    }
+
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<PageResponse<GetJobsResponseDto>>> getAllJobs(
             @RequestParam(required = false) String keyword,

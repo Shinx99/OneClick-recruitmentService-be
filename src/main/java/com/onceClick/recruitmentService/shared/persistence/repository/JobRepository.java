@@ -115,6 +115,17 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
 
     List<Job> findByCreatedBy(UUID employerId);
 
+    // Why: query through job_employer junction table to find jobs owned by a specific employer
+    @Query("""
+        SELECT j FROM Job j
+        WHERE j.jobId IN (
+            SELECT je.id.jobId FROM JobEmployer je
+            WHERE je.id.employerId = :employerId
+        )
+        ORDER BY j.createdAt DESC
+        """)
+    Page<Job> findJobsByEmployerId(@Param("employerId") UUID employerId, Pageable pageable);
+
     // Xử lý cho lượt ứng tuyển và lượt view
     @Modifying
     @Transactional

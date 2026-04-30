@@ -107,6 +107,27 @@ public class GetJobsHandler {
         );
     }
 
+    // Why: query through job_employer junction table so employer sees only jobs they own/manage
+    @Transactional(readOnly = true)
+    public ApiResponse<PageResponse<GetJobsResponseDto>> getJobsByEmployer(UUID employerId, Pageable pageable) {
+        log.info("Fetching jobs for employerId: {}", employerId);
+
+        Page<Job> jobPage = jobRepository.findJobsByEmployerId(employerId, pageable);
+
+        List<UUID> companyIds = jobPage.getContent().stream()
+                .map(Job::getCompanyId)
+                .distinct()
+                .toList();
+
+        Map<UUID, Company> companyMap = companyRepository.findAllByCompanyIdIn(companyIds).stream()
+                .collect(Collectors.toMap(Company::getCompanyId, company -> company));
+
+        Page<GetJobsResponseDto> dtoPage = jobPage.map(job -> mapToDto(job, companyMap));
+
+        PageResponse<GetJobsResponseDto> pageResponse = PageResponse.from(dtoPage);
+        return ApiResponse.success("Fetched employer's jobs successfully!", pageResponse);
+    }
+
     @Transactional(readOnly = true)
     public ApiResponse<PageResponse<GetJobsResponseDto>> getJobsByCompanyId(UUID companyId, Pageable pageable) {
         log.info("Fetching jobs for companyId: {}", companyId);

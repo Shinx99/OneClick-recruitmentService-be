@@ -1,6 +1,7 @@
 package com.onceClick.recruitmentService.features.company.controller;
 
 import com.onceClick.recruitmentService.features.company.dto.request.CreateCompanyRequestDto;
+import com.onceClick.recruitmentService.features.company.dto.request.JoinCompanyRequestDto;
 import com.onceClick.recruitmentService.features.company.dto.response.*;
 import com.onceClick.recruitmentService.features.company.handler.*;
 import jakarta.validation.Valid;
@@ -33,6 +34,9 @@ public class CompanyController {
     private final GetCompanyFiltersHandler getCompanyFiltersHandler;
     private final UploadCompanyImageHandler uploadCompanyImageHandler;
     private final CreateCompanyHandler createCompanyHandler;
+    private final SendJoinRequestHandler sendJoinRequestHandler;
+    private final ReviewJoinRequestHandler reviewJoinRequestHandler;
+    private final GetJoinRequestsHandler getJoinRequestsHandler;
     private final CurrentUser currentUser;
     private final GetJobsHandler  getJobsHandler;
 
@@ -91,6 +95,47 @@ public class CompanyController {
 
         // Gọi Handler và trả về Response chuẩn
         return ResponseEntity.ok(getJobsHandler.getJobsByCompanyId(companyId, pageable));
+    }
+
+    // --- Join Company Request endpoints ---
+
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @PostMapping("/{companyId}/join-request")
+    public ResponseEntity<ApiResponse<JoinRequestResponseDto>> sendJoinRequest(
+            @PathVariable UUID companyId,
+            @RequestBody(required = false) JoinCompanyRequestDto requestDto
+    ) {
+        UUID employerId = currentUser.getCurrentAccountId();
+        return ResponseEntity.ok(sendJoinRequestHandler.sendJoinRequest(employerId, companyId, requestDto));
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @GetMapping("/join-requests")
+    public ResponseEntity<ApiResponse<PageResponse<JoinRequestResponseDto>>> getJoinRequests(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        UUID ownerId = currentUser.getCurrentAccountId();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(getJoinRequestsHandler.getPendingRequests(ownerId, pageable));
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @PutMapping("/join-request/{requestId}/approve")
+    public ResponseEntity<ApiResponse<JoinRequestResponseDto>> approveJoinRequest(
+            @PathVariable UUID requestId
+    ) {
+        UUID reviewerId = currentUser.getCurrentAccountId();
+        return ResponseEntity.ok(reviewJoinRequestHandler.approve(requestId, reviewerId));
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @PutMapping("/join-request/{requestId}/reject")
+    public ResponseEntity<ApiResponse<JoinRequestResponseDto>> rejectJoinRequest(
+            @PathVariable UUID requestId
+    ) {
+        UUID reviewerId = currentUser.getCurrentAccountId();
+        return ResponseEntity.ok(reviewJoinRequestHandler.reject(requestId, reviewerId));
     }
 
     @PreAuthorize("hasAuthority('ROLE_recruiter')")

@@ -12,6 +12,7 @@ import com.onceClick.recruitmentService.shared.persistence.repository.JobEmploye
 import com.onceClick.recruitmentService.shared.persistence.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,12 @@ public class UploadJobImageHandler {
     private final JobEmployerRepository jobEmployerRepository;
     private final CloudinaryStorageService cloudinaryStorageService;
 
+    @CacheEvict(value = {
+            "jobs",
+            "job:by-employer-id",
+            "job:by-company-id",
+            "job:by-job-id"
+    }, allEntries = true)
     @Transactional
     public ApiResponse<CreateJobResponseDto> uploadJobImage(UUID jobId, UUID employerId, MultipartFile file) throws IOException {
 

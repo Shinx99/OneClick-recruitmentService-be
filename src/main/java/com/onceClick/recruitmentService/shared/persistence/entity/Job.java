@@ -98,4 +98,7 @@ public class Job extends BaseEntity {
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT NOW()")
     private Instant updatedAt;
 
+    @Column(name = "search_vector", insertable = false, updatable = false, columnDefinition = "tsvector")
+    private String searchVector;
+
 }

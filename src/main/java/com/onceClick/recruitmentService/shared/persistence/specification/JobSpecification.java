@@ -3,6 +3,7 @@ package com.onceClick.recruitmentService.shared.persistence.specification;
 import com.onceClick.recruitmentService.shared.persistence.entity.Job;
 import org.springframework.data.jpa.domain.Specification;
 
+import jakarta.persistence.criteria.Expression;
 import java.math.BigDecimal;
 
 public class JobSpecification {
@@ -35,12 +36,24 @@ public class JobSpecification {
         if (keyword == null || keyword.isBlank()) {
             return null;
         }
-        String pattern = "%" + keyword.toLowerCase() + "%";
-        return (root, query, cb) -> cb.or(
-                cb.like(cb.lower(root.get("title")), pattern),
-                cb.like(cb.lower(root.get("description")), pattern),
-                cb.like(cb.lower(root.get("requirement")), pattern)
-        );
+        return (root, query, cb) -> {
+            // Tạo expression: search_vector @@ websearch_to_tsquery('simple', 'keyword')
+            // Dùng cb.function với tên hàm PostgreSQL thật
+            var tsquery = cb.function(
+                    "websearch_to_tsquery",
+                    Object.class,
+                    cb.literal("simple"),
+                    cb.literal(keyword.trim())
+            );
+            var rank = cb.function(
+                    "ts_rank",
+                    Float.class,
+                    root.get("searchVector"),
+                    tsquery
+            );
+            // ts_rank > 0 nghĩa là có match
+            return cb.greaterThan(rank, 0f);
+        };
     }
 
     /**

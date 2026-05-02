@@ -10,6 +10,7 @@ import com.onceClick.recruitmentService.shared.persistence.repository.JobReposit
 import com.onceClick.recruitmentService.shared.persistence.specification.JobSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,6 +31,10 @@ public class GetJobsHandler {
     private final JobRepository jobRepository;
     private final CompanyRepository companyRepository;
 
+    @Cacheable(
+            value = "jobs",
+            key = "{#keyword, #province, #level, #jobType, #status, #salaryMin, #salaryMax, #experienceMax, #pageable.pageNumber, #pageable.pageSize}"
+    )
     @Transactional(readOnly = true)
     public ApiResponse<PageResponse<GetJobsResponseDto>> getAllJobs(
             String keyword,
@@ -46,7 +51,7 @@ public class GetJobsHandler {
                 keyword, province, level, jobType, status, salaryMin, salaryMax, experienceMax);
 
         // 1. Build Specification from filters
-        Specification<Job> spec = Specification.where(JobSpecification.hasStatus(status))
+        Specification<Job> spec = JobSpecification.hasStatus(status)
                 .and(JobSpecification.hasKeyword(keyword))
                 .and(JobSpecification.hasProvince(province))
                 .and(JobSpecification.hasLevel(level))
@@ -108,6 +113,7 @@ public class GetJobsHandler {
     }
 
     // Why: query through job_employer junction table so employer sees only jobs they own/manage
+    @Cacheable(value = "job:by-employer-id", key = "#employerId")
     @Transactional(readOnly = true)
     public ApiResponse<PageResponse<GetJobsResponseDto>> getJobsByEmployer(UUID employerId, Pageable pageable) {
         log.info("Fetching jobs for employerId: {}", employerId);
@@ -128,7 +134,9 @@ public class GetJobsHandler {
         return ApiResponse.success("Fetched employer's jobs successfully!", pageResponse);
     }
 
+
     @Transactional(readOnly = true)
+    @Cacheable(value = "job:by-company-id", key = "#companyId")
     public ApiResponse<PageResponse<GetJobsResponseDto>> getJobsByCompanyId(UUID companyId, Pageable pageable) {
         log.info("Fetching jobs for companyId: {}", companyId);
 

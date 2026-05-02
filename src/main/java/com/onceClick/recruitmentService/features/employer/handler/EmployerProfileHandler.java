@@ -1,5 +1,6 @@
 package com.onceClick.recruitmentService.features.employer.handler;
 
+import com.cloudinary.Api;
 import com.onceClick.recruitmentService.features.employer.dto.request.EmployerRequestDto;
 import com.onceClick.recruitmentService.features.employer.dto.response.EmployerResponseDto;
 import com.onceClick.recruitmentService.infrastructure.feign.AuthAccountDto;
@@ -27,6 +28,23 @@ public class EmployerProfileHandler {
     private final EmployerRepository employerRepository;
     private final CompanyRepository companyRepository;
     private final SyncDataFromAccountHandler syncDataFromAccountHandler;
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    // GET PROFILE WITH CANDIDATE ID
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    @Transactional
+    public ApiResponse<EmployerResponseDto> findByEmployerId(UUID employerId){
+
+        // 1. Check existed employer
+        Employer employer = getOrSyncEmployer(employerId);
+
+        return ApiResponse.<EmployerResponseDto>builder()
+                .success(true)
+                .message("Employer profile was filled successfully!")
+                .data(mapToResponseDto(employer))
+                .build();
+    }
 
 
 
@@ -165,7 +183,6 @@ public class EmployerProfileHandler {
         return ApiResponse.<EmployerResponseDto>builder()
                 .success(true)
                 .message("Employer profile updated successfully")
-                .data(new EmployerResponseDto(employerId, "Employer profile updated successfully!"))
                 .build();
     }
 
@@ -228,7 +245,63 @@ public class EmployerProfileHandler {
     }
 
 
-    // THÊM METHOD NÀY VÀO Handler của bạn
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    // HELPER GET OR SYNC EMPLOYER
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    private Employer getOrSyncEmployer(UUID employerId){
+        return employerRepository.findById(employerId)
+                .orElseGet(() -> {
+                    log.debug("Employer {} not found, syncing from Auth Service", employerId);
+                    AuthAccountDto authAccount = syncDataFromAccountHandler.syncAccountData(employerId);
+
+                    Employer employer = Employer.builder()
+                            .employerId(employerId)
+                            .email(authAccount.getEmail())
+                            .phone(authAccount.getPhone())
+                            .consentVersion("1.0")
+                            .status(authAccount.getStatus())
+                            .createdAt(Instant.now())
+                            .isNew(true)
+                            .build();
+
+                    return employerRepository.save(employer);
+                });
+    }
+
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    // HELPER MAP TO RESPONSE DTO
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    private EmployerResponseDto mapToResponseDto(Employer employer){
+        return EmployerResponseDto.builder()
+                .employerId(employer.getEmployerId())
+                .name(employer.getName())
+                .email(employer.getEmail())
+                .phone(employer.getPhone())
+                .surname(employer.getSurname())
+                .about(employer.getAbout())
+                .birthday(employer.getBirthday())
+                .province(employer.getProvince())
+                .commune(employer.getCommune())
+                .gender(employer.getGender())
+                .industry(employer.getIndustry())
+                .avatarUrl(employer.getAvatarUrl())
+                .backgroundUrl(employer.getBackgroundUrl())
+                .referenceLink(employer.getReferenceLink())
+                .level(employer.getLevel())
+                .experienceYear(employer.getExperienceYear())
+                .cccd(employer.getCccd())
+                .verificationLevel(employer.getVerificationLevel())
+                .totalJobPosted(employer.getTotalJobPosted())
+                .consentVersion(employer.getConsentVersion())
+                .status(employer.getStatus())
+                .build();
+    }
+
+
+
+
     public String checkOnboardingStatus(UUID employerId) {
         if (employerRepository.existsById(employerId)) {
             return "COMPLETED";

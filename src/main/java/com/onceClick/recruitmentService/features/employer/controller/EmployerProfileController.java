@@ -1,6 +1,7 @@
 package com.onceClick.recruitmentService.features.employer.controller;
 
 
+import com.cloudinary.Api;
 import com.onceClick.recruitmentService.features.employer.dto.request.EmployerRequestDto;
 import com.onceClick.recruitmentService.features.employer.dto.response.EmployerResponseDto;
 import com.onceClick.recruitmentService.features.employer.handler.EmployerProfileHandler;
@@ -22,6 +23,16 @@ public class EmployerProfileController {
 
     private final EmployerProfileHandler employerProfileHandler;
     private final CurrentUser currentUser;
+
+    // Method fetchData
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @GetMapping("/fetchData")
+    public ResponseEntity<ApiResponse<EmployerResponseDto>> fetchEmployerProfile(){
+
+        UUID employerId = currentUser.getCurrentAccountId();
+        ApiResponse<EmployerResponseDto> response = employerProfileHandler.findByEmployerId(employerId);
+        return ResponseEntity.ok(response);
+    }
 
 
     // Method submitOnboarding() cho recruiter chua duoc onboard

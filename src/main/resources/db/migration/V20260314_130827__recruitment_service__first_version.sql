@@ -7,6 +7,18 @@
 -- EXTENSIONS
 -- =========================================================
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS unaccent;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+
+-- =========================================================
+-- IMMUTABLE WRAPPER
+-- =========================================================
+CREATE OR REPLACE FUNCTION immutable_unaccent(text)
+RETURNS text AS $$
+    SELECT unaccent($1);
+$$ LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE;
+
 
 -- =========================================================
 -- 1. COMPANY

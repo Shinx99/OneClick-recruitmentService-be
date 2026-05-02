@@ -1,10 +1,13 @@
 package com.onceClick.recruitmentService.shared.persistence.repository;
 
 import com.onceClick.recruitmentService.shared.persistence.entity.Resume;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -96,5 +99,65 @@ public interface ResumeRepository extends JpaRepository<Resume, UUID> {
     List<Resume> findActiveCvList(@Param("candidateId") UUID candidateId);
 
 
+    //---------------------------------------------------------------------------------------------------------------------------
+    // SEARCH & FETCH ALL RESUMES
+    //---------------------------------------------------------------------------------------------------------------------------
+    @Query(value = """
+    SELECT * FROM (
+        SELECT *,
+            CASE
+                WHEN :keyword IS NOT NULL AND :keyword != ''
+                THEN ts_rank(search_vector, plainto_tsquery('simple', unaccent(:keyword)))
+                ELSE 0
+            END AS rank
+        FROM resume
+        WHERE status = 'active'
+        AND find_job = TRUE
+        AND (:keyword IS NULL OR :keyword = ''
+            OR search_vector @@ plainto_tsquery('simple', unaccent(:keyword)))
+    ) AS filtered
+    ORDER BY
+        CASE WHEN (:keyword IS NULL OR :keyword = '')
+            THEN view_count
+            ELSE 0
+        END DESC,
+        CASE WHEN (:keyword IS NOT NULL AND :keyword != '')
+            THEN rank
+            ELSE 0
+        END DESC,
+        updated_at DESC
+    """,
+            countQuery = """
+    SELECT COUNT(*) FROM resume
+    WHERE status = 'active'
+    AND find_job = TRUE
+    AND (:keyword IS NULL OR :keyword = ''
+        OR search_vector @@ plainto_tsquery('simple', unaccent(:keyword)))
+    """,
+            nativeQuery = true)
+    Page<Resume> searchResumes(@Param("keyword") String keyword, Pageable pageable);
+
+
+
+    //---------------------------------------------------------------------------------------------------------------------------
+    // FETCH ACTIVE & FINDJOB = TRUE BY RESUME ID
+    //---------------------------------------------------------------------------------------------------------------------------
+    @Query("""
+            SELECT r FROM Resume r
+            WHERE resumeId = :resumeId
+            AND r.status = 'active'
+            AND findJob = TRUE
+            """)
+    Optional<Resume> findResumeByResumeId(@Param("resumeId") UUID resumeId);
+
+
+
+    //---------------------------------------------------------------------------------------------------------------------------
+    // FETCH ACTIVE & FINDJOB = TRUE BY RESUME ID
+    //---------------------------------------------------------------------------------------------------------------------------
+    @Modifying
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Query("UPDATE Resume r SET r.viewCount = r.viewCount + 1 WHERE r.resumeId = :resumeId")
+    void incrementViewCount(@Param("resumeId") UUID resumeId);
 
 }

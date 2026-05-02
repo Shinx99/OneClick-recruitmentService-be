@@ -47,4 +47,12 @@ public class ResumeResponse {
     private Instant deletedAt;
 
     private ParsedData parsedData;
+
+    // Candidate
+    private String surname;
+
+    private String name;
+
+    private String email;
+
 }

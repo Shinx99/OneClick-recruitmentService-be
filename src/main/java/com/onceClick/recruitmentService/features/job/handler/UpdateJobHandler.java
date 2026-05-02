@@ -12,6 +12,7 @@ import com.onceClick.recruitmentService.shared.persistence.repository.JobReposit
 import com.onceClick.recruitmentService.shared.persistence.repository.JobSkillRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,12 @@ public class UpdateJobHandler {
     private final JobSkillRepository jobSkillRepository;
     private final SkillsHandler skillsHandler;
 
+    @CacheEvict(value = {
+            "jobs",
+            "job:by-employer-id",
+            "job:by-company-id",
+            "job:by-job-id"
+    }, allEntries = true)
     @Transactional
     public ApiResponse<CreateJobResponseDto> updateJob(UUID jobId, UpdateJobRequestDto requestDto, UUID employerId) {
 

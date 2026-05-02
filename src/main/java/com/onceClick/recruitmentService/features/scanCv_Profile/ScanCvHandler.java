@@ -16,6 +16,8 @@ import com.onceClick.recruitmentService.shared.persistence.repository.CandidateE
 import com.onceClick.recruitmentService.shared.persistence.repository.ResumeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,24 +38,34 @@ public class ScanCvHandler {
     private final CandidateEducationRepository eduRepo;
     private final ObjectMapper objectMapper;
 
+    @CacheEvict(value = {
+            "resume:by-resume-id",
+            "resume:by-candidate-id",
+            "resumes"
+    }, allEntries = true)
     @Transactional
     public ParsedResumeResponse handle(UUID candidateId, ScanCvRequest req) {
+
+        String pdfUrl = null;
+        String parsedJson = null;
+        ParsedData parsed = null;
+
         try {
             // 1. Upload trước → lấy S3 URL
-            String pdfUrl = s3Service.uploadCv(req.resumeFile(), candidateId);
+            pdfUrl = s3Service.uploadCv(req.resumeFile(), candidateId);
 
             // 2. Extract từ S3 URL
             String cvText = extractor.extractTextFromS3(pdfUrl);
 
             if (cvText.startsWith("[IMAGE_SCAN_CV]")) {
-                log.warn("🚨 Image CV detected: {}", pdfUrl);
+                log.warn("Image CV detected: {}", pdfUrl);
                 return ParsedResumeResponse.warning(  // Hoặc constructor
-                        cvText + "\n💡 Fix: Mở Word → File → Export → Create PDF (text-selectable)"
+                        cvText + "\n Fix: Mở Word → File → Export → Create PDF (text-selectable)"
                 );
             }
 
             // 3. Parse AI & save như cũ
-            String parsedJson = aiService.parseCvText(cvText);
+            parsedJson = aiService.parseCvText(cvText);
 
             log.info("AI Raw response: {}", parsedJson.substring(0, 500));
 
@@ -63,7 +75,12 @@ public class ScanCvHandler {
                     .replaceAll("^\\*+\\s*", "")    // Remove leading **
                     .trim();
 
-            ParsedData parsed = aiService.parseResponse(cleanJson, ParsedData.class);
+            parsed = aiService.parseResponse(cleanJson, ParsedData.class);
+
+            } catch (Exception e) {
+                log.error("ScanCV failed: {}", e.getMessage(), e);
+                return ParsedResumeResponse.error(e.getMessage());
+            }
 
             Resume resume = createResume(candidateId, pdfUrl, parsed, false);
             resume = resumeRepo.save(resume);
@@ -75,14 +92,10 @@ public class ScanCvHandler {
             resumeRepo.setDefault(resume.getResumeId(), candidateId);
 
             //saveEducations(req.candidateId(), parsed.education());
-
             return ParsedResumeResponse.success(resume.getResumeId(), pdfUrl, parsed);
-
-        } catch (Exception e) {
-            log.error("ScanCV failed: {}", e.getMessage(), e);
-            return ParsedResumeResponse.error(e.getMessage());
-        }
     }
+
+
 
     private Resume createResume(UUID candidateId, String pdfUrl, ParsedData parsed,  boolean isDefault) {
         ExtractedFields extracted = parsed.extractedFields();
@@ -107,6 +120,7 @@ public class ScanCvHandler {
                 .salaryExpectation(Optional.ofNullable(extracted)
                         .map(ExtractedFields::salaryExpectation)
                         .orElse(null))  // Null cho optional field
+                .findJob(true)
                 .viewCount(0)
                 .status("active")
                 .build();

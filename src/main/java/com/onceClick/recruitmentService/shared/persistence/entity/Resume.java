@@ -77,6 +77,9 @@ public class Resume {
     @Column(name = "parsed_data", columnDefinition = "JSONB")
     private Map<String, Object> parsedData;  // Hoặc JsonNode, ObjectNode
 
+//    @Column(name = "search_vector", insertable = false, updatable = false)
+//    private String searchVector;
+
     public static ResumeBuilder builder() {
         return new ResumeBuilder();
     }

@@ -47,7 +47,7 @@ public class CandidateProfileHandler {
     public ApiResponse<CandidateResponseDto> updateCandidateProfile(CandidateRequestDto requestDto, UUID candidateId)
     {
 
-        // 1. Check exist candidate
+        // 1. Check existed candidate
         Candidate candidate = getOrSyncCandidate(candidateId);
 
         // 2. Update field from request

@@ -58,7 +58,7 @@ public class AiChatWsPublisher {
                     buildEvent(eventType, response)
             );
             log.debug("Published {} to assigned admin {}", eventType, conv.getAssignedAdminId());
-        } else {
+        } /*else {
             // QUAN TRỌNG: Nếu chưa có admin assigned (status = handoff)
             // Gửi broadcast đến TẤT CẢ admin đang online
             log.info("No admin assigned for conversation {}, broadcasting to all admins", conversationId);
@@ -69,7 +69,7 @@ public class AiChatWsPublisher {
             // Gửi broadcast tin nhắn đến tất cả admin
             messagingTemplate.convertAndSend("/topic/admin/broadcast",
                     buildEvent(eventType, response));
-        }
+        }*/
     }
 
     // Thêm method mới để gửi broadcast đến tất cả admin

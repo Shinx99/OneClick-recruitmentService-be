@@ -147,7 +147,7 @@ public class AiChatUserController {
     public ResponseEntity<AiChatResponseDto> createConversation() {
         // Tạo conversation mới với tin nhắn rỗng (sẽ có welcome message)
         AiChatCreateDto dto = AiChatCreateDto.builder()
-                .message("xin chào")  // Tin nhắn rỗng để trigger welcome
+                .message("")  // Tin nhắn rỗng để trigger welcome
                 .build();
 
         return ResponseEntity.ok(aiChatService.createOrContinueConversation(

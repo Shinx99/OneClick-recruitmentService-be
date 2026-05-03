@@ -50,7 +50,7 @@ public class AiChatServiceImpl implements AiChatService {
 
     @Override
     public AiChatResponseDto createOrContinueConversation(AiChatCreateDto dto, UUID userId, String userType) {
-        validateUserInput(dto, userId, userType);
+//        validateUserInput(dto, userId, userType);
 
         // Bỏ channel parameter, mặc định là "http" hoặc "websocket" tùy context
         String channel = "http"; // Default, controller sẽ override nếu cần
@@ -58,6 +58,23 @@ public class AiChatServiceImpl implements AiChatService {
 
         if (STATUS_HANDOFF.equals(conversation.getStatus()) || STATUS_IN_PROGRESS.equals(conversation.getStatus())) {
             throw new IllegalArgumentException("Conversation has been handed off to admin");
+        }
+
+        // Nếu message rỗng, chỉ trả về conversation hiện tại (không xử lý gì thêm)
+        if (dto.getMessage() == null || dto.getMessage().trim().isEmpty()) {
+            log.info("Empty message received, returning existing conversation: {}", conversation.getConversationId());
+
+            List<AiChatMessage> existingMessages = aiChatMessageRepository
+                    .findByConversation_ConversationIdOrderByCreatedAtAsc(conversation.getConversationId());
+
+            return AiChatResponseDto.builder()
+                    .conversationId(conversation.getConversationId())
+                    .messages(existingMessages.stream()
+                            .map(msg -> toDto(msg, conversation.getConversationId()))
+                            .toList())
+                    .status(conversation.getStatus())
+                    .assignedAdminId(conversation.getAssignedAdminId())
+                    .build();
         }
 
         AiChatMessage userMessage = saveMessage(
@@ -95,6 +112,8 @@ public class AiChatServiceImpl implements AiChatService {
                 MESSAGE_TEXT,
                 aiReply
         );
+
+
 
         AiChatResponseDto response = AiChatResponseDto.builder()
                 .conversationId(conversation.getConversationId())
@@ -671,6 +690,9 @@ public class AiChatServiceImpl implements AiChatService {
 //        wsPublisher.publishToUser(oldConv.getConversationId(), "CONVERSATION_CLOSED", oldConvResponse);
         wsPublisher.publishToUser(oldConv.getConversationId(), "SYSTEM_MESSAGE", oldConvResponse);
 
+        wsPublisher.publishToAllAdmins("CONVERSATION_CLOSED", adminNotification);
+
+
         if (oldAdminId != null) {
 //            wsPublisher.publishToAdmin(oldConv.getConversationId(), "CONVERSATION_CLOSED", oldConvResponse);
             wsPublisher.publishToAdmin(oldConv.getConversationId(), "CONVERSATION_CLOSED", adminNotification);
@@ -745,9 +767,9 @@ public class AiChatServiceImpl implements AiChatService {
         if (userType == null || (!userType.equals("candidate") && !userType.equals("recruiter"))) {
             throw new IllegalArgumentException("userType must be candidate or recruiter");
         }
-        if (dto.getMessage() == null || dto.getMessage().trim().isEmpty()) {
+        /*if (dto.getMessage() == null || dto.getMessage().trim().isEmpty()) {
             throw new IllegalArgumentException("message must not be blank");
-        }
+        }*/
     }
 
     private void requireAdmin() {

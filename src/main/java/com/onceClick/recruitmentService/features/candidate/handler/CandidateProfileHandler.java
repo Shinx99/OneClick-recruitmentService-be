@@ -312,18 +312,23 @@ public class CandidateProfileHandler {
                 .orElseGet(() -> {
                     log.debug("Candidate {} not found, syncing from Auth Service", candidateId);
                     AuthAccountDto authAccount = syncDataFromAccountHandler.syncAccountData(candidateId);
+                    if (authAccount != null && authAccount.hasRole("candidate")) {
+                        Candidate candidate = Candidate.builder()
+                                .candidateId(candidateId)
+                                .email(authAccount.getEmail())
+                                .phone(authAccount.getPhone())
+                                .consentVersion("1.0")
+                                .status(authAccount.getStatus())
+                                .createdAt(Instant.now())
+                                .isNew(true)
+                                .build();
 
-                     Candidate candidate = Candidate.builder()
-                            .candidateId(candidateId)
-                            .email(authAccount.getEmail())
-                            .phone(authAccount.getPhone())
-                            .consentVersion("1.0")
-                            .status(authAccount.getStatus())
-                            .createdAt(Instant.now())
-                            .isNew(true)
-                            .build();
-
-                     return candidateRepository.save(candidate);
+                        log.debug("Candidate {} created successfully", candidateId);
+                        return candidateRepository.save(candidate);
+                    } else {
+                        log.warn("Account {} is not a candidate role or sync failed", candidateId);
+                        throw new ResourceNotFoundException("Candidate not found");
+                    }
                 });
     }
 

@@ -56,7 +56,9 @@ CREATE TABLE notification (
 
     CONSTRAINT chk_notification_type
         CHECK (type IN ('NEW_APPLICATION', 'STATUS_CHANGED', 'INTERVIEW_SCHEDULED',
-                        'INTERVIEW_REMINDER', 'APPLICATION_CANCELLED', 'OFFER_SENT'))
+                        'INTERVIEW_REMINDER', 'APPLICATION_CANCELLED', 'OFFER_SENT',
+                        'JOIN_REQUEST', 'JOIN_REQUEST_APPROVED', 'JOIN_REQUEST_REJECTED',
+                        'COMPANY_APPROVED', 'COMPANY_REJECTED'))
 );
 
 CREATE INDEX idx_notification_user_id ON notification(user_id);

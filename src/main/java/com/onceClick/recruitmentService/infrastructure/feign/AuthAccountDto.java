@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -16,6 +17,10 @@ public class AuthAccountDto {
     private String email;
     private String phone;
     private String status;
-    private String role;
+    private Set<String> roles;
+
+    public boolean hasRole(String roleName) {
+        return roles != null && roles.contains(roleName);
+    }
 
 }

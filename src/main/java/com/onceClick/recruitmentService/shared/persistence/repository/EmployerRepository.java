@@ -1,6 +1,7 @@
 package com.onceClick.recruitmentService.shared.persistence.repository;
 
 import com.onceClick.recruitmentService.shared.persistence.entity.Employer;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +29,24 @@ public interface EmployerRepository extends JpaRepository<Employer, UUID> {
 
     @Query("SELECT e FROM Employer e ORDER BY e.createdAt DESC")
     List<Employer> findRecentEmployers(Pageable pageable);
+
+    @Query(value = "SELECT e.* FROM employer e " +
+            "JOIN company c ON e.company_id = c.company_id " +
+            "WHERE (:status IS NULL OR e.status = :status) AND " +
+            "(:keyword IS NULL OR e.surname ILIKE CONCAT('%', :keyword, '%') " +
+            "OR e.name ILIKE CONCAT('%', :keyword, '%') " +
+            "OR e.email ILIKE CONCAT('%', :keyword, '%') " +
+            "OR c.company_name ILIKE CONCAT('%', :keyword, '%')) " +
+            "ORDER BY e.created_at DESC",
+            countQuery = "SELECT count(*) FROM employer e " +
+                    "JOIN company c ON e.company_id = c.company_id " +
+                    "WHERE (:status IS NULL OR e.status = :status) AND " +
+                    "(:keyword IS NULL OR e.surname ILIKE CONCAT('%', :keyword, '%') " +
+                    "OR e.name ILIKE CONCAT('%', :keyword, '%') " +
+                    "OR e.email ILIKE CONCAT('%', :keyword, '%') " +
+                    "OR c.company_name ILIKE CONCAT('%', :keyword, '%'))",
+            nativeQuery = true)
+    Page<Employer> findFilteredEmployers(@Param("status") String status,
+                                         @Param("keyword") String keyword,
+                                         Pageable pageable);
 }

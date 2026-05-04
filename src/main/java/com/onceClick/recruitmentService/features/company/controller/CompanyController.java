@@ -2,6 +2,7 @@ package com.onceClick.recruitmentService.features.company.controller;
 
 import com.onceClick.recruitmentService.features.company.dto.request.CreateCompanyRequestDto;
 import com.onceClick.recruitmentService.features.company.dto.request.JoinCompanyRequestDto;
+import com.onceClick.recruitmentService.features.company.dto.request.UpdateCompanyRequestDto;
 import com.onceClick.recruitmentService.features.company.dto.response.*;
 import com.onceClick.recruitmentService.features.company.handler.*;
 import jakarta.validation.Valid;
@@ -34,6 +35,8 @@ public class CompanyController {
     private final GetCompanyFiltersHandler getCompanyFiltersHandler;
     private final UploadCompanyImageHandler uploadCompanyImageHandler;
     private final CreateCompanyHandler createCompanyHandler;
+    private final GetMyCompanyHandler getMyCompanyHandler;
+    private final UpdateCompanyHandler updateCompanyHandler;
     private final SendJoinRequestHandler sendJoinRequestHandler;
     private final ReviewJoinRequestHandler reviewJoinRequestHandler;
     private final GetJoinRequestsHandler getJoinRequestsHandler;
@@ -81,6 +84,23 @@ public class CompanyController {
     @GetMapping("/filters")
     public ResponseEntity<ApiResponse<FilterOptionsResponseDto>> getFilters() {
         return ResponseEntity.ok(getCompanyFiltersHandler.getFilters());
+    }
+
+    // Get the company of the currently logged-in recruiter
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @GetMapping("/my-company")
+    public ResponseEntity<ApiResponse<GetCompanyResponseDto>> getMyCompany() {
+        UUID employerId = currentUser.getCurrentAccountId();
+        return ResponseEntity.ok(getMyCompanyHandler.getMyCompany(employerId));
+    }
+
+    // Update the company of the currently logged-in recruiter
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @PutMapping("/my-company")
+    public ResponseEntity<ApiResponse<GetCompanyResponseDto>> updateMyCompany(
+            @Valid @RequestBody UpdateCompanyRequestDto requestDto) {
+        UUID employerId = currentUser.getCurrentAccountId();
+        return ResponseEntity.ok(updateCompanyHandler.updateMyCompany(employerId, requestDto));
     }
 
     @GetMapping("/{companyId}")

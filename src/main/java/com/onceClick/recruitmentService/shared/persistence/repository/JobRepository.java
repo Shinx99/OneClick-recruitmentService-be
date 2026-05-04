@@ -77,6 +77,7 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
         SELECT j FROM Job j
         WHERE j.jobId <> :jobId
         AND j.status = 'active'
+        AND j.applicationDeadline > CURRENT_TIMESTAMP
         ORDER BY j.createdAt DESC
         """)
     Page<Job> findFallbackRelatedJobs(@Param("jobId") UUID jobId, Pageable pageable);
@@ -87,6 +88,7 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
         WHERE j.majorPreferred = :majorPreferred
         AND j.jobId <> :jobId
         AND j.status = 'active'
+        AND j.applicationDeadline > CURRENT_TIMESTAMP
         ORDER BY j.createdAt DESC
         """)
     List<Job> findAllRelatedJobsByMajor(
@@ -94,11 +96,12 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
             @Param("jobId") UUID jobId
     );
 
-    // Fallback (không phân trang): trả về TẤT CẢ jobs active mới nhất
+    // Fallback (không phân trang): trả về TẤT CẢ jobs active mới nhất (ĐÃ THÊM LỌC HẠN)
     @Query("""
         SELECT j FROM Job j
         WHERE j.jobId <> :jobId
         AND j.status = 'active'
+        AND j.applicationDeadline > CURRENT_TIMESTAMP
         ORDER BY j.createdAt DESC
         """)
     List<Job> findAllFallbackRelatedJobs(@Param("jobId") UUID jobId);
@@ -141,4 +144,8 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
     @Transactional
     @Query("UPDATE Job j SET j.viewCount = j.viewCount + 1 WHERE j.jobId = :jobId")
     void incrementViewCount(@Param("jobId") UUID jobId);
+
+    @Query("SELECT j FROM Job j WHERE j.status = 'active' ORDER BY j.viewCount DESC, j.createdAt DESC")
+    List<Job> findTopJobsByViewCount(org.springframework.data.domain.Pageable pageable);
 }
+

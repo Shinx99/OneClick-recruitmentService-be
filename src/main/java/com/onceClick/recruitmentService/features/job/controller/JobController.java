@@ -6,13 +6,8 @@ import com.onceClick.recruitmentService.features.job.dto.response.CreateJobRespo
 
 import com.onceClick.recruitmentService.features.job.dto.response.GetJobDetailResponseDto;
 import com.onceClick.recruitmentService.features.job.dto.response.GetJobsResponseDto;
-import com.onceClick.recruitmentService.features.job.handler.CreateJobHandler;
-import com.onceClick.recruitmentService.features.job.handler.DeleteJobHandler;
-import com.onceClick.recruitmentService.features.job.handler.GetJobDetailHandler;
-import com.onceClick.recruitmentService.features.job.handler.GetJobsHandler;
-import com.onceClick.recruitmentService.features.job.handler.GetRelatedJobsHandler;
-import com.onceClick.recruitmentService.features.job.handler.UpdateJobHandler;
-import com.onceClick.recruitmentService.features.job.handler.UploadJobImageHandler;
+import com.onceClick.recruitmentService.features.job.dto.response.TopJobsResponseDto;
+import com.onceClick.recruitmentService.features.job.handler.*;
 import com.onceClick.recruitmentService.shared.dto.ApiResponse;
 import com.onceClick.recruitmentService.shared.security.CurrentUser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,6 +42,8 @@ public class JobController {
     private final GetJobDetailHandler getJobDetailHandler;
     private final GetRelatedJobsHandler getRelatedJobsHandler;
     private final CurrentUser currentUser;
+    private final GetTopJobsHandler getTopJobsHandler;
+
 
     @PreAuthorize("hasAuthority('ROLE_recruiter')")
     @PostMapping("/create")
@@ -138,5 +135,11 @@ public class JobController {
     ) throws IOException {
         UUID employerId = currentUser.getCurrentAccountId();
         return ResponseEntity.ok(uploadJobImageHandler.uploadJobImage(jobId, employerId, file));
+    }
+
+
+    @GetMapping("/top-6-viewed")
+    public ResponseEntity<ApiResponse<List<TopJobsResponseDto>>> getTop8ViewedJobs() {
+        return ResponseEntity.ok(getTopJobsHandler.getTop6ViewedJobs());
     }
 }

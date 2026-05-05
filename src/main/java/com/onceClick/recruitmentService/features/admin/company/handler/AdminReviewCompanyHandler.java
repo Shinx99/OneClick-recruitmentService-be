@@ -102,7 +102,7 @@ public class AdminReviewCompanyHandler {
         return new AdminCompanyResponseDto(
                 c.getCompanyId(), c.getCompanyName(), c.getTaxCode(),
                 c.getBusinessLicenseUrl(), c.getBusinessRepName(), c.getFinancialProofUrl(),
-                c.getLogoUrl(), c.getWebsiteUrl(), c.getProvinceCode(), c.getIndustry(),
+                c.getLogoUrl(),  c.getBackgroundUrl(),  c.getWebsiteUrl(), c.getProvinceCode(), c.getIndustry(),
                 c.getSizeRange(), c.getOverview(), c.getAddress(), c.getCreatedBy(),
                 c.getStatus(), c.getVerificationLevel(), c.getVerifiedAt(),
                 c.getCreatedAt(), c.getUpdatedAt()

@@ -11,6 +11,7 @@ public record AdminCompanyResponseDto(
         String businessRepName,
         String financialProofUrl,
         String logoUrl,
+        String backgroundUrl,
         String websiteUrl,
         String provinceCode,
         String industry,

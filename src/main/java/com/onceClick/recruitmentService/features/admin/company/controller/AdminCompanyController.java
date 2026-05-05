@@ -60,7 +60,7 @@ public class AdminCompanyController {
 
     // Reject a pending company
     @PutMapping("/{companyId}/reject")
-    public ResponseEntity<ApiResponse<AdminCompanyResponseDto>> rejectCompany(
+    public ResponseEntity<ApiResponse<Void>> rejectCompany(
             @PathVariable UUID companyId) {
         return ResponseEntity.ok(reviewCompanyHandler.reject(companyId));
     }

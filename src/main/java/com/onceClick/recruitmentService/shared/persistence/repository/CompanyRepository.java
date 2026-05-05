@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
@@ -68,7 +69,6 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
 
 
-
     // Dashboard queries
     long count();
 
@@ -100,4 +100,6 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
     boolean existsByCompanyName(String companyName);
 
     boolean existsByTaxCode(String taxCode);
+
+    Optional<Company> findByCreatedBy(UUID employerId);
 }

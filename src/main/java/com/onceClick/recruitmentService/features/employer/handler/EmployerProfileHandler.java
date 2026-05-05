@@ -6,6 +6,9 @@ import com.onceClick.recruitmentService.features.employer.dto.response.EmployerR
 import com.onceClick.recruitmentService.infrastructure.feign.AuthAccountDto;
 import com.onceClick.recruitmentService.infrastructure.feign.SyncDataFromAccountHandler;
 import com.onceClick.recruitmentService.shared.dto.ApiResponse;
+import com.onceClick.recruitmentService.shared.exception.BusinessException;
+import com.onceClick.recruitmentService.shared.exception.ForbiddenException;
+import com.onceClick.recruitmentService.shared.exception.ResourceNotFoundException;
 import com.onceClick.recruitmentService.shared.persistence.entity.Company;
 import com.onceClick.recruitmentService.shared.persistence.entity.Employer;
 import com.onceClick.recruitmentService.shared.persistence.repository.CompanyRepository;
@@ -15,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.SecondaryRow;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 import java.util.Optional;
 
 import java.time.Instant;
@@ -31,7 +36,84 @@ public class EmployerProfileHandler {
 
 
     //-----------------------------------------------------------------------------------------------------------------------------------------
-    // GET PROFILE WITH CANDIDATE ID
+    // GET EMPLOYER TEAMS WITH COMPANY ID
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    @Transactional
+    public ApiResponse<List<EmployerResponseDto>> findTeamByCompanyId(UUID employerId){
+
+        // 1. Check existed employer
+        Employer employer = getOrSyncEmployer(employerId);
+
+        // 2. Make sure employer belonging to one company
+        if(employer.getCompany() == null){
+            throw new ResourceNotFoundException("Employer này đang không thuộc công ty nào!");
+        }
+
+        // 3. Get members of 1 company
+        List<Employer> teams = employerRepository.findActiveEmployersByCompanyId(employer.getCompany().getCompanyId());
+
+        // 4. Map to DTO
+        List<EmployerResponseDto> result = teams.stream()
+                .map(this::mapToResponseDto)
+                .toList();
+
+        // 5. Return
+        ApiResponse<List<EmployerResponseDto>> response = ApiResponse
+                .<List<EmployerResponseDto>>builder()
+                .success(true)
+                .message("Lấy danh sách thành viên công ty thành công!")
+                .data(result)
+                .build();
+
+        return response;
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------
+    // REMOVE MEMBER OUT OF COMPANY
+    //-------------------------------------------------------------------------------------------------------------------------------------------
+    @Transactional
+    public ApiResponse<Void> removeMember(UUID ownerId, UUID targetEmployerId) {
+        log.info("Owner {} removing member {}", ownerId, targetEmployerId);
+
+        // 0. Check owner
+        Employer owner = employerRepository.findById(ownerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employer", "employerId", ownerId));
+
+        if (!owner.getLevel().equals("level1")) {
+            throw new BusinessException("Bạn không có quyền xóa thành viên ra khỏi công ty!");
+        }
+
+        // 1. Find company of owner
+        Company company = companyRepository.findById(owner.getCompany().getCompanyId())
+                .orElseThrow(() -> new ResourceNotFoundException("Company", "companyId", owner.getCompany().getCompanyId()));
+
+        // 2. Must not delete herself/himself
+        if (ownerId.equals(targetEmployerId)) {
+            throw new BusinessException("Không thể xóa chính mình ra khỏi công ty");
+        }
+
+        // 3. Find target — must belong to that company
+        Employer target = employerRepository.findById(targetEmployerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employer", "employerId", targetEmployerId));
+
+        if (target.getCompany() == null || !target.getCompany().getCompanyId().equals(company.getCompanyId())) {
+            throw new ForbiddenException("member", "remove");
+        }
+
+        // 4. Reset
+        target.setCompany(null);
+        target.setLevel(null);
+        target.setVerificationLevel(null);
+        employerRepository.save(target);
+
+        return ApiResponse.success("Đã xóa thành viên ra khỏi công ty", null);
+    }
+
+
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    // GET PROFILE WITH EMPLOYER ID
     //-----------------------------------------------------------------------------------------------------------------------------------------
     @Transactional
     public ApiResponse<EmployerResponseDto> findByEmployerId(UUID employerId){
@@ -273,13 +355,13 @@ public class EmployerProfileHandler {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     // HELPER MAP TO RESPONSE DTO
     //-----------------------------------------------------------------------------------------------------------------------------------------
-    private EmployerResponseDto mapToResponseDto(Employer employer){
+    private EmployerResponseDto mapToResponseDto(Employer employer) {
         return EmployerResponseDto.builder()
                 .employerId(employer.getEmployerId())
-                .name(employer.getName())
+                .name(employer.getName() != null ? employer.getName() : "")
+                .surname(employer.getSurname() != null ? employer.getSurname() : "")
                 .email(employer.getEmail())
                 .phone(employer.getPhone())
-                .surname(employer.getSurname())
                 .about(employer.getAbout())
                 .birthday(employer.getBirthday())
                 .province(employer.getProvince())

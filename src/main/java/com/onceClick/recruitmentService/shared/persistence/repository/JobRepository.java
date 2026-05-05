@@ -145,7 +145,7 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
     @Query("UPDATE Job j SET j.viewCount = j.viewCount + 1 WHERE j.jobId = :jobId")
     void incrementViewCount(@Param("jobId") UUID jobId);
 
-    @Query("SELECT j FROM Job j WHERE j.status = 'active' ORDER BY j.viewCount DESC, j.createdAt DESC")
-    List<Job> findTopJobsByViewCount(org.springframework.data.domain.Pageable pageable);
+    @Query("SELECT j FROM Job j WHERE j.status = 'active' AND j.applicationDeadline > CURRENT_TIMESTAMP ORDER BY j.viewCount DESC, j.createdAt DESC")
+    List<Job> findTopJobsByViewCount(Pageable pageable);
 }
 

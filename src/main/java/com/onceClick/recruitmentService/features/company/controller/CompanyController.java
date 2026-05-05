@@ -16,6 +16,7 @@ import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +42,8 @@ public class CompanyController {
     private final ReviewJoinRequestHandler reviewJoinRequestHandler;
     private final GetJoinRequestsHandler getJoinRequestsHandler;
     private final CurrentUser currentUser;
-    private final GetJobsHandler  getJobsHandler;
+    private final GetJobsHandler getJobsHandler;
+    private final GetMyJoinRequestHandler getMyJoinRequestHandler;
 
     @PreAuthorize("hasAuthority('ROLE_recruiter')")
     @PostMapping
@@ -118,6 +120,13 @@ public class CompanyController {
     }
 
     // --- Join Company Request endpoints ---
+
+    @GetMapping("/my-join-request")
+    public ResponseEntity<ApiResponse<JoinRequestResponseDto>> getMyJoinRequest() {
+
+        UUID employerId = currentUser.getCurrentAccountId();
+        return ResponseEntity.ok(getMyJoinRequestHandler.handle(employerId));
+    }
 
     @PreAuthorize("hasAuthority('ROLE_recruiter')")
     @PostMapping("/{companyId}/join-request")

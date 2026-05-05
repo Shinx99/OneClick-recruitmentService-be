@@ -50,6 +50,7 @@ public class GetTopJobsHandler {
                             job.getSalaryMax(),
                             job.getViewCount(),
                             job.getJobType(),
+                            job.getStatus(),
                             company != null ? company.getCompanyId() : null,
                             company != null ? company.getCompanyName() : null,
                             company != null ? company.getLogoUrl() : null

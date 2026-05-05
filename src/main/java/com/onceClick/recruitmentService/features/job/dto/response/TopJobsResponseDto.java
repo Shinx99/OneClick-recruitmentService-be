@@ -11,6 +11,8 @@ public record TopJobsResponseDto(
         BigDecimal salaryMax,
         Integer viewCount,
         String jobType,
+        String status,
+
 
         UUID companyId,
         String companyName,

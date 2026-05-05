@@ -43,7 +43,29 @@ public class JobController {
     private final GetRelatedJobsHandler getRelatedJobsHandler;
     private final CurrentUser currentUser;
     private final GetTopJobsHandler getTopJobsHandler;
+    private final GetEmployerJobsHandler getEmployerJobsHandler;
 
+    // API MỚI: Lấy danh sách jobs của employer để quản lý (CRUD)
+    // JobController.java
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @GetMapping("/employer/jobs")
+    public ResponseEntity<ApiResponse<PageResponse<GetJobsResponseDto>>> getEmployerJobsForManagement(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        UUID employerId = currentUser.getCurrentAccountId();
+
+        // Tạo Sort từ tham số
+        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return ResponseEntity.ok(getEmployerJobsHandler.getEmployerJobs(employerId, keyword, status, pageable));
+    }
 
     @PreAuthorize("hasAuthority('ROLE_recruiter')")
     @PostMapping("/create")
@@ -142,4 +164,6 @@ public class JobController {
     public ResponseEntity<ApiResponse<List<TopJobsResponseDto>>> getTop8ViewedJobs() {
         return ResponseEntity.ok(getTopJobsHandler.getTop6ViewedJobs());
     }
+
+
 }

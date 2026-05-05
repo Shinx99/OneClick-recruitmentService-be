@@ -145,7 +145,42 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
     @Query("UPDATE Job j SET j.viewCount = j.viewCount + 1 WHERE j.jobId = :jobId")
     void incrementViewCount(@Param("jobId") UUID jobId);
 
-    @Query("SELECT j FROM Job j WHERE j.status = 'active' AND j.applicationDeadline > CURRENT_TIMESTAMP ORDER BY j.viewCount DESC, j.createdAt DESC")
-    List<Job> findTopJobsByViewCount(Pageable pageable);
+    @Query("SELECT j FROM Job j WHERE j.status = 'active' ORDER BY j.viewCount DESC, j.createdAt DESC")
+    List<Job> findTopJobsByViewCount(org.springframework.data.domain.Pageable pageable);
+
+    // JobRepository.java - Dùng native query
+    @Query(value = """
+    SELECT * FROM job j
+    WHERE j.job_id IN (
+        SELECT je.job_id FROM job_employer je 
+        WHERE je.employer_id = :employerId
+    )
+    AND (:keyword IS NULL OR j.title ILIKE CONCAT('%', :keyword, '%'))
+    AND (:status IS NULL OR j.status = :status)
+    ORDER BY j.created_at DESC
+    LIMIT :limit OFFSET :offset
+    """, nativeQuery = true)
+    List<Job> findByEmployerIdAndFiltersNative(
+            @Param("employerId") UUID employerId,
+            @Param("keyword") String keyword,
+            @Param("status") String status,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+
+    @Query(value = """
+    SELECT COUNT(*) FROM job j
+    WHERE j.job_id IN (
+        SELECT je.job_id FROM job_employer je 
+        WHERE je.employer_id = :employerId
+    )
+    AND (:keyword IS NULL OR j.title ILIKE CONCAT('%', :keyword, '%'))
+    AND (:status IS NULL OR j.status = :status)
+    """, nativeQuery = true)
+    long countByEmployerIdAndFilters(
+            @Param("employerId") UUID employerId,
+            @Param("keyword") String keyword,
+            @Param("status") String status
+    );
 }
 

@@ -31,15 +31,15 @@ public class CreateCompanyHandler {
 
         // 2. An employer can only own 1 company
         if (employer.getCompany() != null) {
-            throw new IllegalStateException("Recruiter already has a company linked!");
+            throw new IllegalArgumentException("Nhà tuyển dụng đã được gia nhập công ty");
         }
 
         // 3. Uniqueness checks (companyName & taxCode are unique in DB)
         if (companyRepository.existsByCompanyName(requestDto.companyName().trim())) {
-            throw new IllegalArgumentException("Company name already exists!");
+            throw new IllegalArgumentException("Tên công ty đã tồn tại!");
         }
         if (companyRepository.existsByTaxCode(requestDto.taxCode().trim())) {
-            throw new IllegalArgumentException("Tax code already exists!");
+            throw new IllegalArgumentException("Tax code đã tồn tại!");
         }
 
         // 4. Build & save company (pending admin verification)

@@ -13,10 +13,12 @@ import java.util.UUID;
 public class GetCompanyHandler {
     private final CompanyRepository companyRepository;
     @Transactional(readOnly = true)
-    public ApiResponse<GetCompanyResponseDto> getCompanyById(UUID companyId) {
+    public ApiResponse<GetCompanyResponseDto> getCompanyById(UUID employerId) {
+
         // Tìm company theo id
-        Company company = companyRepository.findById(companyId)
+        Company company = companyRepository.findByCreatedBy(employerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy công ty"));
+
         // Map entity sang response DTO
         GetCompanyResponseDto responseDto = new GetCompanyResponseDto(
                 company.getCompanyId(),

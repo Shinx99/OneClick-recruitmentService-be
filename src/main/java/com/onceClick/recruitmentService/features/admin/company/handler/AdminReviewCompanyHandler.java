@@ -6,6 +6,7 @@ import com.onceClick.recruitmentService.shared.exception.ResourceNotFoundExcepti
 import com.onceClick.recruitmentService.shared.persistence.entity.Company;
 import com.onceClick.recruitmentService.shared.persistence.entity.Notification;
 import com.onceClick.recruitmentService.shared.persistence.repository.CompanyRepository;
+import com.onceClick.recruitmentService.shared.persistence.repository.EmployerRepository;
 import com.onceClick.recruitmentService.shared.persistence.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class AdminReviewCompanyHandler {
 
     private final CompanyRepository companyRepository;
     private final NotificationRepository notificationRepository;
+    private final EmployerRepository employerRepository;
 
     // Admin approves a pending company
     @Transactional
@@ -37,33 +39,35 @@ public class AdminReviewCompanyHandler {
         Company saved = companyRepository.save(company);
 
         // Notify the company owner
-        sendNotification(saved, "COMPANY_APPROVED",
-                "Công ty đã được phê duyệt",
-                String.format("Công ty %s đã được admin phê duyệt và kích hoạt thành công!",
-                        saved.getCompanyName()));
+//        sendNotification(saved, "COMPANY_APPROVED",
+//                "Công ty đã được phê duyệt",
+//                String.format("Công ty %s đã được admin phê duyệt và kích hoạt thành công!",
+//                        saved.getCompanyName()));
 
         return ApiResponse.success("Phê duyệt công ty thành công!", mapToDto(saved));
     }
 
     // Admin rejects a pending company
     @Transactional
-    public ApiResponse<AdminCompanyResponseDto> reject(UUID companyId) {
+    public ApiResponse<Void> reject(UUID companyId) {
         log.info("Admin rejecting company {}", companyId);
 
         Company company = findAndValidatePending(companyId);
 
-        // Mark as rejected
-        company.setStatus("rejected");
-        Company saved = companyRepository.save(company);
+        // 1. Unlink employer trước (tránh FK constraint)
+        employerRepository.findByCompanyCompanyId(companyId).ifPresent(owner -> {
+            owner.setCompany(null);
+            owner.setLevel(null);
+            employerRepository.save(owner);
+        });
 
-        // Notify the company owner
-        sendNotification(saved, "COMPANY_REJECTED",
-                "Công ty bị từ chối",
-                String.format("Công ty %s đã bị admin từ chối xác minh.",
-                        saved.getCompanyName()));
+        // 2. Xóa cứng company
+        companyRepository.delete(company);
 
-        return ApiResponse.success("Đã từ chối công ty.", mapToDto(saved));
+        log.info("Company {} rejected and deleted", companyId);
+        return ApiResponse.success("Đã từ chối và xóa công ty.", null);
     }
+
 
     // Find company by id and ensure it is in pending state
     private Company findAndValidatePending(UUID companyId) {
@@ -79,23 +83,23 @@ public class AdminReviewCompanyHandler {
     }
 
     // Send notification to company owner if owner exists
-    private void sendNotification(Company company, String type,
-                                  String title, String content) {
-        // Skip when seed data company has no owner (createdBy is null)
-        if (company.getCreatedBy() == null) {
-            log.warn("Company {} has no owner (createdBy is null), skipping notification",
-                    company.getCompanyId());
-            return;
-        }
-        Notification notification = Notification.builder()
-                .userId(company.getCreatedBy())
-                .type(type)
-                .title(title)
-                .content(content)
-                .isRead(false)
-                .build();
-        notificationRepository.save(notification);
-    }
+//    private void sendNotification(Company company, String type,
+//                                  String title, String content) {
+//        // Skip when seed data company has no owner (createdBy is null)
+//        if (company.getCreatedBy() == null) {
+//            log.warn("Company {} has no owner (createdBy is null), skipping notification",
+//                    company.getCompanyId());
+//            return;
+//        }
+//        Notification notification = Notification.builder()
+//                .userId(company.getCreatedBy())
+//                .type(type)
+//                .title(title)
+//                .content(content)
+//                .isRead(false)
+//                .build();
+//        notificationRepository.save(notification);
+//    }
 
     // Map Company entity to admin DTO
     private AdminCompanyResponseDto mapToDto(Company c) {

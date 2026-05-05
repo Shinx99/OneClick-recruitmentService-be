@@ -49,4 +49,17 @@ public interface EmployerRepository extends JpaRepository<Employer, UUID> {
     Page<Employer> findFilteredEmployers(@Param("status") String status,
                                          @Param("keyword") String keyword,
                                          Pageable pageable);
+
+
+    @Query("""
+        SELECT e FROM Employer e 
+        WHERE e.company.companyId = :companyId 
+        AND e.status = 'active'
+        AND e.company.status = 'active'
+    """)
+    List<Employer> findActiveEmployersByCompanyId(@Param("companyId") UUID companyId);
+
+    // Dùng trong reject(): unlink employer khỏi company trước khi xóa
+    Optional<Employer> findByCompanyCompanyId(UUID companyId);
+
 }

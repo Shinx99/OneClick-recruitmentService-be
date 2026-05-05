@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GetJoinRequestsHandler {
 
+    private static final String STATUS_PENDING = "PENDING";
+
     private final CompanyJoinRequestRepository joinRequestRepository;
     private final CompanyRepository companyRepository;
     private final EmployerRepository employerRepository;
@@ -35,23 +37,14 @@ public class GetJoinRequestsHandler {
     public ApiResponse<PageResponse<JoinRequestResponseDto>> getPendingRequests(UUID ownerId, Pageable pageable) {
         log.info("Owner {} fetching pending join requests", ownerId);
 
-        // Why: find the company this owner created — owner is identified by company.createdBy
-        Employer owner = employerRepository.findById(ownerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employer", "employerId", ownerId));
-
-        Company company = owner.getCompany();
-        if (company == null) {
-            throw new IllegalStateException("Bạn chưa có công ty!");
-        }
-
-        if (!company.getCreatedBy().equals(ownerId)) {
-            throw new IllegalStateException("Bạn không phải người tạo công ty này!");
-        }
+        // Fix: tìm company theo createdBy thay vì getCompany() của employer
+        Company company = companyRepository.findByCreatedBy(ownerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Company", "createdBy", ownerId));
 
         Page<CompanyJoinRequest> requestPage = joinRequestRepository
-                .findByCompanyIdAndStatus(company.getCompanyId(), "PENDING", pageable);
+                .findByCompanyIdAndStatus(company.getCompanyId(), STATUS_PENDING, pageable);
 
-        // Why: batch fetch employer data to avoid N+1 queries
+        // Batch fetch tránh N+1
         List<UUID> employerIds = requestPage.getContent().stream()
                 .map(CompanyJoinRequest::getEmployerId)
                 .distinct()
@@ -75,7 +68,6 @@ public class GetJoinRequestsHandler {
             );
         });
 
-        PageResponse<JoinRequestResponseDto> pageResponse = PageResponse.from(dtoPage);
-        return ApiResponse.success("Lấy danh sách yêu cầu gia nhập thành công!", pageResponse);
+        return ApiResponse.success("Lấy danh sách yêu cầu gia nhập thành công!", PageResponse.from(dtoPage));
     }
 }

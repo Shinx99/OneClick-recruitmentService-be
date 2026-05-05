@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -23,6 +24,25 @@ public class EmployerProfileController {
 
     private final EmployerProfileHandler employerProfileHandler;
     private final CurrentUser currentUser;
+
+    // Method fetch employer's team
+    @PreAuthorize("hasAuthority('ROLE_recruiter')")
+    @GetMapping("/team")
+    public ResponseEntity<ApiResponse<List<EmployerResponseDto>>> fetchTeam(){
+
+        UUID employerId = currentUser.getCurrentAccountId();
+        ApiResponse<List<EmployerResponseDto>> response = employerProfileHandler.findTeamByCompanyId(employerId);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @DeleteMapping("/members/{employerId}")
+    public ResponseEntity<ApiResponse<Void>> removeMember(@PathVariable UUID employerId) {
+
+        UUID ownerId = currentUser.getCurrentAccountId();
+        return ResponseEntity.ok(employerProfileHandler.removeMember(ownerId, employerId));
+    }
+
 
     // Method fetchData
     @PreAuthorize("hasAuthority('ROLE_recruiter')")

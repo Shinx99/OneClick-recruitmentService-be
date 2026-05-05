@@ -58,21 +58,21 @@ public class SendJoinRequestHandler {
         CompanyJoinRequest saved = joinRequestRepository.save(joinRequest);
 
         // Why: only notify if company has an owner — seed data companies may have createdBy = null
-        if (company.getCreatedBy() != null) {
-            Notification notification = Notification.builder()
-                    .userId(company.getCreatedBy())
-                    .type("JOIN_REQUEST")
-                    .title("Yêu cầu gia nhập công ty")
-                    .content(String.format("%s (%s) muốn gia nhập công ty %s",
-                            employer.getName() != null ? employer.getName() : "Employer",
-                            employer.getEmail(),
-                            company.getCompanyName()))
-                    .isRead(false)
-                    .build();
-            notificationRepository.save(notification);
-        } else {
-            log.warn("Company {} has no owner (createdBy is null), skipping notification", companyId);
-        }
+//        if (company.getCreatedBy() != null) {
+//            Notification notification = Notification.builder()
+//                    .userId(company.getCreatedBy())
+//                    .type("JOIN_REQUEST")
+//                    .title("Yêu cầu gia nhập công ty")
+//                    .content(String.format("%s (%s) muốn gia nhập công ty %s",
+//                            employer.getName() != null ? employer.getName() : "Employer",
+//                            employer.getEmail(),
+//                            company.getCompanyName()))
+//                    .isRead(false)
+//                    .build();
+//            notificationRepository.save(notification);
+//        } else {
+//            log.warn("Company {} has no owner (createdBy is null), skipping notification", companyId);
+//        }
 
         JoinRequestResponseDto responseDto = new JoinRequestResponseDto(
                 saved.getId(),

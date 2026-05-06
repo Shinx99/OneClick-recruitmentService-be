@@ -10,4 +10,6 @@ public interface EmailTemplateService {
     String buildCandidateWelcome(Map<String, Object> vars);
     String buildJobPublished(Map<String, Object> vars);
     String buildResumeConfirm(Map<String, Object> vars);
+    String buildApplicationStatusUpdate(Map<String, Object> vars);
+    String buildInterviewScheduled(Map<String, Object> vars);
 }

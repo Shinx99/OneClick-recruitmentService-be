@@ -17,4 +17,10 @@ public interface EmailService {
 
     // Common
     void sendSupportEmail(String toEmail, String subject, String message);
+
+    void sendApplicationStatusUpdate(String toEmail, String candidateName, String jobTitle,
+                                     String status, String statusDisplay, String note);
+
+    void sendInterviewScheduled(String toEmail, String candidateName, String jobTitle,
+                                String scheduledTime, String meetingLink, String location);
 }

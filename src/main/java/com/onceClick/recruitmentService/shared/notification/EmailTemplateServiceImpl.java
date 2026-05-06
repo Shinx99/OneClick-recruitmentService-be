@@ -93,6 +93,25 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
         return templateEngine.process("email/resume-confirm", ctx);
     }
 
+    // ========== APPLICATION STATUS (MỚI) ==========
+    @Override
+    public String buildApplicationStatusUpdate(Map<String, Object> vars) {
+        log.debug("Building application-status-update template");
+        Context ctx = new Context();
+        ctx.setVariables(createBaseVariables());
+        ctx.setVariables(vars);
+        return templateEngine.process("email/application-status-update", ctx);
+    }
+
+    @Override
+    public String buildInterviewScheduled(Map<String, Object> vars) {
+        log.debug("Building interview-scheduled template");
+        Context ctx = new Context();
+        ctx.setVariables(createBaseVariables());
+        ctx.setVariables(vars);
+        return templateEngine.process("email/interview-scheduled", ctx);
+    }
+
     // ============ Private Helper Methods ============
     private Map<String, Object> createBaseVariables() {
         Map<String, Object> variables = new HashMap<>();

@@ -271,7 +271,7 @@ public class RecruiterApplicationService {
     @Transactional(readOnly = true)
     public List<EmployerJobResponse> getMyJobs(UUID employerId) {
         // Lấy tất cả jobs do employer tạo
-        List<Job> jobs = jobRepository.findByCreatedBy(employerId);
+        List<Job> jobs = jobRepository.findJobsByEmployerOrderByApplicationCount(employerId);
 
         return jobs.stream()
                 .map(job -> EmployerJobResponse.builder()

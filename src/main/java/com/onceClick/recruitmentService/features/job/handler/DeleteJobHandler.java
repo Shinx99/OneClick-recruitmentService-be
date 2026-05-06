@@ -44,17 +44,17 @@ public class DeleteJobHandler {
                 .build();
 
         JobEmployer jobEmployer = jobEmployerRepository.findById(jobEmployerIdKey)
-                .orElseThrow(() -> new ForbiddenException("job", "delete"));
+                .orElseThrow(() -> new ForbiddenException("job", "closed"));
 
         if (!"owner".equalsIgnoreCase(jobEmployer.getAccessRole())) {
-            throw new ForbiddenException("Only job owner can delete this job");
+            throw new ForbiddenException("Only job owner can closed this job");
         }
 
-        // 3. Soft delete: đổi status thành "deleted"
-        job.setStatus("deleted");
+        // 3. Soft delete: đổi status thành "closed"
+        job.setStatus("closed");
         job.setUpdatedBy(employerId);
         jobRepository.save(job);
 
-        return ApiResponse.success("Job deleted successfully!", null);
+        return ApiResponse.success("Job closed successfully!", null);
     }
 }

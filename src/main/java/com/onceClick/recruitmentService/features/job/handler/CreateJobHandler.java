@@ -61,6 +61,8 @@ public class CreateJobHandler {
                 .description(requestDto.description())
                 .level(requestDto.level())
                 .jobType(requestDto.jobType())
+                .province(requestDto.province())
+                .commune(requestDto.commune())
                 .salaryMin(requestDto.salaryMin())
                 .salaryMax(requestDto.salaryMax())
                 .experienceMinYear(requestDto.experienceMinYear())

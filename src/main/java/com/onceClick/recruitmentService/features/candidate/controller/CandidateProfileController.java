@@ -44,7 +44,7 @@ public class CandidateProfileController {
     // -------------------------------------------------------------------------
     // FETCH DATA CANDIDATE CONTROLLER
     // -------------------------------------------------------------------------
-    @PreAuthorize("hasAuthority('ROLE_candidate')")
+    //@PreAuthorize("hasAuthority('ROLE_candidate')")
     @GetMapping("/fetchData")
     public ResponseEntity<ApiResponse<CandidateResponseDto>> fetchCandidateProfile(){
 

@@ -78,6 +78,7 @@ public class SecurityConfig {
                                         "/api/employer/applications/*/schedule-interview",   // Lên lịch PV
                                         "/api/employer/schedule-interview/*",                // Hủy lịch PV
                                         "/api/employer/jobs",                                // Danh sách job của employer
+                                        "/api/recruitment/job/employer/jobs",
 
                                         // Notification APIs
                                         "/api/notifications/my",
@@ -101,8 +102,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/recruitment/job/all").permitAll()
                         .requestMatchers("/api/recruitment/candidate/**").authenticated()
                         .requestMatchers("/api/recruitment/employer/**").authenticated()
-//                        .requestMatchers("/api/recruitment/job/**").authenticated()
+                        .requestMatchers("/api/recruitment/job/**").permitAll()
                         .requestMatchers("/api/recruitment/**").permitAll()
+                        .requestMatchers("/api/recruitment/candidate/profile/fetchData").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_admin")
 
                         // Internal path

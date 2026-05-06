@@ -4,6 +4,7 @@ import com.onceClick.recruitmentService.features.admin.company.dto.AdminCompanyR
 import com.onceClick.recruitmentService.shared.dto.ApiResponse;
 import com.onceClick.recruitmentService.shared.exception.ResourceNotFoundException;
 import com.onceClick.recruitmentService.shared.persistence.entity.Company;
+import com.onceClick.recruitmentService.shared.persistence.entity.Employer;
 import com.onceClick.recruitmentService.shared.persistence.entity.Notification;
 import com.onceClick.recruitmentService.shared.persistence.repository.CompanyRepository;
 import com.onceClick.recruitmentService.shared.persistence.repository.EmployerRepository;
@@ -38,12 +39,15 @@ public class AdminReviewCompanyHandler {
         company.setVerificationLevel("lv3");
         Company saved = companyRepository.save(company);
 
-        // Notify the company owner
-//        sendNotification(saved, "COMPANY_APPROVED",
-//                "Công ty đã được phê duyệt",
-//                String.format("Công ty %s đã được admin phê duyệt và kích hoạt thành công!",
-//                        saved.getCompanyName()));
+        // Set level1 for employer when create company
+        Employer employer = employerRepository.findById(company.getCreatedBy())
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find employer who create this company!"));
 
+        employer.setLevel("level1");
+        employer.setVerificationLevel("lv3");
+
+
+        // Return
         return ApiResponse.success("Phê duyệt công ty thành công!", mapToDto(saved));
     }
 

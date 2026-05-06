@@ -1,6 +1,7 @@
 package com.onceClick.recruitmentService.shared.persistence.repository;
 
 import com.onceClick.recruitmentService.shared.persistence.entity.Company;
+import com.onceClick.recruitmentService.shared.persistence.entity.Employer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -102,4 +103,7 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
     boolean existsByTaxCode(String taxCode);
 
     Optional<Company> findByCreatedBy(UUID employerId);
+
+    Optional<Employer> findEmployerByCreatedBy(UUID createdBy);
+
 }

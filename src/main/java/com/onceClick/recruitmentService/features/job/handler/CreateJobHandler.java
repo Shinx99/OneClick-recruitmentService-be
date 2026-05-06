@@ -50,8 +50,11 @@ public class CreateJobHandler {
         }
 
         // 3. Check HR Level 1
-        if(!"level1".equalsIgnoreCase(employer.getLevel())) {
-            throw new IllegalStateException("Only HR Level 1 can create job!");
+        String level = employer.getLevel();
+        if (level == null || (!level.equalsIgnoreCase("level1")
+                && !level.equalsIgnoreCase("level2")
+                && !level.equalsIgnoreCase("level3"))) {
+            throw new IllegalStateException("Only HR in company can create job!");
         }
 
         // 4. Save job

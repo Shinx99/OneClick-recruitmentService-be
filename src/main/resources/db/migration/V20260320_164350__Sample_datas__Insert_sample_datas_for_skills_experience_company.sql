@@ -4,7 +4,7 @@
 
 -- Add your SQL statements below:
 -- ========================================================
--- 1. COMPANY (10 records - Professional Vietnamese IT companies)
+-- 1. COMPANY (Professional Vietnamese IT companies)
 -- ========================================================
 INSERT INTO company (company_id, company_name, tax_code, size_range, overview, industry, province_code, address, logo_url, website_url) VALUES
 (gen_random_uuid(), 'FPT Software', '0100109106', '1000+', 'Thành lập năm 1999, FPT Software hiện là công ty cung cấp dịch vụ công nghệ thông tin và chuyển đổi số quy mô lớn nhất Việt Nam và vươn tầm Đông Nam Á. Với mạng lưới hoạt động trải dài trên 30 quốc gia và vùng lãnh thổ, công ty chuyên cung cấp các giải pháp công nghệ toàn diện và tiên tiến nhất như Trí tuệ nhân tạo (AI), Điện toán đám mây (Cloud), Phân tích dữ liệu lớn (Big Data), Internet vạn vật (IoT) và Tự động hóa quy trình bằng robot (RPA). Trải qua hơn hai thập kỷ phát triển, FPT Software đã và đang là đối tác chiến lược quan trọng của hàng nghìn doanh nghiệp, tập đoàn trong danh sách Fortune Global 500 trên toàn cầu, đặc biệt khẳng định vị thế vững chắc tại các thị trường trọng điểm và khắt khe như Nhật Bản, Mỹ, Châu Âu và khu vực Châu Á - Thái Bình Dương.', 'Công Nghệ Thông Tin', '700000', 'Phu My Hung, District 7, HCMC', 'fpt-logo.png', 'fpt-software.com'),

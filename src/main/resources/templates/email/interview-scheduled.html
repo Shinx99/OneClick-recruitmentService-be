@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư mời phỏng vấn</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7fc;">
+<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+
+    <!-- Header -->
+<!--    <div th:replace="~{email/fragments/header :: header}"></div>-->
+
+    <!-- Content -->
+    <div style="padding: 30px;">
+        <h2 style="color: #1a2a3a; margin: 0 0 10px 0; font-size: 24px;">
+            📅 Thư mời phỏng vấn
+        </h2>
+
+        <p style="color: #4a5568; line-height: 1.6; margin-bottom: 20px;">
+            Xin chào <strong th:text="${candidateName}">Ứng viên</strong>,
+        </p>
+
+        <p style="color: #4a5568; line-height: 1.6; margin-bottom: 20px;">
+            Nhà tuyển dụng đã mời bạn tham gia phỏng vấn cho vị trí
+            <strong th:text="${jobTitle}">[Job Title]</strong>.
+        </p>
+
+        <div style="background-color: #f0f7ff; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+            <h3 style="margin: 0 0 15px 0; color: #1a56db;">Thông tin buổi phỏng vấn</h3>
+
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="padding: 8px 0; width: 120px; font-weight: bold; color: #4a5568;">Thời gian:</td>
+                    <td style="padding: 8px 0; color: #1a2a3a;" th:text="${scheduledTime}">[Time]</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; font-weight: bold; color: #4a5568;">Địa điểm/Hình thức:</td>
+                    <td style="padding: 8px 0; color: #1a2a3a;" th:text="${location}">[Location]</td>
+                </tr>
+            </table>
+
+            <div th:if="${meetingLink != null and meetingLink != ''}" style="margin-top: 15px;">
+                <p style="margin: 0 0 5px 0; font-weight: bold; color: #4a5568;">Link tham gia:</p>
+                <a th:href="${meetingLink}" style="color: #10b94f; word-break: break-all;" th:text="${meetingLink}">[Meeting Link]</a>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <a th:href="${dashboardUrl}" style="display: inline-block; background-color: #10b94f; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                Xem chi tiết đơn ứng tuyển
+            </a>
+        </div>
+
+        <p style="color: #718096; font-size: 13px; text-align: center; margin-top: 30px;">
+            Vui lòng xác nhận tham gia phỏng vấn qua hệ thống để BTC sắp xếp.
+        </p>
+    </div>
+
+    <!-- Footer -->
+<!--    <div th:replace="~{email/fragments/footer :: footer}"></div>-->
+</div>
+</body>
+</html>

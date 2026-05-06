@@ -93,6 +93,10 @@ public class RecruiterApplicationController {
         return ResponseEntity.ok(ApiResponse.success(history));
     }
 
+
+    /**
+     * Phat trien feat cho interview (Scale)
+     * */
     @PostMapping("/applications/{applicationId}/schedule-interview")
     public ResponseEntity<ApiResponse<InterviewScheduleResponse>> scheduleInterview(
             @PathVariable UUID applicationId,

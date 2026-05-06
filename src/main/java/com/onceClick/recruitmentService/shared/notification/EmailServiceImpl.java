@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -137,5 +138,48 @@ public class EmailServiceImpl implements EmailService {
             log.error("❌ [EMAIL] Failed to send email to: {}", toEmail, e);
             throw new RuntimeException("Failed to send email", e);
         }
+    }
+
+    @Override
+    public void sendApplicationStatusUpdate(String toEmail, String candidateName, String jobTitle,
+                                            String status, String statusDisplay, String note) {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("candidateName", candidateName != null ? candidateName : "Ứng viên");
+        vars.put("jobTitle", jobTitle != null ? jobTitle : "Việc làm");
+        vars.put("status", status != null ? status : "");
+        vars.put("statusDisplay", statusDisplay != null ? statusDisplay : "Đã cập nhật");
+        vars.put("note", note != null ? note : "");
+        vars.put("dashboardUrl", frontendUrl + "/applications");
+
+        String subject = getSubjectByStatus(statusDisplay);
+        String html = emailTemplateService.buildApplicationStatusUpdate(vars);
+        sendHtmlEmail(toEmail, subject, html);
+        log.info("[APPLICATION] Status update email sent to: {} for job: {} - status: {}",
+                toEmail, jobTitle, statusDisplay);
+    }
+
+    @Override
+    public void sendInterviewScheduled(String toEmail, String candidateName, String jobTitle,
+                                       String scheduledTime, String meetingLink, String location) {
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("candidateName", candidateName != null ? candidateName : "Ứng viên");
+        vars.put("jobTitle", jobTitle != null ? jobTitle : "Việc làm");
+        vars.put("scheduledTime", scheduledTime != null ? scheduledTime : "Chưa cập nhật");
+        vars.put("meetingLink", meetingLink != null ? meetingLink : "");
+        vars.put("location", location != null ? location : "Online");
+        vars.put("dashboardUrl", frontendUrl + "/applications");
+
+        String html = emailTemplateService.buildInterviewScheduled(vars);
+        sendHtmlEmail(toEmail, "📅 Thư mời phỏng vấn từ " + appName, html);
+        log.info("[INTERVIEW] Interview invitation sent to: {} for job: {}", toEmail, jobTitle);
+    }
+
+    private String getSubjectByStatus(String statusDisplay) {
+        return switch (statusDisplay) {
+            case "Phỏng vấn" -> "📅 Thư mời phỏng vấn";
+            case "Được nhận" -> "🎉 Chúc mừng! Bạn đã trúng tuyển";
+            case "Từ chối" -> "📧 Cập nhật kết quả ứng tuyển";
+            default -> "📧 Cập nhật trạng thái đơn ứng tuyển";
+        };
     }
 }

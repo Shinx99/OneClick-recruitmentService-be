@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cập nhật trạng thái đơn ứng tuyển</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7fc;">
+<div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+
+    <!-- Header -->
+<!--    <div th:replace="~{email/fragments/header :: header}"></div>-->
+
+    <!-- Content -->
+    <div style="padding: 30px;">
+        <h2 style="color: #1a2a3a; margin: 0 0 10px 0; font-size: 24px;">
+            Cập nhật kết quả ứng tuyển
+        </h2>
+
+        <div th:if="${statusDisplay == 'Phỏng vấn'}" style="background-color: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
+            <p style="margin: 0; font-weight: bold; color: #1565c0;">📅 Bạn đã được chọn vào vòng phỏng vấn!</p>
+        </div>
+
+        <div th:if="${statusDisplay == 'Được nhận'}" style="background-color: #e8f5e9; padding: 12px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
+            <p style="margin: 0; font-weight: bold; color: #2e7d32;">🎉 Chúc mừng! Bạn đã trúng tuyển!</p>
+        </div>
+
+        <div th:if="${statusDisplay == 'Từ chối'}" style="background-color: #ffebee; padding: 12px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #f44336;">
+            <p style="margin: 0; font-weight: bold; color: #c62828;">📧 Rất tiếc, đơn ứng tuyển của bạn chưa thành công</p>
+        </div>
+
+        <p style="color: #4a5568; line-height: 1.6; margin-bottom: 20px;">
+            Xin chào <strong th:text="${candidateName}">Ứng viên</strong>,
+        </p>
+
+        <p style="color: #4a5568; line-height: 1.6; margin-bottom: 20px;">
+            Đơn ứng tuyển của bạn cho vị trí <strong th:text="${jobTitle}">[Job Title]</strong>
+            đã được cập nhật sang trạng thái:
+            <strong th:text="${statusDisplay}" style="color: #2d6a4f;">[Status]</strong>.
+        </p>
+
+        <div th:if="${note != null and note != ''}" style="background-color: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <p style="margin: 0 0 5px 0; font-weight: bold; color: #333;">Lời nhắn từ nhà tuyển dụng:</p>
+            <p style="margin: 0; color: #555;" th:text="${note}">[Note]</p>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <a th:href="${dashboardUrl}" style="display: inline-block; background-color: #10b94f; color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                Xem chi tiết đơn ứng tuyển
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+<!--    <div th:replace="~{email/fragments/footer :: footer}"></div>-->
+</div>
+</body>
+</html>

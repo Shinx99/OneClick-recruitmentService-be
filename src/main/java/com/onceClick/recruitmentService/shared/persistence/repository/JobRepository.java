@@ -182,5 +182,8 @@ public interface JobRepository extends JpaRepository<Job, UUID>, JpaSpecificatio
             @Param("keyword") String keyword,
             @Param("status") String status
     );
+
+    @Query("SELECT j FROM Job j WHERE j.createdBy = :employerId ORDER BY j.applicationCount DESC, j.createdAt DESC")
+    List<Job> findJobsByEmployerOrderByApplicationCount(@Param("employerId") UUID employerId);
 }
 

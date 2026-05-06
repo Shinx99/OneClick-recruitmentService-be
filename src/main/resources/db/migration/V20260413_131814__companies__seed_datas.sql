@@ -7,7 +7,7 @@
 -- Created: Fri Apr 11 2026
 -- Description: Update company logo_url and background_url with real image URLs for display
 
-UPDATE company SET background_url = 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776061859/companies/covers/fpt_software_cover_h5ycfb.jpg'
+UPDATE company SET background_url = 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1778090574/companies/covers/fpt_software_cover_jiziit.jpg'
 WHERE company_name = 'FPT Software';
 
 UPDATE company SET background_url= 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776062108/companies/covers/vng_corporation_cover_yk6ecy.jpg'
@@ -41,5 +41,5 @@ UPDATE company SET background_url = 'https://res.cloudinary.com/dhiz9hdeq/image/
 WHERE company_name = 'ELSA Corp';
 
 UPDATE company SET background_url = 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776063075/companies/covers/Untitled_xf8qev.png'
-WHERE company_name = 'Giao Hang Tiet Kiem';
+WHERE company_name = 'Giao Hàng Tiết Kiệm';
 

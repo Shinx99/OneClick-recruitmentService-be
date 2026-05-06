@@ -7,7 +7,7 @@
 ALTER TABLE job ADD COLUMN IF NOT EXISTS img_url TEXT;
 
 -- =============================================
--- 2. SEED 10 NEW JOBS (đa ngành: IT, Marketing, Bếp, Kế toán, Nhân sự, Logistics...)
+-- 2. SEED 10 JOBS
 -- =============================================
 INSERT INTO job (
     job_id, company_id, title, description, requirement, img_url, major_preffered,
@@ -16,7 +16,9 @@ INSERT INTO job (
     status, created_by, created_at, updated_at
 ) VALUES
 
--- 1. Marketing Manager
+-- ---------------------------------------------------------------
+-- 1. Marketing Manager → Tiki (e3)
+-- ---------------------------------------------------------------
 (gen_random_uuid(),
  (SELECT company_id FROM company WHERE company_name = 'Tiki Corporation' LIMIT 1),
  'Marketing Manager - Digital Marketing & Brand Strategy',
@@ -39,11 +41,13 @@ INSERT INTO job (
  'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776052464/companies/avatars/1692104431985_uik5mj.jpg',
  'Marketing', 'Senior', 'Full-time', 'Hồ Chí Minh', 'Quận 1',
  1500.00, 2500.00, 4.0, '2026-06-30', 0, 0, 'active',
- 'e1e1e1e1-e1e1-e1e1-e1e1-e1e1e1e1e1e1', NOW() - INTERVAL '2 days', NOW()),
+ 'e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3', NOW() - INTERVAL '2 days', NOW()),
 
--- 2. Bếp trưởng (Head Chef)
+-- ---------------------------------------------------------------
+-- 2. Bếp trưởng → CMC Global (e5)
+-- ---------------------------------------------------------------
 (gen_random_uuid(),
- (SELECT company_id FROM company WHERE company_name = 'Saigon Technology' LIMIT 1),
+ (SELECT company_id FROM company WHERE company_name = 'CMC Global' LIMIT 1),
  'Bếp Trưởng (Head Chef) - Nhà Hàng Ẩm Thực Á Âu',
  'Mô tả công việc:
 - Quản lý toàn bộ hoạt động bếp: lên menu, kiểm soát chất lượng món ăn, quản lý nguyên vật liệu.
@@ -64,11 +68,13 @@ INSERT INTO job (
  'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776052512/companies/avatars/1773284290624_kgwmgs.jpg',
  'Nhà hàng - Khách sạn', 'Senior', 'Full-time', 'Hồ Chí Minh', 'Quận 3',
  800.00, 1500.00, 5.0, '2026-07-15', 0, 0, 'active',
- 'e2e2e2e2-e2e2-e2e2-e2e2-e2e2e2e2e2e2', NOW() - INTERVAL '3 days', NOW()),
+ 'e5e5e5e5-e5e5-e5e5-e5e5-e5e5e5e5e5e5', NOW() - INTERVAL '3 days', NOW()),
 
--- 3. Kế toán trưởng
+-- ---------------------------------------------------------------
+-- 3. Kế toán trưởng → KMS Technology (e6)
+-- ---------------------------------------------------------------
 (gen_random_uuid(),
- (SELECT company_id FROM company WHERE company_name = 'FPT Software' LIMIT 1),
+ (SELECT company_id FROM company WHERE company_name = 'KMS Technology' LIMIT 1),
  'Kế Toán Trưởng (Chief Accountant) - Công ty Công nghệ',
  'Mô tả công việc:
 - Chịu trách nhiệm toàn bộ công tác kế toán, tài chính của công ty (doanh thu > 500 tỷ/năm).
@@ -86,12 +92,14 @@ INSERT INTO job (
 - Am hiểu Luật Thuế, Luật Kế toán Việt Nam, chuẩn mực VAS.
 - Có kinh nghiệm ngành IT/Phần mềm là lợi thế.
 - Tỉ mỉ, cẩn thận, có trách nhiệm cao, giữ bí mật thông tin tài chính.',
- 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776053365/companies/avatars/fpt_software_logo_ibo1d7.jpg',
+ 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776053403/companies/avatars/kms_technology_logo_nuystc.jpg',
  'Kế toán - Tài chính', 'Senior', 'Full-time', 'Hà Nội', 'Cầu Giấy',
  1200.00, 2000.00, 5.0, '2026-06-30', 0, 0, 'active',
- 'e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3', NOW() - INTERVAL '4 days', NOW()),
+ 'e6e6e6e6-e6e6-e6e6-e6e6-e6e6e6e6e6e6', NOW() - INTERVAL '4 days', NOW()),
 
--- 4. HR Business Partner
+-- ---------------------------------------------------------------
+-- 4. HR Business Partner → VNG (e2)
+-- ---------------------------------------------------------------
 (gen_random_uuid(),
  (SELECT company_id FROM company WHERE company_name = 'VNG Corporation' LIMIT 1),
  'HR Business Partner (HRBP) - Mảng Công nghệ',
@@ -114,9 +122,11 @@ INSERT INTO job (
  'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776053530/companies/avatars/vng_group_logo_fvdsli.jpg',
  'Nhân sự', 'Senior', 'Full-time', 'Hồ Chí Minh', 'Quận 7',
  1500.00, 2500.00, 4.0, '2026-07-01', 0, 0, 'active',
- 'e4e4e4e4-e4e4-e4e4-e4e4-e4e4e4e4e4e4', NOW() - INTERVAL '5 days', NOW()),
+ 'e2e2e2e2-e2e2-e2e2-e2e2-e2e2e2e2e2e2', NOW() - INTERVAL '5 days', NOW()),
 
--- 5. AI/ML Engineer (giữ lại 1 job IT)
+-- ---------------------------------------------------------------
+-- 5. AI/ML Engineer → VinAI (e4)
+-- ---------------------------------------------------------------
 (gen_random_uuid(),
  (SELECT company_id FROM company WHERE company_name = 'VinAI Research' LIMIT 1),
  'AI/ML Engineer - Computer Vision (Python/PyTorch)',
@@ -136,9 +146,11 @@ INSERT INTO job (
  'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776053487/companies/avatars/vinai_research_logo_c0d6qz.jpg',
  'Trí tuệ nhân tạo', 'Senior', 'Full-time', 'Hà Nội', 'Cầu Giấy',
  2000.00, 4000.00, 2.0, '2026-06-30', 0, 0, 'active',
- 'e1e1e1e1-e1e1-e1e1-e1e1-e1e1e1e1e1e1', NOW() - INTERVAL '6 days', NOW()),
+ 'e4e4e4e4-e4e4-e4e4-e4e4-e4e4e4e4e4e4', NOW() - INTERVAL '6 days', NOW()),
 
--- 6. Nhân viên Logistics / Quản lý kho
+-- ---------------------------------------------------------------
+-- 6. Quản lý kho → Tiki (e3)
+-- ---------------------------------------------------------------
 (gen_random_uuid(),
  (SELECT company_id FROM company WHERE company_name = 'Tiki Corporation' LIMIT 1),
  'Quản Lý Kho Vận (Warehouse Supervisor) - Logistics',
@@ -161,17 +173,19 @@ INSERT INTO job (
  'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776052464/companies/avatars/1692104431985_uik5mj.jpg',
  'Logistics - Kho vận', 'Middle', 'Full-time', 'Hồ Chí Minh', 'Quận 9',
  700.00, 1200.00, 3.0, '2026-07-15', 0, 0, 'active',
- 'e2e2e2e2-e2e2-e2e2-e2e2-e2e2e2e2e2e2', NOW() - INTERVAL '7 days', NOW()),
+ 'e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3', NOW() - INTERVAL '7 days', NOW()),
 
--- 7. Content Creator / Social Media
+-- ---------------------------------------------------------------
+-- 7. Content Creator → VNG (e2)
+-- ---------------------------------------------------------------
 (gen_random_uuid(),
- (SELECT company_id FROM company WHERE company_name = 'ELSA Corp' LIMIT 1),
- 'Content Creator (TikTok/Reels/YouTube) - EdTech',
+ (SELECT company_id FROM company WHERE company_name = 'VNG Corporation' LIMIT 1),
+ 'Content Creator (TikTok/Reels/YouTube) - Gaming Division',
  'Mô tả công việc:
-- Sáng tạo nội dung video ngắn cho TikTok, Instagram Reels, YouTube Shorts về chủ đề học tiếng Anh.
+- Sáng tạo nội dung video ngắn cho TikTok, Instagram Reels, YouTube Shorts về chủ đề gaming và giải trí.
 - Lên ý tưởng, viết kịch bản, quay và edit video (target 3-5 video/tuần).
 - Xây dựng và phát triển cộng đồng trên các nền tảng MXH (target 100K followers trong 6 tháng).
-- Hợp tác với KOL/Influencer trong lĩnh vực giáo dục.
+- Hợp tác với KOL/Influencer trong lĩnh vực gaming.
 - Phân tích metrics (views, engagement rate, conversion) để tối ưu nội dung.
 - Theo dõi trend, viral content để áp dụng vào chiến lược content.
 - Phối hợp với team Marketing, Product để align thông điệp thương hiệu.',
@@ -182,13 +196,15 @@ INSERT INTO job (
 - Biết chụp ảnh, quay video cơ bản bằng smartphone và camera.
 - Có khiếu hài hước, storytelling tốt, không ngại xuất hiện trước camera.
 - Am hiểu các thuật toán đề xuất của TikTok, Instagram, YouTube.
-- Đam mê giáo dục, tiếng Anh giao tiếp tốt.',
- 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776063162/companies/avatars/elsa_corp_logo_tcv10z.jpg',
- 'Marketing - Truyền thông', 'Junior', 'Full-time', 'Hồ Chí Minh', 'Quận 2',
+- Đam mê gaming, tiếng Anh giao tiếp tốt.',
+ 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776053530/companies/avatars/vng_group_logo_fvdsli.jpg',
+ 'Marketing - Truyền thông', 'Junior', 'Full-time', 'Hồ Chí Minh', 'Quận 1',
  500.00, 1000.00, 1.0, '2026-07-31', 0, 0, 'active',
- 'e3e3e3e3-e3e3-e3e3-e3e3-e3e3e3e3e3e3', NOW() - INTERVAL '8 days', NOW()),
+ 'e2e2e2e2-e2e2-e2e2-e2e2-e2e2e2e2e2e2', NOW() - INTERVAL '8 days', NOW()),
 
--- 8. Nhân viên Kinh doanh B2B
+-- ---------------------------------------------------------------
+-- 8. Sales B2B → CMC Global (e5)
+-- ---------------------------------------------------------------
 (gen_random_uuid(),
  (SELECT company_id FROM company WHERE company_name = 'CMC Global' LIMIT 1),
  'Nhân Viên Kinh Doanh B2B (IT Solutions / Outsourcing)',
@@ -211,9 +227,11 @@ INSERT INTO job (
  'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776053319/companies/avatars/cmc_global_company_limited_logo_ghl4pb.jpg',
  'Kinh doanh - Bán hàng', 'Middle', 'Full-time', 'Hà Nội', 'Thanh Xuân',
  800.00, 2000.00, 2.0, '2026-07-15', 0, 0, 'active',
- 'e4e4e4e4-e4e4-e4e4-e4e4-e4e4e4e4e4e4', NOW() - INTERVAL '9 days', NOW()),
+ 'e5e5e5e5-e5e5-e5e5-e5e5-e5e5e5e5e5e5', NOW() - INTERVAL '9 days', NOW()),
 
--- 9. Thực tập sinh Graphic Design
+-- ---------------------------------------------------------------
+-- 9. Graphic Design Intern → VNG (e2)
+-- ---------------------------------------------------------------
 (gen_random_uuid(),
  (SELECT company_id FROM company WHERE company_name = 'VNG Corporation' LIMIT 1),
  'Thực Tập Sinh Graphic Designer - Gaming Division',
@@ -235,9 +253,11 @@ INSERT INTO job (
  'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776053530/companies/avatars/vng_group_logo_fvdsli.jpg',
  'Thiết kế đồ họa', 'Fresher', 'Internship', 'Hồ Chí Minh', 'Quận 7',
  200.00, 400.00, 0.0, '2026-08-01', 0, 0, 'active',
- 'e5e5e5e5-e5e5-e5e5-e5e5-e5e5e5e5e5e5', NOW() - INTERVAL '10 days', NOW()),
+ 'e2e2e2e2-e2e2-e2e2-e2e2-e2e2e2e2e2e2', NOW() - INTERVAL '10 days', NOW()),
 
--- 10. Chăm sóc khách hàng (Customer Service)
+-- ---------------------------------------------------------------
+-- 10. Customer Support → KMS (e6)
+-- ---------------------------------------------------------------
 (gen_random_uuid(),
  (SELECT company_id FROM company WHERE company_name = 'KMS Technology' LIMIT 1),
  'Nhân Viên Chăm Sóc Khách Hàng (Customer Support) - Part-time',
@@ -260,25 +280,30 @@ INSERT INTO job (
  'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776053403/companies/avatars/kms_technology_logo_nuystc.jpg',
  'Dịch vụ khách hàng', 'Fresher', 'Part-time', 'Hồ Chí Minh', 'Quận 1',
  200.00, 400.00, 0.0, '2026-07-31', 0, 0, 'active',
- 'e5e5e5e5-e5e5-e5e5-e5e5-e5e5e5e5e5e5', NOW() - INTERVAL '11 days', NOW());
+ 'e6e6e6e6-e6e6-e6e6-e6e6-e6e6e6e6e6e6', NOW() - INTERVAL '11 days', NOW());
+
 
 -- =============================================
--- 3. LINK JOBS TO SKILLS (chỉ job IT mới cần skills tech)
+-- 3. LINK JOBS TO SKILLS
 -- =============================================
+INSERT INTO job_skills (job_id, skills_id)
+SELECT j.job_id, s.skills_id FROM job j, skills s
+WHERE j.title = 'AI/ML Engineer - Computer Vision (Python/PyTorch)'
+  AND s.skills_name = 'Python Django'
+ON CONFLICT DO NOTHING;
 
--- AI/ML Engineer → Python Django, Docker Kubernetes, AWS Cloud
 INSERT INTO job_skills (job_id, skills_id)
 SELECT j.job_id, s.skills_id FROM job j, skills s
-WHERE j.title = 'AI/ML Engineer - Computer Vision (Python/PyTorch)' AND s.skills_name = 'Python Django'
+WHERE j.title = 'AI/ML Engineer - Computer Vision (Python/PyTorch)'
+  AND s.skills_name = 'Docker Kubernetes'
 ON CONFLICT DO NOTHING;
+
 INSERT INTO job_skills (job_id, skills_id)
 SELECT j.job_id, s.skills_id FROM job j, skills s
-WHERE j.title = 'AI/ML Engineer - Computer Vision (Python/PyTorch)' AND s.skills_name = 'Docker Kubernetes'
+WHERE j.title = 'AI/ML Engineer - Computer Vision (Python/PyTorch)'
+  AND s.skills_name = 'AWS Cloud'
 ON CONFLICT DO NOTHING;
-INSERT INTO job_skills (job_id, skills_id)
-SELECT j.job_id, s.skills_id FROM job j, skills s
-WHERE j.title = 'AI/ML Engineer - Computer Vision (Python/PyTorch)' AND s.skills_name = 'AWS Cloud'
-ON CONFLICT DO NOTHING;
+
 
 -- =============================================
 -- 4. LINK JOBS TO EMPLOYERS (owner)

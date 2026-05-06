@@ -35,5 +35,5 @@ WHERE company_name = 'Rikkeisoft';
 UPDATE company SET logo_url = 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776063162/companies/avatars/elsa_corp_logo_tcv10z.jpg'
 WHERE company_name = 'ELSA Corp';
 
-UPDATE company SET logo_url = 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1776063014/companies/avatars/GHTK__Logo_RGB_x0gmpg.png'
-WHERE company_name = 'Giao Hang Tiet Kiem';
+UPDATE company SET logo_url = 'https://res.cloudinary.com/dhiz9hdeq/image/upload/v1778088186/companies/avatars/ghtk_logo_wuwjtf.jpg'
+WHERE company_name = 'Giao Hàng Tiết Kiệm';

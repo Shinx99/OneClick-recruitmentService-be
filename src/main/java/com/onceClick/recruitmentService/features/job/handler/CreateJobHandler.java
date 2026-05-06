@@ -49,7 +49,7 @@ public class CreateJobHandler {
             throw new IllegalStateException("Recruiter hasn't verified company!");
         }
 
-        // 3. Check HR Level 1
+        // 3. Check HR Level 1, 2, 3
         String level = employer.getLevel();
         if (level == null || (!level.equalsIgnoreCase("level1")
                 && !level.equalsIgnoreCase("level2")
